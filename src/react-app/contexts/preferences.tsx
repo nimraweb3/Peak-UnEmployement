@@ -1,0 +1,4 @@
+import {createContext,useContext,useState,useEffect,type ReactNode} from 'react';
+const Context=createContext({theme:'midnight',setTheme:(_v:string)=>{},reduced:false,setReduced:(_v:boolean)=>{}});
+export function Preferences({children}:{children:ReactNode}){const [theme,setTheme]=useState(()=>localStorage.getItem('peak-theme')||'midnight');const [reduced,setReduced]=useState(()=>localStorage.getItem('peak-reduced')==='true'||matchMedia('(prefers-reduced-motion: reduce)').matches);useEffect(()=>{document.documentElement.dataset.theme=theme;document.documentElement.dataset.reduced=String(reduced);localStorage.setItem('peak-theme',theme);localStorage.setItem('peak-reduced',String(reduced));},[theme,reduced]);return <Context.Provider value={{theme,setTheme,reduced,setReduced}}>{children}</Context.Provider>;}
+export const usePreferences=()=>useContext(Context);
