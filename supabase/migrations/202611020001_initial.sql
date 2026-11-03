@@ -12,7 +12,7 @@ create table public.blocks(user_id uuid references public.profiles on delete cas
 create table public.dm_requests(id uuid primary key default gen_random_uuid(),sender_id uuid not null references public.profiles on delete cascade,recipient_id uuid not null references public.profiles on delete cascade,status text not null default 'pending' check(status in ('pending','accepted','declined')),created_at timestamptz not null default now(),check(sender_id<>recipient_id));
 create unique index request_pair on public.dm_requests(least(sender_id,recipient_id),greatest(sender_id,recipient_id));
 create table public.conversations(id uuid primary key default gen_random_uuid(),user_a uuid not null references public.profiles on delete cascade,user_b uuid not null references public.profiles on delete cascade,closed_at timestamptz,created_at timestamptz not null default now(),check(user_a<user_b),unique(user_a,user_b));
-create table public.messages(id uuid primary key default gen_random_uuid(),room_id uuid references public.rooms on delete cascade,conversation_id uuid references public.conversations on delete cascade,sender_id uuid not null references public.profiles on delete cascade,content text not null check(length(content)<=1000),client_id uuid not null,created_at timestamptz not null default clock_timestamp(),deleted_at timestamptz,check((room_id is null)<>(conversation_id is null)),unique(sender_id,client_id));
+create table public.messages(id uuid primary key default gen_random_uuid(),room_id uuid references public.rooms on delete cascade,conversation_id uuid references public.conversations on delete cascade,sender_id uuid not null references public.profiles on delete cascade,content text not null check(length(content)<=1000),client_id uuid not null,created_at timestamptz not null default clock_timestamp(),deleted_at timestamptz,updated_at timestamptz not null default now(),check((room_id is null)<>(conversation_id is null)),unique(sender_id,client_id));
 create index messages_room_cursor on public.messages(room_id,created_at desc,id desc);
 create index messages_conversation_cursor on public.messages(conversation_id,created_at desc,id desc);
 create index messages_sender_time on public.messages(sender_id,created_at desc);
@@ -54,7 +54,7 @@ create policy reports_admin on public.reports for select to authenticated using(
 revoke all on all tables in schema public from anon,authenticated;
 grant select on public.profiles,public.industries,public.rooms,public.blocks,public.dm_requests,public.conversations,public.messages,public.reactions,public.conversation_reads,public.reports to authenticated;
 
-create function public.bootstrap_profile() returns public.profiles language plpgsql security definer set search_path='' as $$
+create function public.bootstrap_profile() returns jsonb language plpgsql security definer set search_path='' as $$
 declare pid uuid; result public.profiles;
 begin
  if auth.uid() is null then raise exception 'Authentication required' using errcode='28000'; end if;
@@ -71,7 +71,7 @@ begin
   insert into private.identities values(auth.uid(),pid);
  end if;
  select * into result from public.profiles where id=pid;
- return result;
+ return to_jsonb(result);
 end $$;
 
 -- Atomic, persistent limits and consent checks also apply to direct PostgREST calls.
@@ -117,6 +117,7 @@ begin
   if not public.can_read_message(mid) or exists(select 1 from public.messages where id=mid and deleted_at is not null) then raise exception 'Message unavailable' using errcode='42501'; end if;
   if action='react' then insert into public.reactions values(mid,me,payload->>'emoji') on conflict do nothing;
   else delete from public.reactions where message_id=mid and user_id=me and emoji=payload->>'emoji'; end if;
+  update public.messages set updated_at=clock_timestamp() where id=mid;
  when 'request' then
   target:=(payload->>'recipient_id')::uuid;
   if target=me or public.is_blocked(me,target) or not exists(select 1 from public.profiles where id=target and allows_dm_requests) then raise exception 'This person is not accepting requests' using errcode='42501'; end if;
@@ -167,3 +168,29 @@ create trigger identity_deleted after delete on private.identities for each row 
 revoke all on all functions in schema public from public,anon;
 grant execute on function public.my_profile_id(),public.is_admin(),public.is_blocked(uuid,uuid),public.can_converse(uuid),public.can_read_message(uuid),public.bootstrap_profile(),public.mutate(text,jsonb),public.moderate(jsonb),public.admin_metrics() to authenticated;
 alter publication supabase_realtime add table public.messages,public.dm_requests,public.conversations;
+
+-- One bounded database query, rather than one Worker subrequest per conversation.
+create function public.list_conversations() returns jsonb language sql stable security invoker set search_path='' as $$
+ select coalesce(jsonb_agg(row_data order by created_at desc),'[]'::jsonb) from (
+  select c.created_at,to_jsonb(c)||jsonb_build_object('a',to_jsonb(a),'b',to_jsonb(b),'unread',
+    (select count(*) from public.messages m where m.conversation_id=c.id and m.sender_id<>public.my_profile_id()
+     and m.created_at>coalesce((select last_read_at from public.conversation_reads r where r.conversation_id=c.id and r.user_id=public.my_profile_id()),c.created_at))) row_data
+  from public.conversations c join public.profiles a on a.id=c.user_a join public.profiles b on b.id=c.user_b
+  order by c.created_at desc limit 100
+ ) inbox
+$$;
+revoke all on function public.list_conversations() from public,anon;
+grant execute on function public.list_conversations() to authenticated;
+
+-- Moderators can review only the specifically reported content through this RPC.
+create function public.review_reports() returns jsonb language plpgsql stable security definer set search_path='' as $$
+begin
+ if not public.is_admin() then raise exception 'Admin required' using errcode='42501'; end if;
+ return (select coalesce(jsonb_agg(row_data order by created_at desc),'[]'::jsonb) from (
+  select r.created_at,to_jsonb(r)||jsonb_build_object('reported_content',m.content) row_data
+  from public.reports r left join public.messages m on m.id=r.message_id where not r.resolved
+  order by r.created_at desc limit 100
+ ) queue);
+end $$;
+revoke all on function public.review_reports() from public,anon;
+grant execute on function public.review_reports() to authenticated;
