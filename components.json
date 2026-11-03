@@ -1,1 +1,16 @@
-{"$schema":"https://ui.shadcn.com/schema.json","style":"new-york","rsc":false,"tsx":true,"tailwind":{"css":"src/react-app/styles.css","baseColor":"slate","cssVariables":true},"aliases":{"components":"src/react-app/components","utils":"src/react-app/lib/utils","ui":"src/react-app/components/ui"}}
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "css": "src/react-app/styles.css",
+    "baseColor": "slate",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "src/react-app/components",
+    "utils": "src/react-app/lib/utils",
+    "ui": "src/react-app/components/ui"
+  }
+}
