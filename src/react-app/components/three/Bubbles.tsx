@@ -1,6 +1,62 @@
-import {Canvas,useFrame} from '@react-three/fiber';
-import {Float,Sphere} from '@react-three/drei';
-import {useEffect,useRef,useState} from 'react';
-import type {Group} from 'three';
-function Scene(){const group=useRef<Group>(null);useFrame(({pointer})=>{if(group.current){group.current.rotation.y+=(pointer.x*.15-group.current.rotation.y)*.02;group.current.rotation.x+=(-pointer.y*.12-group.current.rotation.x)*.02;}});return <group ref={group}><ambientLight intensity={1.4}/><directionalLight position={[2,4,5]} intensity={3} color="#d9c7ff"/><pointLight position={[-4,-2,3]} intensity={18} color="#8e74ff"/>{[[0,0,0,1.35],[-2.6,1.2,-1,.48],[2.3,1.6,-2,.8],[2.5,-1.7,-1,.4],[-2,-1.6,0,.65]].map(([x,y,z,s],i)=><Float key={i} speed={1} rotationIntensity={.15} floatIntensity={.6}><Sphere args={[s,32,24]} position={[x,y,z]}><meshPhysicalMaterial color={i%2?'#d3b7ff':'#ad98ef'} metalness={.18} roughness={.12} transparent opacity={.5} clearcoat={1} iridescence={1} iridescenceIOR={1.3}/></Sphere></Float>)}</group>;}
-export default function Bubbles(){const [visible,setVisible]=useState(!document.hidden);useEffect(()=>{const update=()=>setVisible(!document.hidden);document.addEventListener('visibilitychange',update);return()=>document.removeEventListener('visibilitychange',update);},[]);return <Canvas dpr={[1,1.5]} camera={{position:[0,0,7],fov:42}} frameloop={visible?'always':'never'} gl={{antialias:false,alpha:true}}><Scene/></Canvas>;}
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Float, Sphere } from "@react-three/drei";
+import { useEffect, useRef, useState } from "react";
+import type { Group } from "three";
+function Scene() {
+  const group = useRef<Group>(null);
+  useFrame(({ pointer }) => {
+    if (group.current) {
+      group.current.rotation.y +=
+        (pointer.x * 0.15 - group.current.rotation.y) * 0.02;
+      group.current.rotation.x +=
+        (-pointer.y * 0.12 - group.current.rotation.x) * 0.02;
+    }
+  });
+  return (
+    <group ref={group}>
+      <ambientLight intensity={1.4} />
+      <directionalLight position={[2, 4, 5]} intensity={3} color="#d9c7ff" />
+      <pointLight position={[-4, -2, 3]} intensity={18} color="#8e74ff" />
+      {[
+        [0, 0, 0, 1.35],
+        [-2.6, 1.2, -1, 0.48],
+        [2.3, 1.6, -2, 0.8],
+        [2.5, -1.7, -1, 0.4],
+        [-2, -1.6, 0, 0.65],
+      ].map(([x, y, z, s], i) => (
+        <Float key={i} speed={1} rotationIntensity={0.15} floatIntensity={0.6}>
+          <Sphere args={[s, 32, 24]} position={[x, y, z]}>
+            <meshPhysicalMaterial
+              color={i % 2 ? "#d3b7ff" : "#ad98ef"}
+              metalness={0.18}
+              roughness={0.12}
+              transparent
+              opacity={0.5}
+              clearcoat={1}
+              iridescence={1}
+              iridescenceIOR={1.3}
+            />
+          </Sphere>
+        </Float>
+      ))}
+    </group>
+  );
+}
+export default function Bubbles() {
+  const [visible, setVisible] = useState(!document.hidden);
+  useEffect(() => {
+    const update = () => setVisible(!document.hidden);
+    document.addEventListener("visibilitychange", update);
+    return () => document.removeEventListener("visibilitychange", update);
+  }, []);
+  return (
+    <Canvas
+      dpr={[1, 1.5]}
+      camera={{ position: [0, 0, 7], fov: 42 }}
+      frameloop={visible ? "always" : "never"}
+      gl={{ antialias: false, alpha: true }}
+    >
+      <Scene />
+    </Canvas>
+  );
+}
