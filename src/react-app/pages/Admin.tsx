@@ -35,7 +35,7 @@ export default function Admin() {
     <div className="content-page">
       <span className="eyebrow">MODERATOR ACCESS ONLY</span>
       <h1>
-        Keep this place <em>kind.</em>
+        Moderation
       </h1>
       <p>
         Review reports carefully. Hiding removes the stored message body;
@@ -89,7 +89,7 @@ export default function Admin() {
       ) : (
         <Empty title="All caught up." description="No unresolved reports." />
       )}
-      <h2>Honest community metrics</h2>
+      <h2>Community activity</h2>
       <p className="fine-print">
         Active means distinct public message senders in the trailing 24 hours /
         30 days. No private content is included.

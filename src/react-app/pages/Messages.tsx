@@ -184,11 +184,13 @@ export default function Messages() {
     requests.data?.filter((r) => r.sender_id === profile?.id) || [];
   return (
     <div className="content-page">
-      <span className="eyebrow">YOUR CORNER OF THE INTERNET</span>
+      <span className="eyebrow">YOUR INBOX</span>
       <h1>
         Private <em>conversations.</em>
       </h1>
-      <p className="page-intro">A little less public. Just as much company.</p>
+      <p className="page-intro">
+        Private conversations start with an accepted request.
+      </p>
       <div className="notice">
         <MessageCircle />
         <p>
@@ -283,8 +285,8 @@ export default function Messages() {
               })
             ) : (
               <Empty
-                title="Nobody has slid into your unemployment era yet."
-                description="Good conversations start with consent. Meet someone in a room, then request a chat."
+                title="No private conversations yet."
+                description="Meet someone in a room, then ask to chat privately. They decide whether to accept."
               />
             )}
           </section>

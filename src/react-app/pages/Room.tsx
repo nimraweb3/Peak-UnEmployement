@@ -28,8 +28,8 @@ export default function Room() {
           <div>
             <span className="eyebrow">
               {slug === "lounge"
-                ? "THE HEART OF THE CHAOS"
-                : "DIFFERENT INDUSTRY. SAME STRUGGLE."}
+                ? "THE UNEMPLOYMENT LOUNGE"
+                : "YOUR INDUSTRY ROOM"}
             </span>
             <h1>{room.name}</h1>
             <p>{room.description}</p>
@@ -41,31 +41,24 @@ export default function Room() {
       <aside className="room-info">
         <div className="prompt-card glass">
           <span className="eyebrow">
-            <Sparkles size={15} /> THE DAILY RANT
+            <Sparkles size={15} /> TODAY’S QUESTION
           </span>
           <h3>{dailyPrompt()}</h3>
-          <p>
-            No wrong answers.
-            <br />
-            Some very funny ones, probably.
-          </p>
+          <p>A starting point if you need one.</p>
           <span className="prompt-doodle">✳</span>
         </div>
         <div className="room-info-copy">
           <span className="eyebrow">A LITTLE REMINDER</span>
-          <h3>
-            You’re more than
-            <br />
-            your employment status.
-          </h3>
+          <h3>This room is public.</h3>
           <p>
-            Rant a little. Celebrate a little. Take a break when you need one.
+            Anyone can read these conversations. Keep identifying details out of
+            your posts.
           </p>
         </div>
         <Link to="/community-guidelines" className="guideline-link">
           <ShieldCheck size={20} />
           <div>
-            <strong>Good company, good boundaries.</strong>
+            <strong>A few ground rules.</strong>
             <p>Read our community guidelines</p>
           </div>
           <ArrowUpRight size={16} />
@@ -80,7 +73,7 @@ export default function Room() {
           </Link>
         )}
         <p className="info-signoff">
-          unemployed, but never alone.<span>peak.</span>
+          A place to talk.<span>Peak Unemployment</span>
         </p>
       </aside>
     </div>
