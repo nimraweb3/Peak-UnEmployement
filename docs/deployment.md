@@ -61,7 +61,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The default browser tests use the honest unconfigured state and skip the live suite. Run them with no populated Vite/Supabase environment. CI does this automatically. A large chunk warning for the lazy Three.js bundle is expected; it is not loaded by chat routes.
+The default browser tests use the honest unconfigured state and skip the live suite. Run them with no populated Vite/Supabase environment. CI does this automatically. The redesign does not load Three.js. Default browser tests use isolated intercepted fixtures only for empty/populated guest-rendering assertions; production never serves those fixtures.
 
 To run the actual two-session journey, configure `.env` and `.dev.vars` for an **isolated** test Supabase project with Turnstile test keys and the account-deletion server secret. Stop any existing Vite process so the test picks up current configuration. Then:
 
@@ -107,3 +107,14 @@ Checked against provider documentation on November 2, 2026; limits can change:
 500–1,000 registered profiles is a planning target, not a tested capacity guarantee. The free realtime connection quota prevents assuming 1,000 simultaneous users. Fan-out, repeated history refetches, indexes and retention can exhaust quotas before registered-user count does. For example, 100 posts/day delivered to 20 connected clients is roughly 60,000 deliveries/month, before reactions and other traffic; 1,000/day to 100 clients is roughly 3 million. Measure actual usage, especially Worker CPU for token verification/network processing.
 
 Start with few rooms, no presence/typing/file uploads, bounded history and active-screen subscriptions. Monitor dashboard quotas, database size, query latency and moderation volume. Before growth, consider Supabase's recommended Broadcast approach, incremental cache reconciliation, narrower SQL policies and an explicit retention strategy. Do not silently upgrade plans. No capacity load test has been performed.
+
+
+## Redesign deployment additions
+
+Apply **all** migrations, including the guest projection and room-copy migration. Set `SITE_URL` in the Worker environment and `VITE_SITE_URL` at build time to the same actual HTTPS production origin, without a trailing path. These power canonical links, sitemap and social URLs. No domain is invented when unset; local previews use their own request origin. Generated share assets are in `public/brand`. Fonts and their licenses ship in `public/fonts`.
+
+The HTML Worker routes need the `ASSETS` binding and the current `run_worker_first` configuration in `wrangler.jsonc`. Do not restore blanket SPA fallback: it would hide real 404s and skip server-rendered metadata. The homepage and public room HTML contain no user-generated messages. Verify deployed redirects, Content-Encoding, caching, CSP, robots, sitemap and Search Console after configuring the final domain.
+
+Run `npm run build`, then `npm run preview -- --host 127.0.0.1 --port 4173`, then `node scripts/audit.mjs` for three real local mobile Lighthouse audits. They are lab measurements, not field INP or a production guarantee. Local Miniflare asset responses are uncompressed; measure the deployed CDN before claiming production performance.
+
+Guest cost: one active tab can make up to four recent-history requests per minute, multiplied by loaded pages on refetch. Each RPC is bounded to 30 messages plus one cursor row. Background/offline polling pauses. Shared-cache TTL is 10 seconds, but caching is not a substitute for operator-side abuse controls or load measurement. No always-on server or paid chat service was added.
