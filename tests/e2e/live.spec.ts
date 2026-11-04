@@ -35,16 +35,21 @@ async function authenticated(
 }
 async function join(page: Page, name: string) {
   await page.goto("/join");
-  await page
-    .getByRole("button", { name: "Join anonymously" })
-    .click({ timeout: 30000 });
   await page.getByLabel("Your public nickname").fill(name);
+  await page
+    .getByRole("button", { name: "Continue", exact: true })
+    .click({ timeout: 30000 });
+  await page.getByRole("button", { name: "Tech & Software" }).click();
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: "Fresh graduate" }).click();
   await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await page.getByRole("button", { name: "Tech & Software" }).click();
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await page.getByRole("button", { name: "Enter the lounge" }).click();
+  await expect(
+    page.getByRole("checkbox", { name: "Allow message requests" }),
+  ).not.toBeChecked();
+  await page.getByRole("button", { name: "Join the conversation" }).click();
+  await expect(
+    page.getByRole("textbox", { name: "Message", exact: true }),
+  ).toBeFocused();
   await expect(
     page.getByRole("heading", { name: "The Unemployment Lounge" }),
   ).toBeVisible();
@@ -76,9 +81,7 @@ test("two real anonymous sessions: onboarding, persistence, rooms, consent, real
     await pb.reload();
     await expect(pb.getByText(publicText, { exact: true })).toBeVisible();
     await pb.getByRole("link", { name: "Design & Creative" }).click();
-    await expect(
-      pb.getByRole("heading", { name: "Design & Creative" }),
-    ).toBeVisible();
+    await expect(pb.locator("#public-room-title")).toBeVisible();
     expect(
       (
         await authenticated(pa, "/dm-requests", "POST", {
@@ -89,7 +92,7 @@ test("two real anonymous sessions: onboarding, persistence, rooms, consent, real
     await pb.goto("/app/settings");
     await pb
       .getByRole("checkbox", {
-        name: "Allow private chat requests",
+        name: "Allow message requests",
         exact: true,
       })
       .check();

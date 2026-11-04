@@ -1,56 +1,173 @@
 import { test, expect } from "@playwright/test";
-test("landing, honest setup state, legal pages, and unknown routes", async ({
+import AxeBuilder from "@axe-core/playwright";
+import { mkdirSync, writeFileSync } from "node:fs";
+test("chat-first public page, intentional join, keyboard dismissal and room context", async ({
   page,
 }) => {
-  await page.goto("/");
-  await expect(page).toHaveTitle(/peak/);
-  await expect(
-    page.getByRole("heading", { name: /Unemployed\? You've got company/ }),
-  ).toBeVisible();
-  await expect(page.getByText("Fictional preview")).toBeVisible();
-  await page.screenshot({
-    path: "test-results/landing-desktop.png",
-    fullPage: true,
+  const auth: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("/auth/v1/")) auth.push(r.url());
   });
-  await page.getByRole("link", { name: "Enter the unemployment era" }).click();
-  await expect(page.getByRole("heading", { name: /A new era/ })).toBeVisible();
+  await page.goto("/");
+  await expect(page).toHaveTitle(/Peak Unemployment/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Job hunting",
+  );
   await expect(
-    page.getByRole("button", { name: "Join anonymously" }),
-  ).toBeDisabled();
-  await page.screenshot({ path: "test-results/join-desktop.png" });
-  await page.goto("/privacy");
-  await expect(
-    page.getByRole("heading", { name: "Anonymous doesn’t mean invisible." }),
+    page.getByRole("heading", { name: "Conversation on hold." }),
   ).toBeVisible();
-  await page.goto("/missing");
+  expect(auth).toEqual([]);
+  await page
+    .getByRole("navigation", { name: "Public chatrooms" })
+    .getByRole("link", { name: "Tech & Software" })
+    .click();
+  await expect(page).toHaveURL(/rooms\/tech/);
+  await expect(page.locator("#public-room-title")).toHaveText(
+    "Tech & Software",
+  );
+  await page.getByRole("button", { name: "Join in", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Continue" })).toBeDisabled();
+  await expect(dialog.getByLabel("Your public nickname")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
   await expect(
-    page.getByRole("heading", { name: "This page is between jobs." }),
-  ).toBeVisible();
+    page.getByRole("button", { name: "Join in", exact: true }),
+  ).toBeFocused();
+  await expect(page).toHaveURL(/rooms\/tech/);
+  expect(auth).toEqual([]);
+  await page.goto("/app/messages");
+  await expect(page).toHaveURL(/join/);
 });
-test("mobile landing has no horizontal overflow and private routes require auth", async ({
+test("responsive screenshots, reflow, accessible themes and modal", async ({
   page,
 }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  test.setTimeout(120000);
+  mkdirSync("docs/screenshots", { recursive: true });
+  mkdirSync("docs/audits", { recursive: true });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: /Unemployed\?/ }),
+    page.getByRole("heading", { name: "Conversation on hold." }),
   ).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  for (const width of [320, 375, 390, 430, 768, 1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: width < 650 ? 844 : 1000 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      `overflow at ${width}`,
+    ).toBe(true);
+    const box = await page.locator(".home-chat").boundingBox();
+    expect(box!.y).toBeLessThan(width < 650 ? 650 : 800);
+    if ([390, 768, 1440].includes(width))
+      await page.screenshot({
+        path: `docs/screenshots/redesign-${width}.png`,
+        fullPage: true,
+      });
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  const reports = [];
+  for (const theme of ["light", "dark"]) {
+    if (theme === "dark")
+      await page.getByRole("button", { name: "Switch to dark mode" }).click();
+    const result = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+      .analyze();
+    reports.push({ theme, violations: result.violations });
+    await page.screenshot({
+      path: `docs/screenshots/redesign-${theme}-desktop.png`,
+    });
+    expect(result.violations, JSON.stringify(result.violations)).toEqual([]);
+  }
+  await page.getByRole("button", { name: "Join in", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  const modal = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+    .analyze();
+  reports.push({ theme: "dark-modal", violations: modal.violations });
+  expect(modal.violations).toEqual([]);
+  await page.screenshot({ path: "docs/screenshots/redesign-join.png" });
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await page.setViewportSize({ width: 1280, height: 1000 });
+  // Reflow equivalent to a 1280px viewport at 400% browser zoom (320 CSS px).
+  await page.setViewportSize({ width: 320, height: 844 });
   expect(
-    await page
-      .locator(".hero h1")
-      .evaluate((el) => el.scrollWidth <= el.clientWidth),
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
   ).toBe(true);
-  await page.screenshot({
-    path: "test-results/landing-mobile.png",
-    fullPage: true,
+  await page.setViewportSize({ width: 1280, height: 1000 });
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "200%";
   });
   expect(
     await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
+      () => document.documentElement.scrollWidth <= innerWidth,
     ),
+    "200% text resize",
   ).toBe(true);
-  await page.getByRole("link", { name: "Join the chaos" }).first().click();
-  await expect(page).toHaveURL(/join/);
-  await page.goto("/app/messages");
-  await expect(page).toHaveURL(/join/);
+  await page.evaluate(() => {
+    document.documentElement.style.fontSize = "";
+  });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-reduced", "true");
+  writeFileSync(
+    "docs/audits/axe-public.json",
+    JSON.stringify(reports, null, 2),
+  );
+});
+test("public HTML and real not-found status are available before JavaScript", async ({
+  request,
+  page,
+}) => {
+  const html = await request.get("/");
+  expect(html.status()).toBe(200);
+  expect(await html.text()).toContain("Job hunting");
+  expect(await html.text()).toContain("application/ld+json");
+  const privacy = await request.get("/privacy");
+  expect(privacy.status()).toBe(200);
+  expect(await privacy.text()).toContain("Privacy");
+  const missing = await request.get("/missing");
+  expect(missing.status()).toBe(404);
+  expect(missing.headers()["x-robots-tag"]).toContain("noindex");
+  await page.goto("/missing");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "This page doesn’t exist.",
+  );
+});
+test("isolated guest fixtures: empty, populated, safe text, and gated reactions", async ({
+  page,
+}) => {
+  // Fixtures are only intercepted in this test. Production never serves sample activity.
+  let items: unknown[] = [];
+  await page.route("**/api/public/rooms/*/messages*", (route) =>
+    route.fulfill({ json: { room: { slug: "lounge" }, items, next: null } }),
+  );
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: /Quiet in here/ }),
+  ).toBeVisible();
+  items = [
+    {
+      id: "fixture-1",
+      content: '<script>alert("fixture")</script>',
+      created_at: "2026-11-03T08:00:00Z",
+      deleted_at: null,
+      author: { username: "TEST_FIXTURE", avatar_seed: "fixture" },
+      reactions: [{ emoji: "🎉", count: 1 }],
+    },
+  ];
+  await page.reload();
+  await expect(
+    page.getByText('<script>alert("fixture")</script>', { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Auto-refresh · every 15s")).toBeVisible();
+  await page
+    .getByRole("button", { name: "Join to react 🎉, 1 reactions" })
+    .click();
+  await expect(page.getByRole("dialog")).toBeVisible();
 });
