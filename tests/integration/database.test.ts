@@ -1,5 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { beforeAll, afterAll, describe, it, expect } from "vitest";
 let db: PGlite;
 const authIds = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
@@ -42,6 +42,10 @@ beforeAll(async () => {
     "",
   );
   await db.exec(migration);
+  for (const file of readdirSync("supabase/migrations")
+    .filter((f) => f > "202611020001_initial.sql")
+    .sort())
+    await db.exec(readFileSync(`supabase/migrations/${file}`, "utf8"));
   await db.exec(readFileSync("supabase/seed.sql", "utf8"));
   for (const id of authIds)
     await db.query("insert into auth.users values($1)", [id]);
@@ -315,6 +319,74 @@ describe("actual PostgreSQL authorization and mutations", () => {
     await expect(
       mutate(1, "profile", { public_status: "bypass" }),
     ).rejects.toThrow(/Account restricted/);
+  });
+  it("limits guests to a bounded, non-identifying public projection", async () => {
+    const guest = (sql: string, params: unknown[] = []) =>
+      db.transaction(async (tx) => {
+        await tx.exec("set local role anon");
+        return tx.query<{ value: any }>(sql, params);
+      });
+    await expect(guest("select * from public.messages")).rejects.toThrow(
+      /permission denied/,
+    );
+    await expect(guest("select * from public.profiles")).rejects.toThrow(
+      /permission denied/,
+    );
+    await expect(guest("select * from private.identities")).rejects.toThrow(
+      /permission denied/,
+    );
+    await expect(guest("select public.mutate('send','{}')")).rejects.toThrow(
+      /permission denied/,
+    );
+    await db.query(
+      "insert into public.messages(room_id,sender_id,content,client_id,created_at) select $1,$2,'public fixture '||n,gen_random_uuid(),now()-n*interval '1 second' from generate_series(1,35) n",
+      [room, ids[2]],
+    );
+    const feed = (await guest("select public.guest_room_feed('lounge') value"))
+      .rows[0].value;
+    expect(feed.items).toHaveLength(30);
+    expect(feed.next).toBeTruthy();
+    for (const item of feed.items) {
+      expect(Object.keys(item).sort()).toEqual([
+        "author",
+        "content",
+        "created_at",
+        "deleted_at",
+        "id",
+        "reactions",
+      ]);
+      expect(Object.keys(item.author).sort()).toEqual([
+        "avatar_seed",
+        "username",
+      ]);
+      if (item.deleted_at) expect(item.content).toBe("");
+    }
+    const privateIds = (
+      await db.query<{ id: string }>(
+        "select id from public.messages where conversation_id is not null",
+      )
+    ).rows.map((m) => m.id);
+    expect(privateIds.length).toBeGreaterThan(0);
+    const serialized = JSON.stringify(feed);
+    for (const id of [...authIds, ...ids, ...privateIds])
+      expect(serialized).not.toContain(id);
+    const older = (
+      await guest("select public.guest_room_feed('lounge',$1,$2) value", [
+        feed.next.at,
+        feed.next.id,
+      ])
+    ).rows[0].value;
+    expect(older.items.length).toBeGreaterThan(0);
+    expect(
+      older.items.some((m: any) => feed.items.some((n: any) => m.id === n.id)),
+    ).toBe(false);
+    expect(
+      (await guest("select public.guest_room_feed('missing') value")).rows[0]
+        .value,
+    ).toBeNull();
+    await expect(
+      guest("select public.guest_room_feed('lounge',now(),null)"),
+    ).rejects.toThrow(/Invalid/);
   });
   it("cleans up profile and associated data when Auth user is deleted", async () => {
     await db.query("delete from auth.users where id=$1", [authIds[0]]);
