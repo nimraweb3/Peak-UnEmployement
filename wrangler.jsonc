@@ -1,1 +1,16 @@
-{"$schema":"node_modules/wrangler/config-schema.json","name":"peak-unemployment","main":"src/worker/index.ts","compatibility_date":"2026-11-02","compatibility_flags":["nodejs_compat"],"assets":{"directory":"./dist/client","not_found_handling":"single-page-application","run_worker_first":["/api/*"]},"observability":{"enabled":true}}
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "peak-unemployment",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-11-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist/client",
+    "not_found_handling": "none",
+    "run_worker_first": ["/api/*", "/", "/robots.txt", "/sitemap.xml"],
+    "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+  },
+}

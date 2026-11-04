@@ -15,11 +15,11 @@ The app uses the official Cloudflare Vite plugin, React SPA assets and a Hono AP
 
 ## Frontend
 
-React Router lazy-loads each route. TanStack Query caches server state; all production messages come from PostgreSQL. The fictional landing preview is static and explicitly labeled. Missing credentials produce a disabled signup/setup state, never a pretend session.
+The homepage is chat-first and server-rendered with meaningful public copy. Public room history is fetched separately; no message bodies enter the HTML template. The interactive React app loads after the first paint; member chat, join, settings and other private screens are lazy chunks. Missing credentials produce a truthful unavailable-service state. There is no fictional production feed.
 
 `SessionProvider` uses Supabase Auth and bootstraps an idempotent public profile via the Worker. The SQL function creates a random public UUID independent from `auth.users.id`. A private mapping is not exposed to clients. Nicknames have a case-insensitive uniqueness constraint.
 
-The landing scene loads R3F/Drei only for WebGL-capable devices with more than two logical processors and without reduced-motion preference. Five low-segment spheres use capped pixel ratio; rendering stops when the document is hidden. A CSS sphere is the fallback. The scene is unmounted on chat routes. This is a coarse low-performance heuristic, not a benchmark of device capability.
+There are no 3D effects on the homepage. Space Grotesk and Inter are self-hosted WOFF2 fonts. Light and dark modes use shared CSS tokens, with reduced-motion and opt-in message-announcement preferences.
 
 ## Data and mutation boundary
 
@@ -56,3 +56,14 @@ Unread counts are one bounded SQL query, not one API subrequest per conversation
 - [Supabase CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha)
 - [Supabase Postgres Changes](https://supabase.com/docs/guides/realtime/postgres-changes)
 - [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security)
+
+
+## Guest reading
+
+GET `/api/public/rooms/:slug/messages` precedes authentication middleware. It calls `guest_room_feed` with only the publishable key and no visitor bearer token. Anonymous database roles receive EXECUTE on this one projection, not table SELECT or mutation privileges. The projection excludes private conversations, Auth IDs, profile IDs, DM preferences and reaction user IDs. Public message IDs are returned for stable rows and cursors.
+
+Guests poll the active visible room every 15 seconds, pause polling offline/in background, and retain at most four 30-message pages. The endpoint advertises a 10-second shared cache lifetime. Actual CDN caching and origin load must be measured after deployment; the browser does not assume every request hits an edge cache. No guest Auth creation, presence or Realtime channels. Signed-in subscriptions keep their existing RLS checks. Blocking remains effective between authenticated accounts; publicly visible posts remain readable while logged out.
+
+## Public HTML and search
+
+The Worker renders the homepage, industry room descriptions, and information pages from shared React components. Its asset binding fetches `/` rather than `/index.html` to avoid HTML canonicalization redirects. Private routes emit noindex in headers and metadata. Unknown pages return HTTP 404. Robots and sitemap contain public informational routes; chat APIs are noindex/nosnippet and live feed regions use data-nosnippet. This discourages indexing; it does not make deliberately public posts confidential or prevent copying.
