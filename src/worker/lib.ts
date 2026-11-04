@@ -5,6 +5,8 @@ export type Env = {
     SUPABASE_URL: string;
     SUPABASE_PUBLISHABLE_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
+    SITE_URL?: string;
+    ASSETS?: { fetch(request: Request): Promise<Response> };
   };
   Variables: { db: SupabaseClient; authId: string };
 };

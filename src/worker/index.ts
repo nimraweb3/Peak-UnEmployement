@@ -8,9 +8,12 @@ import profile from "./routes/profile";
 import chat from "./routes/chat";
 import social from "./routes/social";
 import admin from "./routes/admin";
+import publicRoutes from "./routes/public";
+import pages from "./pages";
 const app = new Hono<Env>();
 app.use("/api/*", async (c, next) => {
   c.header("Cache-Control", "no-store");
+  c.header("X-Robots-Tag", "noindex, nofollow, nosnippet");
   await next();
 });
 app.use(
@@ -27,6 +30,7 @@ app.get("/api/health", (c) =>
     configured: !!(c.env.SUPABASE_URL && c.env.SUPABASE_PUBLISHABLE_KEY),
   }),
 );
+app.route("/", publicRoutes);
 app.use("/api/*", async (c, next) => {
   if (!c.env.SUPABASE_URL || !c.env.SUPABASE_PUBLISHABLE_KEY)
     throw new HTTPException(503, {
@@ -52,6 +56,7 @@ app.route("/", profile);
 app.route("/", chat);
 app.route("/", social);
 app.route("/", admin);
+app.route("/", pages);
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 app.onError((err, c) => {
   if (err instanceof z.ZodError)
