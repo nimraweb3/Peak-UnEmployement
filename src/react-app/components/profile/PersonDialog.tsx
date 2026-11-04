@@ -67,11 +67,11 @@ export function PersonDialog({
                 large
               />
               <h3>{profile.data.username}</h3>
-              <p>{profile.data.public_status || "Professionally available."}</p>
+              <p>{profile.data.public_status || "No status shared."}</p>
               <small>
                 {profile.data.profession ||
                   profile.data.industry_id ||
-                  "Finding their next chapter"}
+                  "Industry not shared"}
               </small>
             </div>
             {!report ? (
@@ -83,7 +83,7 @@ export function PersonDialog({
                       void act(
                         "/dm-requests",
                         { recipient_id: id },
-                        "Request sent. The next move is theirs.",
+                        "Request sent. They can accept or decline.",
                       )
                     }
                   >

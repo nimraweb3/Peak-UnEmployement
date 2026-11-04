@@ -1,3 +1,4 @@
+import { useMessageAnnouncement } from "../../hooks/useMessageAnnouncement";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import {
   ArrowDown,
@@ -31,7 +32,7 @@ export function ChatPanel({
   closed?: boolean;
 }) {
   const { profile } = useSession();
-  const { reduced } = usePreferences();
+  const { reduced, announcements } = usePreferences();
   const qc = useQueryClient();
   const query = useMessages(kind, id);
   const [content, setContent] = useState("");
@@ -49,7 +50,14 @@ export function ChatPanel({
   const previousLast = useRef("");
   const olderHeight = useRef<{ height: number; pages: number } | null>(null);
   const [atBottom, setAtBottom] = useState(true);
-  const latestMessage = query.messages.at(-1)?.id;
+  const lastRow = query.messages.at(-1);
+  const latestMessage = lastRow?.id;
+  const announcement = useMessageAnnouncement(
+    lastRow ? `${lastRow.created_at}:${lastRow.id}` : "",
+    lastRow?.profiles?.username || "a member",
+    !query.isLoading && !query.error,
+    announcements,
+  );
   useEffect(() => {
     if (kind !== "conversations" || !latestMessage || !atBottom) return;
     const mark = () => {
@@ -156,7 +164,7 @@ export function ChatPanel({
           : query.connection === "Offline"
             ? "You’re offline. Messages will need retrying."
             : `${query.connection}…`}
-        <span>BE KIND. BE YOURSELF.</span>
+        <span>KEEP IT KIND.</span>
       </div>
       <div
         className="message-scroll"
@@ -171,6 +179,8 @@ export function ChatPanel({
           }
         }}
         aria-label={`${title} messages`}
+        role="region"
+        tabIndex={0}
       >
         {query.hasNextPage && (
           <Button
@@ -195,19 +205,10 @@ export function ChatPanel({
           <ErrorState error={query.error} retry={() => void query.refetch()} />
         ) : query.messages.length === 0 ? (
           <Empty
-            title="Even unemployment is quiet today."
-            description="Start the conversation. HR certainly won’t."
+            title="Quiet in here. Someone has to start."
+            description="A question, a small win, or whatever’s on your mind."
           />
-        ) : (
-          <div className="conversation-start">
-            <span>✳</span>
-            <h3>You’ve got company.</h3>
-            <p>
-              This is a space for real people, tiny wins, and everything in
-              between.
-            </p>
-          </div>
-        )}
+        ) : null}
         {query.messages.map((message) => {
           const own = message.sender_id === profile?.id;
           const reactions = message.reactions || [];
@@ -270,7 +271,11 @@ export function ChatPanel({
                   </div>
                 )}
                 {reactionMenu === message.id && (
-                  <div className="emoji-picker" aria-label="Choose reaction">
+                  <div
+                    className="emoji-picker"
+                    role="group"
+                    aria-label="Choose reaction"
+                  >
                     {["💜", "😂", "🫂", "🎉", "🔥"].map((emoji) => (
                       <button
                         key={emoji}
@@ -387,10 +392,17 @@ export function ChatPanel({
           New messages <ArrowDown size={15} />
         </button>
       )}
-      <div className="sr-only" role="status" aria-live="polite">
-        {unseen
-          ? "New messages available. Use the new messages button to read them."
-          : ""}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live={announcements ? "polite" : "off"}
+      >
+        <span key={announcement.key}>
+          {announcement.text}
+          {announcement.text && unseen
+            ? " Use the new messages button to read it."
+            : ""}
+        </span>
       </div>
       <form
         className="composer-area"
@@ -403,7 +415,7 @@ export function ChatPanel({
           <textarea
             aria-label="Message"
             placeholder={
-              closed ? "This conversation is closed." : `Message ${title}…`
+              closed ? "This conversation is closed." : "Write a message…"
             }
             value={content}
             maxLength={1000}
@@ -435,7 +447,9 @@ export function ChatPanel({
           <span>
             {content.length > 800
               ? `${content.length}/1000`
-              : "No pressure. Just people."}
+              : kind === "rooms"
+                ? "Public posts are visible to visitors."
+                : "Private conversation"}
           </span>
         </div>
       </form>
