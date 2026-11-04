@@ -2,3 +2,4 @@ SUPABASE_URL=
 SUPABASE_PUBLISHABLE_KEY=
 # Server only; used exclusively for account deletion
 SUPABASE_SERVICE_ROLE_KEY=
+SITE_URL=

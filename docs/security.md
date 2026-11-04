@@ -31,3 +31,10 @@ Messages are not end-to-end encrypted. Operators with database access can inspec
 Provide a moderation contact and schedule, adapt legal copy, publish retention, configure recovery email delivery, protect operator accounts, review logs without storing chat bodies, and keep secrets out of commits. No automatic public deployment, billing change, external messages or paid service provisioning is performed by this repository.
 
 The minimatch override pins 11.0.1 to address [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) in the development lint dependency graph. Lint, type checks and tests are rerun with the override. Do not blindly run `npm audit fix --force`, which can downgrade incompatible lint packages.
+
+
+## Guest-read redesign
+
+`202611030001_guest_read.sql` grants only the anon-role public feed RPC. Guest SELECT on messages/profiles/private identities and guest mutation remain denied in PostgreSQL tests. Projection tests cover field allowlists, private-message exclusion, deleted-body clearing and disjoint bounded pagination. The Worker never forwards a guest-supplied bearer token to this RPC. `/api/*` responses carry noindex/nofollow/nosnippet. Public content is still public when a blocked member signs out; the UI and privacy page explain this boundary.
+
+Lighthouse is pinned to 13.5.0 because 13.6.0 introduced a vulnerable development-only glob dependency chain. The installed dependency tree passed npm audit after that change.
