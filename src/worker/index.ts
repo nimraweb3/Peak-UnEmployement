@@ -24,6 +24,15 @@ app.use(
     onError: (c) => c.json({ error: "Request too large" }, 413),
   }),
 );
+// Coarse, shared edge protection. PostgreSQL remains authoritative for atomic user limits.
+app.use("/api/*", async (c, next) => {
+  const ip = c.req.header("CF-Connecting-IP");
+  if (c.env.NETWORK_LIMITER && ip) {
+    const result = await c.env.NETWORK_LIMITER.limit({ key: `network:${ip}` });
+    if (!result.success) { c.header("Retry-After", "60"); return c.json({ error: "Too many requests. Try again shortly." }, 429); }
+  }
+  await next();
+});
 app.get("/api/health", (c) =>
   c.json({
     ok: true,
