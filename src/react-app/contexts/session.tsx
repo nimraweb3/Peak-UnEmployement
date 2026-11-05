@@ -28,11 +28,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   useEffect(() => {
     if (!supabase) return;
-    void supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setReady(true);
-    });
+    let previousUser: string | undefined;
     const { data } = supabase.auth.onAuthStateChange((_event, next) => {
+      if (previousUser !== next?.user.id) {
+        qc.clear();
+        void supabase?.removeAllChannels();
+      }
+      previousUser = next?.user.id;
       setSession(next);
       setReady(true);
       if (!next) qc.clear();

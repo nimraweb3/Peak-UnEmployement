@@ -13,7 +13,14 @@ import { eras, industries } from "../../shared/config";
 import type { Profile } from "../../shared/types";
 export default function Settings() {
   const { profile, session } = useSession();
-  const { theme, setTheme, reduced, setReduced } = usePreferences();
+  const {
+    theme,
+    setTheme,
+    reduced,
+    setReduced,
+    announcements,
+    setAnnouncements,
+  } = usePreferences();
   const qc = useQueryClient();
   const nav = useNavigate();
   const [form, setForm] = useState<Partial<Profile>>({});
@@ -35,7 +42,7 @@ export default function Settings() {
       await api("/me", "PATCH", form);
       await qc.invalidateQueries({ queryKey: ["me"] });
       setForm({});
-      toast.success("Your corner, updated.");
+      toast.success("Preferences saved.");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -59,12 +66,10 @@ export default function Settings() {
   }
   return (
     <div className="content-page settings-page">
-      <span className="eyebrow">MAKE YOURSELF AT HOME</span>
-      <h1>
-        Your space.<em> Your rules.</em>
-      </h1>
+      <span className="eyebrow">YOUR ACCOUNT</span>
+      <h1>Your profile & preferences</h1>
       <p className="page-intro">
-        A little privacy. A little personality. Entirely your choice.
+        Choose what you share and how this space works for you.
       </p>
       <section className="settings-section glass">
         <h2>Your anonymous identity</h2>
@@ -79,9 +84,7 @@ export default function Settings() {
               <RefreshCw size={15} />
               Change avatar
             </Button>
-            <p className="fine-print">
-              Abstract on purpose. Just like the hiring process.
-            </p>
+            <p className="fine-print">An avatar without a profile photo.</p>
           </div>
         </div>
         <div className="form-grid">
@@ -134,7 +137,7 @@ export default function Settings() {
             </select>
           </label>
           <label>
-            Your era
+            Your situation
             <select
               value={value.unemployment_status}
               onChange={(e) => update("unemployment_status", e.target.value)}
@@ -145,7 +148,7 @@ export default function Settings() {
             </select>
           </label>
           <div className="joined-date">
-            Part of the chaos since
+            Joined
             <br />
             <strong>
               {new Date(profile.created_at).toLocaleDateString(undefined, {
@@ -156,7 +159,7 @@ export default function Settings() {
         </div>
         <div className="setting-row">
           <div>
-            <strong>Allow private chat requests</strong>
+            <strong>Allow message requests</strong>
             <p>
               You still approve each request. Turning this off prevents new
               requests; existing conversations stay available.
@@ -165,7 +168,7 @@ export default function Settings() {
           <input
             className="switch"
             type="checkbox"
-            aria-label="Allow private chat requests"
+            aria-label="Allow message requests"
             checked={value.allows_dm_requests}
             onChange={(e) => update("allows_dm_requests", e.target.checked)}
           />
@@ -178,12 +181,12 @@ export default function Settings() {
         </Button>
       </section>
       <section className="settings-section glass">
-        <h2>Set the mood</h2>
+        <h2>Appearance & accessibility</h2>
         <div className="theme-options">
           {[
-            ["midnight", "Midnight Liquid Glass"],
-            ["daylight", "Frosted Daylight"],
-            ["neon", "After-Hours Neon"],
+            ["light", "Day Shift"],
+            ["dark", "Night Shift"],
+            ["system", "System"],
           ].map(([id, label]) => (
             <button
               className={`theme-choice theme-${id} ${theme === id ? "selected" : ""}`}
@@ -199,7 +202,10 @@ export default function Settings() {
         <div className="setting-row">
           <div>
             <strong>Reduce motion</strong>
-            <p>Turn down animations and disable the 3D landing scene.</p>
+            <p>
+              Limit interface animations. Your device preference is also
+              respected.
+            </p>
           </div>
           <input
             className="switch"
@@ -209,15 +215,32 @@ export default function Settings() {
             aria-label="Reduce motion"
           />
         </div>
+        <div className="setting-row">
+          <div>
+            <strong>Announce new messages</strong>
+            <p>
+              Let your screen reader announce when unread messages arrive. Off
+              by default.
+            </p>
+          </div>
+          <input
+            className="switch"
+            type="checkbox"
+            checked={announcements}
+            onChange={(e) => setAnnouncements(e.target.checked)}
+            aria-label="Announce new messages"
+          />
+        </div>
         <p className="fine-print">
           Appearance preferences are saved in this browser.
         </p>
       </section>
       <section className="settings-section glass">
-        <h2>Protect your peace</h2>
+        <h2>Blocked members</h2>
         <p className="muted">
           Blocked people can’t chat with you privately. Public content is hidden
-          in both directions.
+          in both directions for signed-in accounts. Public posts remain
+          readable as a guest.
         </p>
         {blocks.isLoading ? (
           <Loading />
@@ -310,7 +333,7 @@ export default function Settings() {
       <Modal
         open={!!confirm}
         onOpenChange={() => setConfirm(null)}
-        title={confirm === "delete" ? "Leave no trace?" : "Before you go…"}
+        title={confirm === "delete" ? "Delete your account?" : "Sign out?"}
         description={
           confirm === "delete"
             ? "This permanently removes your account, profile, messages, reactions, and conversations. This cannot be undone."

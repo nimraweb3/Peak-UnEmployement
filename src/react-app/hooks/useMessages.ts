@@ -14,6 +14,8 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
       ),
     getNextPageParam: (page, pages) => (pages.length < 10 ? page.next : null),
     enabled: !!id,
+    refetchInterval: 30000,
+    refetchIntervalInBackground: false,
   });
   useEffect(() => {
     if (!supabase || !id) return;
@@ -73,6 +75,7 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
   }, [id, kind, qc]);
   const messages = useMemo(() => {
     const unique = new Map<string, Message>();
+    if (query.isError) return [];
     query.data?.pages.forEach((page) =>
       page.items.forEach((item) => unique.set(item.id, item)),
     );
@@ -80,6 +83,6 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
       (a, b) =>
         a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
     );
-  }, [query.data]);
+  }, [query.data, query.isError]);
   return { ...query, messages, connection };
 }
