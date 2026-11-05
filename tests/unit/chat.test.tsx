@@ -107,4 +107,11 @@ describe("message composer behavior", () => {
     expect(screen.queryByText("removed secret")).toBeNull();
     expect(screen.getByText("This message was removed.")).toBeTruthy();
   });
+  it("does not activate javascript URLs or interpret Unicode text as markup", () => {
+    const content = "javascript:alert(1) — مرحبا 🫂 <script>no()</script>";
+    vi.mocked(useMessages).mockReturnValue({ ...empty, messages: [{ id: "safe", sender_id: "self", content, created_at: "2026-11-04T12:00:00Z", deleted_at: null, profiles: { username: "Fixture", avatar_seed: "seed" }, reactions: [] }] } as any);
+    const { container } = mount();
+    expect(screen.getByText(content)).toBeTruthy();
+    expect(container.querySelector('a[href^="javascript:"],script')).toBeNull();
+  });
 });

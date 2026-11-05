@@ -54,7 +54,7 @@ describe("guest API and crawler boundary", () => {
     const home = await app.request("/", {}, env);
     const html = await home.text();
     expect(home.status).toBe(200);
-    expect(html).toContain("Job hunting");
+    expect(html).toContain("The group chat");
     expect(html).toContain("application/ld+json");
     expect(html).toContain("https://community.example/brand/social-share.png");
     expect(html).not.toContain("PRIVATE_TOKEN");
