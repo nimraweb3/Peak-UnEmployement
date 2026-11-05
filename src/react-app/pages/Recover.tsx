@@ -1,3 +1,4 @@
+import { Brand } from "../../shared/brand";
 import { useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
@@ -10,8 +11,8 @@ export default function Recover() {
   const [busy, setBusy] = useState(false);
   return (
     <main className="join-page">
-      <Link className="logo" to="/">
-        peak<span>.</span>
+      <Link aria-label="Peak Unemployment home" to="/">
+        <Brand />
       </Link>
       <form
         className="onboarding glass"
@@ -39,9 +40,7 @@ export default function Recover() {
           }
         }}
       >
-        <h1>
-          Welcome <em>back.</em>
-        </h1>
+        <h1>Sign in by email</h1>
         <p>
           Use the email you previously linked. An unlinked anonymous account
           cannot be recovered here.
