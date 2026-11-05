@@ -102,7 +102,6 @@ describe("actual PostgreSQL authorization and mutations", () => {
       room_id: room,
       content: "hello from the lounge",
       client_id: client,
-      sender_id: ids[1],
     };
     const row = await mutate(0, "send", payload);
     message = row.id;
@@ -192,6 +191,18 @@ describe("actual PostgreSQL authorization and mutations", () => {
       1,
     );
   });
+  it("rejects direct RPC mass assignment and oversized payloads", async () => {
+    await expect(mutate(0, "send", { room_id: room, content: "spoof", client_id: crypto.randomUUID(), sender_id: ids[1] })).rejects.toThrow(/Unknown field/);
+    await expect(mutate(0, "profile", { avatar_seed: "x".repeat(9000) })).rejects.toThrow(/Invalid payload/);
+  });
+  it("does not disclose other members' block relationships", async () => {
+    await mutate(1, "block", { user_id: ids[2] });
+    const outsider = await asUser<{ blocked: boolean }>(0, "select public.is_blocked($1,$2) blocked", [ids[1], ids[2]]);
+    const participant = await asUser<{ blocked: boolean }>(1, "select public.is_blocked($1,$2) blocked", [ids[1], ids[2]]);
+    expect(outsider.rows[0].blocked).toBe(false);
+    expect(participant.rows[0].blocked).toBe(true);
+    await mutate(1, "unblock", { user_id: ids[2] });
+  });
   it("blocks both private delivery and public visibility", async () => {
     await mutate(1, "block", { user_id: ids[0] });
     expect(
@@ -209,6 +220,17 @@ describe("actual PostgreSQL authorization and mutations", () => {
       }),
     ).rejects.toThrow(/Conversation unavailable/);
     await mutate(1, "unblock", { user_id: ids[0] });
+  });
+  it("keeps declined and blocked pending requests from creating conversations", async () => {
+    await mutate(2, "profile", { allows_dm_requests: true });
+    const declined = await mutate(1, "request", { recipient_id: ids[2] });
+    await mutate(2, "respond", { id: declined.id, status: "declined" });
+    await expect(mutate(2, "respond", { id: declined.id, status: "accepted" })).rejects.toThrow(/Request unavailable/);
+    const blocked = await mutate(0, "request", { recipient_id: ids[2] });
+    await mutate(2, "block", { user_id: ids[0] });
+    await expect(mutate(2, "respond", { id: blocked.id, status: "accepted" })).rejects.toThrow(/Request unavailable/);
+    await mutate(2, "unblock", { user_id: ids[0] });
+    expect((await asUser(2, "select * from public.conversations")).rows).toHaveLength(0);
   });
   it("enforces duplicate, link and length limits directly in SQL", async () => {
     await expect(
@@ -316,6 +338,9 @@ describe("actual PostgreSQL authorization and mutations", () => {
     await asUser(2, "select public.moderate($1::jsonb)", [
       JSON.stringify({ action: "restrict", user_id: ids[1] }),
     ]);
+    const audit = await db.query<{ action: string }>("select action from private.moderation_events");
+    expect(audit.rows.at(-1)?.action).toBe("restrict");
+    await expect(asUser(0, "select * from private.moderation_events")).rejects.toThrow(/permission denied/);
     await expect(
       mutate(1, "profile", { public_status: "bypass" }),
     ).rejects.toThrow(/Account restricted/);
@@ -387,6 +412,10 @@ describe("actual PostgreSQL authorization and mutations", () => {
     await expect(
       guest("select public.guest_room_feed('lounge',now(),null)"),
     ).rejects.toThrow(/Invalid/);
+  });
+  it("caps new private requests at ten per hour", async () => {
+    await db.query("with recipients as (insert into public.profiles(username) select 'rate_recipient_'||n from generate_series(1,10) n returning id) insert into public.dm_requests(sender_id,recipient_id) select $1,id from recipients", [ids[0]]);
+    await expect(mutate(0, "request", { recipient_id: ids[2] })).rejects.toThrow(/Request limit/);
   });
   it("cleans up profile and associated data when Auth user is deleted", async () => {
     await db.query("delete from auth.users where id=$1", [authIds[0]]);
