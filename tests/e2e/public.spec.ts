@@ -11,7 +11,7 @@ test("chat-first public page, intentional join, keyboard dismissal and room cont
   await page.goto("/");
   await expect(page).toHaveTitle(/Peak Unemployment/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Job hunting",
+    "The group chat",
   );
   await expect(
     page.getByRole("heading", { name: "Conversation on hold." }),
@@ -71,7 +71,7 @@ test("responsive screenshots, reflow, accessible themes and modal", async ({
   const reports = [];
   for (const theme of ["light", "dark"]) {
     if (theme === "dark")
-      await page.getByRole("button", { name: "Switch to dark mode" }).click();
+      await page.getByLabel("Color theme").selectOption("dark");
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
       .analyze();
@@ -90,7 +90,7 @@ test("responsive screenshots, reflow, accessible themes and modal", async ({
   expect(modal.violations).toEqual([]);
   await page.screenshot({ path: "docs/screenshots/redesign-join.png" });
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await page.getByLabel("Color theme").selectOption("light");
   await page.setViewportSize({ width: 1280, height: 1000 });
   // Reflow equivalent to a 1280px viewport at 400% browser zoom (320 CSS px).
   await page.setViewportSize({ width: 320, height: 844 });
@@ -126,7 +126,7 @@ test("public HTML and real not-found status are available before JavaScript", as
 }) => {
   const html = await request.get("/");
   expect(html.status()).toBe(200);
-  expect(await html.text()).toContain("Job hunting");
+  expect(await html.text()).toContain("The group chat");
   expect(await html.text()).toContain("application/ld+json");
   const privacy = await request.get("/privacy");
   expect(privacy.status()).toBe(200);
@@ -151,6 +151,7 @@ test("isolated guest fixtures: empty, populated, safe text, and gated reactions"
   await expect(
     page.getByRole("heading", { name: /Quiet in here/ }),
   ).toBeVisible();
+  await page.screenshot({ path: "docs/screenshots/after-hours-empty.png" });
   items = [
     {
       id: "fixture-1",
@@ -166,8 +167,24 @@ test("isolated guest fixtures: empty, populated, safe text, and gated reactions"
     page.getByText('<script>alert("fixture")</script>', { exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Auto-refresh · every 15s")).toBeVisible();
+  await page.screenshot({ path: "docs/screenshots/after-hours-test-fixture.png" });
   await page
     .getByRole("button", { name: "Join to react 🎉, 1 reactions" })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
+});
+
+test("system theme follows OS changes and explicit preferences survive reload", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("heading", { name: "Conversation on hold." })).toBeVisible();
+  await page.getByLabel("Color theme").selectOption("system");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.emulateMedia({ colorScheme: "light" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByLabel("Color theme").selectOption("dark");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#11151B");
 });

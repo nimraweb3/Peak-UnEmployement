@@ -29,7 +29,10 @@ app.use("/api/*", async (c, next) => {
   const ip = c.req.header("CF-Connecting-IP");
   if (c.env.NETWORK_LIMITER && ip) {
     const result = await c.env.NETWORK_LIMITER.limit({ key: `network:${ip}` });
-    if (!result.success) { c.header("Retry-After", "60"); return c.json({ error: "Too many requests. Try again shortly." }, 429); }
+    if (!result.success) {
+      c.header("Retry-After", "60");
+      return c.json({ error: "Too many requests. Try again shortly." }, 429);
+    }
   }
   await next();
 });

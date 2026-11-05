@@ -22,7 +22,7 @@ function ratio(a: string, b: string) {
   const l = [luminance(a), luminance(b)].sort((a, b) => b - a);
   return (l[0] + 0.05) / (l[1] + 0.05);
 }
-describe("Offbeat Social contrast tokens", () => {
+describe("After Hours contrast tokens", () => {
   for (const [name, selector] of [
     ["light", ":root"],
     ["dark", '\\[data-theme="dark"\\]'],
@@ -30,7 +30,7 @@ describe("Offbeat Social contrast tokens", () => {
     it(`${name} text and interactive boundaries meet AA ratios`, () => {
       const t = tokens(selector);
       for (const surface of ["bg", "surface", "elevated"])
-        for (const foreground of ["text", "muted", "accent", "coral-text"])
+        for (const foreground of ["text", "muted-foreground", "accent", "coral-text"])
           expect(
             ratio(t[foreground], t[surface]),
             `${foreground} on ${surface}`,
