@@ -98,15 +98,15 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
       );
       const data = await response.json();
       if (!response.ok)
-        throw new Error(
-          data.error || "Couldn’t load the conversation. Try again.",
-        );
+        throw Object.assign(new Error(data.error || "Couldn’t load the conversation. Try again."), {
+          retryable: response.status >= 500 && data.code !== "NOT_CONFIGURED",
+        });
       return data as Feed;
     },
     getNextPageParam: (page, pages) => (pages.length < 4 ? page.next : null),
     refetchInterval: visible && online ? 15000 : false,
     refetchIntervalInBackground: false,
-    retry: 1,
+    retry: (count, error) => count < 1 && !("retryable" in error && error.retryable === false),
     staleTime: 10000,
   });
   const items = [
@@ -194,7 +194,7 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
               Try again
             </Button>
             <span className="empty-footnote">
-              No sample messages. This is where the real ones go.
+              Read along. Join when you’re ready.
             </span>
           </div>
         ) : items.length === 0 ? (
