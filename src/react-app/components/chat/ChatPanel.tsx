@@ -20,17 +20,17 @@ import { Avatar, Empty, ErrorState, Loading } from "../common";
 import { PersonDialog } from "../profile/PersonDialog";
 import { motion } from "motion/react";
 type Pending = { client_id: string; content: string; failed: boolean };
-export function ChatPanel({
-  id,
-  kind,
-  title,
-  closed = false,
-}: {
+type ChatProps = {
   id: string;
   kind: "rooms" | "conversations";
   title: string;
   closed?: boolean;
-}) {
+};
+export function ChatPanel(props: ChatProps) {
+  const { profile } = useSession();
+  return <ChatContent key={profile?.id || "guest"} {...props} />;
+}
+function ChatContent({ id, kind, title, closed = false }: ChatProps) {
   const { profile } = useSession();
   const { reduced, announcements } = usePreferences();
   const qc = useQueryClient();
@@ -415,7 +415,7 @@ export function ChatPanel({
           <textarea
             aria-label="Message"
             placeholder={
-              closed ? "This conversation is closed." : "Write a message…"
+              closed ? "This conversation is closed." : "Say something…"
             }
             value={content}
             maxLength={1000}

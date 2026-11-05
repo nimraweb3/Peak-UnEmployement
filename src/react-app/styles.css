@@ -2,8 +2,8 @@
 @source "./";
 @source "../shared/";
 @font-face {
-  font-family: Inter;
-  src: url("/fonts/inter-latin.woff2") format("woff2");
+  font-family: "DM Sans";
+  src: url("/fonts/dm-sans-latin.woff2") format("woff2");
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -16,31 +16,39 @@
   font-display: swap;
 }
 :root {
-  font-family: Inter, Arial, sans-serif;
+  font-family: "DM Sans", Arial, sans-serif;
   font-synthesis: none;
   color: var(--text);
   background: var(--bg);
-  --bg: #f7f7f2;
+  --background: #f8f7f2;
+  --foreground: #171a21;
+  --surface-elevated: #f0eee8;
+  --muted: #f0eee8;
+  --primary: #3652dd;
+  --primary-foreground: #fff;
+  --accent-foreground: #fff;
+  --ring: #3652dd;
+  --bg: #f8f7f2;
   --surface: #fff;
-  --elevated: #f0f1ed;
-  --text: #181a20;
-  --muted: #626775;
-  --subtle: #626775;
-  --accent: #3558e8;
-  --action: #3558e8;
+  --elevated: #f0eee8;
+  --text: #171a21;
+  --muted-foreground: #59616b;
+  --subtle: #59616b;
+  --accent: #3652dd;
+  --action: #3652dd;
   --action-text: #fff;
   --accent-soft: #edf1ff;
-  --coral: #e85249;
+  --coral: #ff7058;
   --coral-text: #ba332b;
   --coral-soft: #fff0eb;
-  --lime: #c7f36b;
+  --lime: #d7f56a;
   --lime-text: #27370e;
-  --border: #e2e3e5;
+  --border: #e1dfd8;
   --control-border: #858994;
   --success: #366921;
   --danger: #b3293c;
   --warm: #8a5310;
-  --shadow: 0 8px 32px #181a2007;
+  --shadow: 0 8px 32px #171a2107;
   --logo-cutout: #fff;
   color-scheme: light;
   --space-1: 4px;
@@ -52,22 +60,30 @@
   --space-12: 48px;
 }
 [data-theme="dark"] {
-  --bg: #101318;
-  --surface: #1c2028;
-  --elevated: #252b35;
-  --text: #f7f8f5;
-  --muted: #b8c0cc;
-  --subtle: #b8c0cc;
-  --accent: #8ba2ff;
-  --action: #3558e8;
+  --background: #11151b;
+  --foreground: #f6f5f0;
+  --surface-elevated: #262e39;
+  --muted: #262e39;
+  --primary: #9aacff;
+  --primary-foreground: #11151b;
+  --accent-foreground: #11151b;
+  --ring: #9aacff;
+  --bg: #11151b;
+  --surface: #1d232b;
+  --elevated: #262e39;
+  --text: #f6f5f0;
+  --muted-foreground: #b7c0cc;
+  --subtle: #b7c0cc;
+  --accent: #9aacff;
+  --action: #3652dd;
   --action-text: #fff;
   --accent-soft: #26304a;
-  --coral: #fb8b80;
-  --coral-text: #fb8b80;
+  --coral: #ff957f;
+  --coral-text: #ff957f;
   --coral-soft: #3a2525;
-  --lime: #c7f36b;
+  --lime: #d7f56a;
   --lime-text: #27370e;
-  --border: #39414d;
+  --border: #394450;
   --control-border: #8993a3;
   --success: #b8e38e;
   --danger: #ff9aae;
@@ -115,7 +131,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Space Grotesk", Inter, sans-serif;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
   letter-spacing: -0.045em;
   margin: 0;
   line-height: 1.15;
@@ -138,7 +154,7 @@ em {
 }
 ::selection {
   background: var(--lime);
-  color: #181a20;
+  color: #171a21;
 }
 a,
 button,
@@ -193,7 +209,7 @@ a svg {
 }
 .button-ghost {
   background: transparent;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .button-danger {
   color: var(--danger);
@@ -217,20 +233,20 @@ a svg {
   min-width: 44px;
   min-height: 44px;
   border-radius: 8px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .icon-button:hover,
 .theme-toggle:hover {
   background: var(--elevated);
 }
 .muted {
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .eyebrow {
   font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.12em;
-  color: var(--muted);
+  color: var(--muted-foreground);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -254,14 +270,14 @@ a svg {
   flex-shrink: 0;
 }
 .brand-wordmark {
-  font-family: "Space Grotesk", Inter, sans-serif;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
   font-weight: 700;
   font-size: 1.25rem;
   line-height: 0.98;
   letter-spacing: -0.055em;
 }
 .brand-wordmark > span {
-  display: block;
+  display: inline;
 }
 .brand-compact .brand-wordmark {
   position: absolute;
@@ -376,7 +392,7 @@ a svg {
 }
 .intro-copy {
   font-size: 0.8125rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   line-height: 1.85;
   max-width: 346px;
   margin-bottom: 27px;
@@ -404,7 +420,7 @@ a svg {
   align-items: center;
   font-size: 0.625rem;
   margin-top: 15px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .identity-note svg {
   width: 16px;
@@ -415,7 +431,7 @@ a svg {
   gap: 12px;
   margin: 24px 0 0 6px;
   transform: rotate(-3deg);
-  color: var(--muted);
+  color: var(--muted-foreground);
   width: fit-content;
 }
 .margin-note > span {
@@ -444,7 +460,7 @@ a svg {
 .intro-bottom span {
   font-size: 0.625rem;
   line-height: 1.7;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .intro-bottom strong {
   color: var(--text);
@@ -455,7 +471,7 @@ a svg {
   border-radius: 13px;
   box-shadow:
     0 5px 0 var(--elevated),
-    0 12px 36px #181a2008;
+    0 12px 36px #171a2108;
   background: var(--surface);
   overflow: hidden;
   display: flex;
@@ -508,7 +524,7 @@ a svg {
 }
 .public-room-header p {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 6px 0 0;
   line-height: 1.5;
 }
@@ -519,7 +535,7 @@ a svg {
   place-items: center;
   min-width: 36px;
   min-height: 40px;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 1.375rem;
 }
 .public-chat-content {
@@ -534,7 +550,7 @@ a svg {
   align-items: center;
   gap: 6px;
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   padding: 11px 21px;
   flex-shrink: 0;
 }
@@ -549,7 +565,7 @@ a svg {
 }
 .connection-dot.disconnected,
 .status-dot.amber {
-  background: var(--muted);
+  background: var(--muted-foreground);
 }
 .guest-label {
   margin-left: auto;
@@ -566,7 +582,7 @@ a svg {
 }
 .feed-loading {
   padding: 20px 24px;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.6875rem;
 }
 .feed-loading > p {
@@ -626,7 +642,7 @@ a svg {
   border-radius: 15px;
   margin-bottom: 19px;
   transform: rotate(-7deg);
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .empty-mark > svg {
   width: 32px;
@@ -640,13 +656,13 @@ a svg {
 .feed-empty p {
   max-width: 340px;
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   line-height: 1.8;
   margin-bottom: 17px;
 }
 .empty-footnote {
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin-top: 16px;
 }
 .guest-composer {
@@ -663,7 +679,7 @@ a svg {
 }
 .guest-composer > span {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .guest-composer .button {
   min-height: 38px;
@@ -673,7 +689,7 @@ a svg {
 .public-disclosure {
   text-align: center;
   font-size: 0.5rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 10px 12px 13px;
 }
 .guest-message-list {
@@ -750,7 +766,7 @@ a svg {
 }
 .directory-heading > p {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin-bottom: 5px;
 }
 .directory-grid {
@@ -809,7 +825,7 @@ a svg {
 .directory-arrow {
   margin-left: auto;
   font-size: 1.0625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .house-note {
   display: flex;
@@ -827,7 +843,7 @@ a svg {
 }
 .house-note p {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   max-width: 620px;
   margin: 0;
   line-height: 1.8;
@@ -864,19 +880,19 @@ a svg {
 }
 .public-footer > span {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .public-footer nav {
   margin-left: auto;
   display: flex;
   gap: 25px;
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .public-footer > small {
   width: 100%;
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin-top: 12px;
 }
 .avatar {
@@ -888,7 +904,7 @@ a svg {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: #181a20;
+  color: #171a21;
   font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 0.875rem;
@@ -912,7 +928,7 @@ a svg {
   padding: 48px 24px;
   gap: 15px;
   min-height: 230px;
-  color: var(--muted);
+  color: var(--muted-foreground);
   font-size: 0.8125rem;
 }
 .state p {
@@ -958,7 +974,7 @@ a svg {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: #181a2070;
+  background: #171a2170;
   backdrop-filter: blur(3px);
   z-index: 50;
 }
@@ -976,7 +992,7 @@ a svg {
   overflow: auto;
   z-index: 51;
   border: 1px solid var(--border);
-  box-shadow: 0 24px 80px #181a2020;
+  box-shadow: 0 24px 80px #171a2120;
 }
 .modal h2 {
   font-size: 1.625rem;
@@ -986,7 +1002,7 @@ a svg {
 .modal > p {
   font-size: 0.75rem;
   margin: 12px 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .modal-close {
   position: absolute;
@@ -1016,7 +1032,7 @@ a svg {
 }
 .join-brand > span {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .progress-track {
   display: flex;
@@ -1055,7 +1071,7 @@ a svg {
   display: block;
   margin: 15px auto 0;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   min-height: 40px;
 }
 .choices {
@@ -1099,7 +1115,7 @@ a svg {
   background: var(--accent-soft);
   margin: 22px 0;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   line-height: 1.8;
 }
 .notice > svg {
@@ -1126,7 +1142,7 @@ a svg {
 .fine-print {
   font-size: 0.6875rem !important;
   line-height: 1.75;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 15px 0 0;
 }
 .fine-print a,
@@ -1140,7 +1156,7 @@ label {
   flex-direction: column;
   gap: 8px;
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 18px 0;
 }
 input:not([type="checkbox"]),
@@ -1157,7 +1173,7 @@ select {
 }
 input::placeholder,
 textarea::placeholder {
-  color: var(--muted);
+  color: var(--muted-foreground);
   opacity: 1;
 }
 textarea {
@@ -1186,7 +1202,7 @@ textarea {
 .setting-row p,
 .setting-row label > span {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   max-width: 530px;
   line-height: 1.8;
   margin: 8px 0 0;
@@ -1212,7 +1228,7 @@ textarea {
   top: 3px;
   width: 18px;
   height: 18px;
-  background: var(--muted);
+  background: var(--muted-foreground);
   border-radius: 50%;
   transition: transform 0.15s;
 }
@@ -1242,7 +1258,7 @@ textarea {
 .person-summary p,
 .person-summary small {
   font-size: 0.75rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .reported-content {
   padding: 15px;
@@ -1272,7 +1288,7 @@ textarea {
 }
 .onboarding > p {
   font-size: 0.8125rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .turnstile {
   margin: 20px 0;
@@ -1318,7 +1334,7 @@ textarea {
 .sidebar-caption {
   font-size: 0.5rem;
   letter-spacing: 0.1em;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 21px 10px 25px;
 }
 .sidebar nav {
@@ -1333,7 +1349,7 @@ textarea {
   gap: 10px;
   font-size: 0.6875rem;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--muted-foreground);
   min-height: 43px;
   padding: 10px 12px;
   border-radius: 7px;
@@ -1355,7 +1371,7 @@ textarea {
   font-size: 0.5rem;
   letter-spacing: 0.12em;
   margin: 22px 12px 8px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .nav-dot {
   display: none;
@@ -1382,7 +1398,7 @@ textarea {
   margin-bottom: 15px;
 }
 .sidebar-note svg {
-  color: var(--muted);
+  color: var(--muted-foreground);
   flex-shrink: 0;
 }
 .sidebar-note > svg:last-child {
@@ -1390,7 +1406,7 @@ textarea {
 }
 .sidebar-note small {
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .profile-link {
   display: flex;
@@ -1412,12 +1428,12 @@ textarea {
   font-size: 0.5625rem;
   display: block;
   margin-top: 4px;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .profile-link > svg {
   margin-left: auto;
   flex-shrink: 0;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .app-main {
   flex: 1;
@@ -1465,7 +1481,7 @@ textarea {
 }
 .room-header p {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 6px 0 0;
   line-height: 1.6;
 }
@@ -1505,7 +1521,7 @@ textarea {
 }
 .prompt-card p {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 0;
 }
 .prompt-doodle {
@@ -1524,7 +1540,7 @@ textarea {
 }
 .room-info-copy p {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .guideline-link {
   display: flex;
@@ -1543,7 +1559,7 @@ textarea {
 }
 .guideline-link p {
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin: 6px 0 0;
 }
 .suggest-room {
@@ -1551,7 +1567,7 @@ textarea {
   border-radius: 9px;
   font-size: 0.5rem;
   letter-spacing: 0.05em;
-  color: var(--muted);
+  color: var(--muted-foreground);
   box-shadow: none;
 }
 .suggest-room strong {
@@ -1568,7 +1584,7 @@ textarea {
 }
 .info-signoff {
   font-size: 0.6875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin-top: auto;
   padding-top: 32px;
 }
@@ -1594,7 +1610,7 @@ textarea {
   padding: 12px 26px;
   border-bottom: 1px solid var(--border);
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   flex-shrink: 0;
 }
 .chat-connection > span:last-child {
@@ -1614,7 +1630,7 @@ textarea {
 .conversation-start {
   padding: 20px 10px 30px;
   text-align: center;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .conversation-start > span {
   font-size: 1.5625rem;
@@ -1671,7 +1687,7 @@ textarea {
 }
 .message-meta time {
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .message-body > p {
   white-space: pre-wrap;
@@ -1682,7 +1698,7 @@ textarea {
 }
 .removed {
   font-style: italic;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .you-tag {
   font-size: 0.5rem;
@@ -1768,7 +1784,7 @@ textarea {
   white-space: pre-wrap;
 }
 .pending-message small {
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .composer-area {
   padding: 14px 25px 15px;
@@ -1808,7 +1824,7 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   font-size: 0.5625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   padding: 10px 1px 0;
 }
 .load-older {
@@ -1870,7 +1886,7 @@ textarea {
 }
 .page-intro {
   font-size: 0.875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin-bottom: 30px;
 }
 .settings-section {
@@ -1902,7 +1918,7 @@ textarea {
   align-self: center;
   font-size: 0.6875rem;
   line-height: 1.9;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .joined-date strong {
   font-weight: 500;
@@ -1926,13 +1942,13 @@ textarea {
 .theme-choice > span {
   display: block;
   height: 60px;
-  border: 1px solid #e2e3e5;
+  border: 1px solid #e1dfd8;
   border-radius: 6px;
-  background: #f7f7f2;
+  background: #f8f7f2;
 }
 .theme-dark > span {
-  background: #1c2028;
-  border-color: #39414d;
+  background: #1d232b;
+  border-color: #394450;
 }
 .theme-choice strong {
   display: block;
@@ -1995,7 +2011,7 @@ textarea {
 .inbox-person small {
   display: block;
   font-size: 0.625rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
   margin-top: 7px;
 }
 .unread-badge {
@@ -2037,7 +2053,7 @@ textarea {
 }
 .legal-page section p {
   font-size: 0.875rem;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 @media (min-width: 1600px) {
   .public-site {
@@ -2584,7 +2600,7 @@ textarea {
     display: block;
     position: fixed;
     inset: 0;
-    background: #181a2070 !important;
+    background: #171a2170 !important;
     z-index: 39;
   }
   .bottom-nav {
@@ -2610,7 +2626,7 @@ textarea {
     min-width: 64px;
     border-radius: 8px;
     font-size: 0.5625rem;
-    color: var(--muted);
+    color: var(--muted-foreground);
   }
   .bottom-nav .active {
     background: var(--accent-soft);
@@ -2859,9 +2875,9 @@ textarea {
 :root {
   --avatar-0: #edf1ff;
   --avatar-1: #fff0eb;
-  --avatar-2: #c7f36b;
-  --avatar-3: #f0f1ed;
-  --avatar-ink: #181a20;
+  --avatar-2: #d7f56a;
+  --avatar-3: #f0eee8;
+  --avatar-ink: #171a21;
 }
 
 /* Message content stays comfortably readable on small screens. */
@@ -2883,4 +2899,133 @@ textarea {
 }
 .public-message .avatar {
   flex-shrink: 0;
+}
+
+/* After Hours: generous editorial rhythm, compact controls, conversation first. */
+.brand-wordmark {
+  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.button,
+.browse-link,
+.public-header nav {
+  font-size: 0.875rem;
+}
+.intro-copy {
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 35ch;
+}
+.editorial-label,
+.eyebrow {
+  font-size: 0.6875rem;
+}
+.identity-note {
+  font-size: 0.75rem;
+}
+.home-intro h1 {
+  font-size: clamp(2.75rem, 4.6vw, 4.3rem);
+  line-height: 1.04;
+  font-weight: 600;
+}
+.home-chat {
+  box-shadow: 0 12px 40px #171a2106;
+}
+.theme-select {
+  width: auto;
+  max-width: 150px;
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: 0.8125rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+}
+.theme-options {
+  flex-wrap: wrap;
+}
+@media (max-width: 900px) {
+  .public-header nav {
+    gap: 10px;
+  }
+  .public-header nav > a:not(.button) {
+    display: none;
+  }
+}
+@media (max-width: 650px) {
+  .public-header {
+    gap: 8px;
+  }
+  .brand > svg {
+    width: 30px;
+    height: 30px;
+  }
+  .brand {
+    gap: 6px;
+  }
+  .public-header .theme-select {
+    max-width: 105px;
+    font-size: 0.75rem;
+    padding: 6px;
+  }
+  .public-header nav > .button {
+    display: none;
+  }
+  .home-intro h1 {
+    font-size: clamp(2.5rem, 9vw, 3.5rem);
+    margin: 16px 0;
+  }
+  .intro-copy {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .identity-note {
+    margin-top: 10px;
+  }
+  .margin-note,
+  .intro-bottom {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-reduced="true"]) body {
+    transition:
+      background-color 160ms,
+      color 160ms;
+  }
+  html:not([data-reduced="true"]) .home-intro {
+    animation: arrive 240ms ease-out both;
+  }
+  @keyframes arrive {
+    from {
+      transform: translateY(6px);
+    }
+    to {
+      transform: none;
+    }
+  }
+}
+
+.public-disclosure,
+.empty-footnote,
+.public-message .message-meta time {
+  font-size: 0.75rem;
+}
+.public-room-header p,
+.connection-bar,
+.chat-topline {
+  font-size: 0.75rem;
+}
+.sidebar .brand-wordmark {
+  font-size: 0.9rem;
+}
+.sidebar .brand > svg {
+  width: 28px;
+  height: 28px;
+}
+.sidebar .brand {
+  gap: 6px;
 }

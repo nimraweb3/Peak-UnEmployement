@@ -1,30 +1,38 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "sonner";
+const Toaster = lazy(() =>
+  import("sonner").then((m) => ({ default: m.Toaster })),
+);
 import App from "./App";
-import { SessionProvider } from "./contexts/session";
+import { SessionProvider, useSession } from "./contexts/session";
 import { Preferences, usePreferences } from "./contexts/preferences";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: { retry: 1, staleTime: 15000, refetchOnWindowFocus: true },
   },
 });
+function Notifications() {
+  const { session } = useSession();
+  const { resolvedTheme } = usePreferences();
+  return session ? (
+    <Suspense fallback={null}>
+      <Toaster
+        theme={resolvedTheme === "light" ? "light" : "dark"}
+        position="bottom-right"
+        richColors
+        closeButton
+      />
+    </Suspense>
+  ) : null;
+}
 function Root() {
-  const { theme } = usePreferences();
   return (
-    <>
-      <SessionProvider>
-        <App />
-        <Toaster
-          theme={theme === "light" ? "light" : "dark"}
-          position="bottom-right"
-          richColors
-          closeButton
-        />
-      </SessionProvider>
-    </>
+    <SessionProvider>
+      <App />
+      <Notifications />
+    </SessionProvider>
   );
 }
 if (import.meta.env.VITE_ANALYTICS_TOKEN) {
