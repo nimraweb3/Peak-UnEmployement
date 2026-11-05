@@ -9,14 +9,16 @@ export function Avatar({
   name?: string;
   large?: boolean;
 }) {
-  const hue = [...seed].reduce((n, c) => n + c.charCodeAt(0), 0) % 360;
+  const hue = [...seed].reduce((n, c) => n + c.charCodeAt(0), 0) % 4;
   return (
     <span
       className={`avatar ${large ? "avatar-large" : ""}`}
       style={{
-        background: `linear-gradient(140deg,hsl(${hue} 65% 65%),hsl(${(hue + 70) % 360} 55% 34%))`,
+        background: `var(--avatar-${hue})`,
+        color: "var(--avatar-ink)",
       }}
       aria-label={`${name}'s avatar`}
+      role="img"
     >
       {Array.from(name)[0]?.toUpperCase()}
       <i />
@@ -27,7 +29,7 @@ export function Loading() {
   return (
     <div className="state">
       <LoaderCircle className="spin" />
-      <p>Waiting for a response… just like your applications.</p>
+      <p>Loading…</p>
       <div className="skeleton-lines" aria-hidden="true">
         <i />
         <i />
@@ -49,7 +51,7 @@ export function ErrorState({
       <p>
         {error instanceof Error
           ? error.message
-          : "Something went wrong. At least it’s not another rejection."}
+          : "Something went wrong. Please try again."}
       </p>
       {retry && (
         <Button variant="outline" onClick={retry}>

@@ -1,3 +1,4 @@
+import { Brand } from "../../../shared/brand";
 import { NavLink, Outlet, Navigate, Link } from "react-router";
 import {
   MessageCircle,
@@ -30,8 +31,8 @@ export default function Shell() {
   return (
     <div className="app-shell">
       <header className="mobile-header">
-        <Link to="/" className="logo">
-          peak<span>.</span>
+        <Link to="/" aria-label="Peak Unemployment home">
+          <Brand />
         </Link>
         <button
           className="icon-button"
@@ -49,15 +50,14 @@ export default function Shell() {
         />
       )}
       <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
-        <Link to="/" className="logo">
-          peak<span>.</span>
+        <Link to="/" aria-label="Peak Unemployment home">
+          <Brand />
         </Link>
-        <div className="sidebar-caption">YOUR INTERNET BREAK ROOM</div>
+        <div className="sidebar-caption">PEOPLE BETWEEN JOBS</div>
         <nav onClick={() => setOpen(false)}>
           <NavLink to="/app/lounge">
             <Coffee size={19} />
             Main Lounge
-            <span className="nav-dot" />
           </NavLink>
           <span className="nav-label">FIND YOUR PEOPLE</span>
           {industries.map((room) => (
@@ -69,7 +69,7 @@ export default function Shell() {
               )}
             </NavLink>
           ))}
-          <span className="nav-label">YOUR CORNER</span>
+          <span className="nav-label">YOUR ACCOUNT</span>
           <NavLink to="/app/messages">
             <MessageCircle size={19} />
             Private messages
@@ -99,7 +99,7 @@ export default function Shell() {
             <Avatar seed={profile.avatar_seed} name={profile.username} />
             <span>
               <strong>{profile.username}</strong>
-              <small>Professionally available</small>
+              <small>Profile & preferences</small>
             </span>
             <Settings size={15} />
           </Link>
