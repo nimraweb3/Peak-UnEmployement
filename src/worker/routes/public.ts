@@ -22,6 +22,7 @@ app.get("/api/public/rooms/:slug/messages", async (c) => {
   let cursor: { at: string; id: string } | null = null;
   if (c.req.query("before")) {
     try {
+      z.string().max(256).parse(c.req.query("before"));
       cursor = z
         .object({
           at: z.string().datetime({ offset: true }),

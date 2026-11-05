@@ -6,6 +6,9 @@ export type Env = {
     SUPABASE_PUBLISHABLE_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
     SITE_URL?: string;
+    NETWORK_LIMITER?: {
+      limit(input: { key: string }): Promise<{ success: boolean }>;
+    };
     ASSETS?: { fetch(request: Request): Promise<Response> };
   };
   Variables: { db: SupabaseClient; authId: string };
@@ -39,7 +42,13 @@ export function unwrap<T>({
       message:
         error.code === "23505"
           ? "Already exists. Choose a different nickname or check your requests."
-          : error.message,
+          : error.code === "42501"
+            ? "This action is not permitted."
+            : error.code === "28000"
+              ? "Sign in to continue."
+              : status === 429
+                ? "Too many actions. Try again shortly."
+                : "The request could not be completed. Check your input and try again.",
     });
   }
   return data as NonNullable<T>;

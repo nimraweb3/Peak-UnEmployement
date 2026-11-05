@@ -56,7 +56,7 @@ export const legalContent: Record<
       ],
       [
         "Retention and deletion",
-        "Messages remain until removed or your account is deleted. Message removal clears the stored body and leaves a removed-message marker. Account deletion removes your profile and associated messages, reactions, blocks, and conversations; reports may remain with identifiers removed. Provider backups and technical logs follow the operator’s configured retention.",
+        "Messages remain until removed or your account is deleted. Message removal clears the stored body and leaves a removed-message marker. Account deletion removes your profile and associated messages, reactions, blocks, and conversations; reports may remain with account links removed. Minimal moderation records retain the action, time, and target identifier for operator review; they do not contain message bodies. Provider backups and technical logs follow the operator’s configured retention.",
       ],
       [
         "Your controls",
