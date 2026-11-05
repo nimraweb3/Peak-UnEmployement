@@ -38,6 +38,7 @@ for (const kind of ["rooms", "conversations"] as const) {
       .limit(40);
     const cursor = c.req.query("before");
     if (cursor) {
+      z.string().max(256).parse(cursor);
       let decoded: unknown;
       try {
         decoded = JSON.parse(atob(cursor));

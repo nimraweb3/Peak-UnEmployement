@@ -56,6 +56,7 @@ app.patch("/api/conversations/:id", async (c) =>
       await c.get("db").rpc("mutate", {
         action: z
           .object({ action: z.enum(["read", "close"]) })
+          .strict()
           .parse(await c.req.json()).action,
         payload: { id: uuid.parse(c.req.param("id")) },
       }),

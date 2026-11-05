@@ -24,9 +24,9 @@ app.post("/api/admin/moderate", async (c) =>
       await c.get("db").rpc("moderate", {
         payload: z
           .discriminatedUnion("action", [
-            z.object({ action: z.literal("hide"), message_id: uuid }),
-            z.object({ action: z.literal("restrict"), user_id: uuid }),
-            z.object({ action: z.literal("resolve"), report_id: uuid }),
+            z.object({ action: z.literal("hide"), message_id: uuid }).strict(),
+            z.object({ action: z.literal("restrict"), user_id: uuid }).strict(),
+            z.object({ action: z.literal("resolve"), report_id: uuid }).strict(),
           ])
           .parse(await c.req.json()),
       }),
