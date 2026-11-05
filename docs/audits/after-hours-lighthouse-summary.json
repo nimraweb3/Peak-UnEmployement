@@ -1,0 +1,2532 @@
+[
+  {
+    "page": "homepage",
+    "url": "http://127.0.0.1:4173/",
+    "date": "2026-11-04T12:45:38.808Z",
+    "version": "13.5.0",
+    "mode": "mobile simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 85,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 1455.708,
+      "largest-contentful-paint": 4227.562,
+      "total-blocking-time": 79.5,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1455.708
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.5 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "4.2 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "80 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "170 ms"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "sourceLocation",
+              "valueType": "source-location",
+              "label": "Source"
+            },
+            {
+              "key": "description",
+              "valueType": "code",
+              "label": "Description"
+            }
+          ],
+          "items": [
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            },
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "4.4 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 122 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+              "totalBytes": 264592,
+              "wastedBytes": 124676,
+              "wastedPercent": 47.12009433391788
+            }
+          ],
+          "overallSavingsMs": 600,
+          "overallSavingsBytes": 124676,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 600
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 7 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 215 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 215,
+            "uncompressedResponseBytes": 6937,
+            "wastedBytes": 6937
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "EC30EF08D231B79FBF6DD80BDA3C82EB": {
+                    "url": "http://127.0.0.1:4173/",
+                    "navStartToEndTime": 294,
+                    "transferSize": 11247,
+                    "isLongest": true,
+                    "children": {
+                      "23700.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 382,
+                        "transferSize": 3819,
+                        "isLongest": true,
+                        "children": {
+                          "23700.16": {
+                            "url": "http://127.0.0.1:4173/assets/common-6_r6DWcq.js",
+                            "navStartToEndTime": 883,
+                            "transferSize": 29226,
+                            "isLongest": true,
+                            "children": {
+                              "23700.23": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 2196,
+                                "transferSize": 783,
+                                "isLongest": true,
+                                "children": {}
+                              },
+                              "23700.22": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 1146,
+                                "transferSize": 783,
+                                "children": {}
+                              }
+                            }
+                          },
+                          "23700.21": {
+                            "url": "http://127.0.0.1:4173/assets/refresh-cw-D6_DkkEJ.js",
+                            "navStartToEndTime": 1038,
+                            "transferSize": 1361,
+                            "children": {}
+                          },
+                          "23700.20": {
+                            "url": "http://127.0.0.1:4173/assets/arrow-up-right-C49yH5HG.js",
+                            "navStartToEndTime": 1018,
+                            "transferSize": 1207,
+                            "children": {}
+                          },
+                          "23700.19": {
+                            "url": "http://127.0.0.1:4173/assets/useMessageAnnouncement-Dg8UC1HY.js",
+                            "navStartToEndTime": 1015,
+                            "transferSize": 2735,
+                            "children": {}
+                          },
+                          "23700.18": {
+                            "url": "http://127.0.0.1:4173/assets/api--upfagCz.js",
+                            "navStartToEndTime": 966,
+                            "transferSize": 33279,
+                            "children": {}
+                          },
+                          "23700.12": {
+                            "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+                            "navStartToEndTime": 906,
+                            "transferSize": 265683,
+                            "children": {}
+                          },
+                          "23700.15": {
+                            "url": "http://127.0.0.1:4173/assets/hooks-BX4x_E-z.js",
+                            "navStartToEndTime": 894,
+                            "transferSize": 22385,
+                            "children": {}
+                          },
+                          "23700.14": {
+                            "url": "http://127.0.0.1:4173/assets/react-DlmbjZJV.js",
+                            "navStartToEndTime": 891,
+                            "transferSize": 8888,
+                            "children": {}
+                          },
+                          "23700.13": {
+                            "url": "http://127.0.0.1:4173/assets/rolldown-runtime-XKyaHtl9.js",
+                            "navStartToEndTime": 888,
+                            "transferSize": 1737,
+                            "children": {}
+                          },
+                          "23700.17": {
+                            "url": "http://127.0.0.1:4173/assets/jsx-runtime-LKYXHABd.js",
+                            "navStartToEndTime": 885,
+                            "transferSize": 1446,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "23700.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 383,
+                        "transferSize": 50891,
+                        "children": {
+                          "23700.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 540,
+                            "transferSize": 37924,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "23700.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 378,
+                        "transferSize": 2277,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 2196
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 320 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 50891,
+              "wastedMs": 728
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 2277,
+              "wastedMs": 428
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "public-room",
+    "url": "http://127.0.0.1:4173/rooms/tech",
+    "date": "2026-11-04T12:45:48.223Z",
+    "version": "13.5.0",
+    "mode": "mobile simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 81,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 1612.9059000000002,
+      "largest-contentful-paint": 3906.58825,
+      "total-blocking-time": 289.00000000000045,
+      "cumulative-layout-shift": 0,
+      "speed-index": 1612.9059000000002
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.6 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "3.9 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "290 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "250 ms"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "sourceLocation",
+              "valueType": "source-location",
+              "label": "Source"
+            },
+            {
+              "key": "description",
+              "valueType": "code",
+              "label": "Description"
+            }
+          ],
+          "items": [
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            },
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "4.4 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 122 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+              "totalBytes": 264592,
+              "wastedBytes": 124676,
+              "wastedPercent": 47.12009433391788
+            }
+          ],
+          "overallSavingsMs": 600,
+          "overallSavingsBytes": 124676,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 600
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 7 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 17 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 17,
+            "uncompressedResponseBytes": 6841,
+            "wastedBytes": 6841
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "86A8B9FE7057793EC042DD09F8B2F0F4": {
+                    "url": "http://127.0.0.1:4173/rooms/tech",
+                    "navStartToEndTime": 52,
+                    "transferSize": 11104,
+                    "isLongest": true,
+                    "children": {
+                      "28028.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 86,
+                        "transferSize": 3819,
+                        "isLongest": true,
+                        "children": {
+                          "28028.16": {
+                            "url": "http://127.0.0.1:4173/assets/common-6_r6DWcq.js",
+                            "navStartToEndTime": 336,
+                            "transferSize": 29225,
+                            "isLongest": true,
+                            "children": {
+                              "28028.23": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                                "navStartToEndTime": 1569,
+                                "transferSize": 783,
+                                "isLongest": true,
+                                "children": {}
+                              },
+                              "28028.22": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                                "navStartToEndTime": 545,
+                                "transferSize": 783,
+                                "children": {}
+                              }
+                            }
+                          },
+                          "28028.21": {
+                            "url": "http://127.0.0.1:4173/assets/refresh-cw-D6_DkkEJ.js",
+                            "navStartToEndTime": 396,
+                            "transferSize": 1361,
+                            "children": {}
+                          },
+                          "28028.20": {
+                            "url": "http://127.0.0.1:4173/assets/arrow-up-right-C49yH5HG.js",
+                            "navStartToEndTime": 390,
+                            "transferSize": 1207,
+                            "children": {}
+                          },
+                          "28028.19": {
+                            "url": "http://127.0.0.1:4173/assets/useMessageAnnouncement-Dg8UC1HY.js",
+                            "navStartToEndTime": 389,
+                            "transferSize": 2735,
+                            "children": {}
+                          },
+                          "28028.18": {
+                            "url": "http://127.0.0.1:4173/assets/api--upfagCz.js",
+                            "navStartToEndTime": 362,
+                            "transferSize": 33279,
+                            "children": {}
+                          },
+                          "28028.12": {
+                            "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+                            "navStartToEndTime": 355,
+                            "transferSize": 265682,
+                            "children": {}
+                          },
+                          "28028.15": {
+                            "url": "http://127.0.0.1:4173/assets/hooks-BX4x_E-z.js",
+                            "navStartToEndTime": 344,
+                            "transferSize": 22384,
+                            "children": {}
+                          },
+                          "28028.14": {
+                            "url": "http://127.0.0.1:4173/assets/react-DlmbjZJV.js",
+                            "navStartToEndTime": 338,
+                            "transferSize": 8887,
+                            "children": {}
+                          },
+                          "28028.17": {
+                            "url": "http://127.0.0.1:4173/assets/jsx-runtime-LKYXHABd.js",
+                            "navStartToEndTime": 335,
+                            "transferSize": 1445,
+                            "children": {}
+                          },
+                          "28028.13": {
+                            "url": "http://127.0.0.1:4173/assets/rolldown-runtime-XKyaHtl9.js",
+                            "navStartToEndTime": 334,
+                            "transferSize": 1736,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "28028.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 95,
+                        "transferSize": 50891,
+                        "children": {
+                          "28028.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 272,
+                            "transferSize": 37924,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "28028.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 79,
+                        "transferSize": 2277,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 1569
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 740 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 50891,
+              "wastedMs": 638
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 2277,
+              "wastedMs": 338
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "privacy",
+    "url": "http://127.0.0.1:4173/privacy",
+    "date": "2026-11-04T12:45:57.556Z",
+    "version": "13.5.0",
+    "mode": "mobile simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 99,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 1567.5163499999999,
+      "largest-contentful-paint": 1717.5163499999999,
+      "total-blocking-time": 0,
+      "cumulative-layout-shift": 0.00003789933707984075,
+      "speed-index": 1567.5163499999999
+    },
+    "failures": [
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "displayValue": "1.6 s"
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "1.7 s"
+      },
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "displayValue": "Est savings of 25 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "wastedBytes": 25869,
+              "wastedPercent": 51.856232209437515,
+              "totalBytes": 49886
+            }
+          ],
+          "overallSavingsMs": 150,
+          "overallSavingsBytes": 25869,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 150
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 4 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 22 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 22,
+            "uncompressedResponseBytes": 4237,
+            "wastedBytes": 4237
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "CEA4F5EB833AC180B103E770AC30316A": {
+                    "url": "http://127.0.0.1:4173/privacy",
+                    "navStartToEndTime": 68,
+                    "transferSize": 7216,
+                    "isLongest": true,
+                    "children": {
+                      "6600.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 108,
+                        "transferSize": 50891,
+                        "isLongest": true,
+                        "children": {
+                          "6600.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 195,
+                            "transferSize": 37924,
+                            "isLongest": true,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "6600.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 100,
+                        "transferSize": 3819,
+                        "children": {}
+                      },
+                      "6600.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 93,
+                        "transferSize": 2277,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 195
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 720 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 50891,
+              "wastedMs": 623
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 2277,
+              "wastedMs": 323
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "homepage",
+    "url": "http://127.0.0.1:4173/",
+    "date": "2026-11-04T12:46:04.644Z",
+    "version": "13.5.0",
+    "mode": "desktop simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 510.13539999999995,
+      "largest-contentful-paint": 510.13539999999995,
+      "total-blocking-time": 3,
+      "cumulative-layout-shift": 0.0002645634503692029,
+      "speed-index": 510.13539999999995
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "sourceLocation",
+              "valueType": "source-location",
+              "label": "Source"
+            },
+            {
+              "key": "description",
+              "valueType": "code",
+              "label": "Description"
+            }
+          ],
+          "items": [
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            },
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 122 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+              "totalBytes": 264592,
+              "wastedBytes": 124676,
+              "wastedPercent": 47.12009433391788
+            }
+          ],
+          "overallSavingsMs": 0,
+          "overallSavingsBytes": 124676,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 7 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 20 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 20,
+            "uncompressedResponseBytes": 6937,
+            "wastedBytes": 6937
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "777FECFD3EB50F75ADE31CBEF4650D62": {
+                    "url": "http://127.0.0.1:4173/",
+                    "navStartToEndTime": 97,
+                    "transferSize": 11247,
+                    "isLongest": true,
+                    "children": {
+                      "10552.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 130,
+                        "transferSize": 3819,
+                        "isLongest": true,
+                        "children": {
+                          "10552.16": {
+                            "url": "http://127.0.0.1:4173/assets/common-6_r6DWcq.js",
+                            "navStartToEndTime": 474,
+                            "transferSize": 29225,
+                            "isLongest": true,
+                            "children": {
+                              "10552.23": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 1709,
+                                "transferSize": 783,
+                                "isLongest": true,
+                                "children": {}
+                              },
+                              "10552.22": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 670,
+                                "transferSize": 783,
+                                "children": {}
+                              }
+                            }
+                          },
+                          "10552.21": {
+                            "url": "http://127.0.0.1:4173/assets/refresh-cw-D6_DkkEJ.js",
+                            "navStartToEndTime": 526,
+                            "transferSize": 1361,
+                            "children": {}
+                          },
+                          "10552.20": {
+                            "url": "http://127.0.0.1:4173/assets/arrow-up-right-C49yH5HG.js",
+                            "navStartToEndTime": 521,
+                            "transferSize": 1207,
+                            "children": {}
+                          },
+                          "10552.19": {
+                            "url": "http://127.0.0.1:4173/assets/useMessageAnnouncement-Dg8UC1HY.js",
+                            "navStartToEndTime": 518,
+                            "transferSize": 2735,
+                            "children": {}
+                          },
+                          "10552.18": {
+                            "url": "http://127.0.0.1:4173/assets/api--upfagCz.js",
+                            "navStartToEndTime": 475,
+                            "transferSize": 33279,
+                            "children": {}
+                          },
+                          "10552.17": {
+                            "url": "http://127.0.0.1:4173/assets/jsx-runtime-LKYXHABd.js",
+                            "navStartToEndTime": 473,
+                            "transferSize": 1445,
+                            "children": {}
+                          },
+                          "10552.15": {
+                            "url": "http://127.0.0.1:4173/assets/hooks-BX4x_E-z.js",
+                            "navStartToEndTime": 473,
+                            "transferSize": 22384,
+                            "children": {}
+                          },
+                          "10552.14": {
+                            "url": "http://127.0.0.1:4173/assets/react-DlmbjZJV.js",
+                            "navStartToEndTime": 472,
+                            "transferSize": 8887,
+                            "children": {}
+                          },
+                          "10552.12": {
+                            "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+                            "navStartToEndTime": 471,
+                            "transferSize": 265682,
+                            "children": {}
+                          },
+                          "10552.13": {
+                            "url": "http://127.0.0.1:4173/assets/rolldown-runtime-XKyaHtl9.js",
+                            "navStartToEndTime": 469,
+                            "transferSize": 1736,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "10552.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 140,
+                        "transferSize": 50891,
+                        "children": {
+                          "10552.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 376,
+                            "transferSize": 37924,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "10552.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 122,
+                        "transferSize": 2277,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 1709
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 200 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 50891,
+              "wastedMs": 197
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 2277,
+              "wastedMs": 117
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "public-room",
+    "url": "http://127.0.0.1:4173/rooms/tech",
+    "date": "2026-11-04T12:46:12.800Z",
+    "version": "13.5.0",
+    "mode": "desktop simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 516.3072999999999,
+      "largest-contentful-paint": 516.3072999999999,
+      "total-blocking-time": 8.38454999999999,
+      "cumulative-layout-shift": 0.0002645634503692029,
+      "speed-index": 516.3072999999999
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "sourceLocation",
+              "valueType": "source-location",
+              "label": "Source"
+            },
+            {
+              "key": "description",
+              "valueType": "code",
+              "label": "Description"
+            }
+          ],
+          "items": [
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            },
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 122 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+              "totalBytes": 264592,
+              "wastedBytes": 124676,
+              "wastedPercent": 47.12009433391788
+            }
+          ],
+          "overallSavingsMs": 0,
+          "overallSavingsBytes": 124676,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 7 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 23 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 23,
+            "uncompressedResponseBytes": 6841,
+            "wastedBytes": 6841
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "694FC16039BAEE7204214F22EC600939": {
+                    "url": "http://127.0.0.1:4173/rooms/tech",
+                    "navStartToEndTime": 56,
+                    "transferSize": 11104,
+                    "isLongest": true,
+                    "children": {
+                      "6540.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 80,
+                        "transferSize": 3819,
+                        "isLongest": true,
+                        "children": {
+                          "6540.16": {
+                            "url": "http://127.0.0.1:4173/assets/common-6_r6DWcq.js",
+                            "navStartToEndTime": 379,
+                            "transferSize": 29225,
+                            "isLongest": true,
+                            "children": {
+                              "6540.23": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                                "navStartToEndTime": 1594,
+                                "transferSize": 783,
+                                "isLongest": true,
+                                "children": {}
+                              },
+                              "6540.22": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/tech/messages",
+                                "navStartToEndTime": 569,
+                                "transferSize": 783,
+                                "children": {}
+                              }
+                            }
+                          },
+                          "6540.21": {
+                            "url": "http://127.0.0.1:4173/assets/refresh-cw-D6_DkkEJ.js",
+                            "navStartToEndTime": 423,
+                            "transferSize": 1361,
+                            "children": {}
+                          },
+                          "6540.20": {
+                            "url": "http://127.0.0.1:4173/assets/arrow-up-right-C49yH5HG.js",
+                            "navStartToEndTime": 422,
+                            "transferSize": 1207,
+                            "children": {}
+                          },
+                          "6540.18": {
+                            "url": "http://127.0.0.1:4173/assets/api--upfagCz.js",
+                            "navStartToEndTime": 404,
+                            "transferSize": 33279,
+                            "children": {}
+                          },
+                          "6540.19": {
+                            "url": "http://127.0.0.1:4173/assets/useMessageAnnouncement-Dg8UC1HY.js",
+                            "navStartToEndTime": 402,
+                            "transferSize": 2735,
+                            "children": {}
+                          },
+                          "6540.15": {
+                            "url": "http://127.0.0.1:4173/assets/hooks-BX4x_E-z.js",
+                            "navStartToEndTime": 378,
+                            "transferSize": 22384,
+                            "children": {}
+                          },
+                          "6540.17": {
+                            "url": "http://127.0.0.1:4173/assets/jsx-runtime-LKYXHABd.js",
+                            "navStartToEndTime": 366,
+                            "transferSize": 1445,
+                            "children": {}
+                          },
+                          "6540.12": {
+                            "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+                            "navStartToEndTime": 365,
+                            "transferSize": 265682,
+                            "children": {}
+                          },
+                          "6540.14": {
+                            "url": "http://127.0.0.1:4173/assets/react-DlmbjZJV.js",
+                            "navStartToEndTime": 364,
+                            "transferSize": 8887,
+                            "children": {}
+                          },
+                          "6540.13": {
+                            "url": "http://127.0.0.1:4173/assets/rolldown-runtime-XKyaHtl9.js",
+                            "navStartToEndTime": 363,
+                            "transferSize": 1736,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "6540.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 90,
+                        "transferSize": 50891,
+                        "children": {
+                          "6540.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 284,
+                            "transferSize": 37924,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "6540.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 74,
+                        "transferSize": 2277,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 1594
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 220 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 50891,
+              "wastedMs": 199
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 2277,
+              "wastedMs": 119
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "privacy",
+    "url": "http://127.0.0.1:4173/privacy",
+    "date": "2026-11-04T12:46:20.564Z",
+    "version": "13.5.0",
+    "mode": "desktop simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 461.8681,
+      "largest-contentful-paint": 461.8681,
+      "total-blocking-time": 0,
+      "cumulative-layout-shift": 0.00001068754925137904,
+      "speed-index": 461.8681
+    },
+    "failures": [
+      {
+        "id": "unused-css-rules",
+        "title": "Reduce unused CSS",
+        "displayValue": "Est savings of 26 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "wastedBytes": 26522,
+              "wastedPercent": 53.165216694062465,
+              "totalBytes": 49886
+            }
+          ],
+          "overallSavingsMs": 0,
+          "overallSavingsBytes": 26522,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 80,
+              "LCP": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 4 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 21 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 21,
+            "uncompressedResponseBytes": 4237,
+            "wastedBytes": 4237
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "31E7272507442C4970BFA689485ADE1C": {
+                    "url": "http://127.0.0.1:4173/privacy",
+                    "navStartToEndTime": 81,
+                    "transferSize": 7216,
+                    "isLongest": true,
+                    "children": {
+                      "5736.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 99,
+                        "transferSize": 50891,
+                        "isLongest": true,
+                        "children": {
+                          "5736.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 189,
+                            "transferSize": 37924,
+                            "isLongest": true,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "5736.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 166,
+                        "transferSize": 3819,
+                        "children": {}
+                      },
+                      "5736.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 111,
+                        "transferSize": 2277,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 189
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 210 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 2277,
+              "wastedMs": 101
+            },
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 50891,
+              "wastedMs": 181
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "homepage",
+    "url": "http://127.0.0.1:4173/",
+    "date": "2026-11-04T12:46:27.510Z",
+    "version": "13.5.0",
+    "mode": "mobile-repeat simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 87,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 976.9486999999999,
+      "largest-contentful-paint": 3463.1858749999997,
+      "total-blocking-time": 245.5,
+      "cumulative-layout-shift": 0.006458105493670476,
+      "speed-index": 976.9486999999999
+    },
+    "failures": [
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "displayValue": "3.5 s"
+      },
+      {
+        "id": "total-blocking-time",
+        "title": "Total Blocking Time",
+        "displayValue": "250 ms"
+      },
+      {
+        "id": "max-potential-fid",
+        "title": "Max Potential First Input Delay",
+        "displayValue": "240 ms"
+      },
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "sourceLocation",
+              "valueType": "source-location",
+              "label": "Source"
+            },
+            {
+              "key": "description",
+              "valueType": "code",
+              "label": "Description"
+            }
+          ],
+          "items": [
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            },
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "displayValue": "3.9 s"
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 122 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+              "totalBytes": 264592,
+              "wastedBytes": 124676,
+              "wastedPercent": 47.12009433391788
+            }
+          ],
+          "overallSavingsMs": 600,
+          "overallSavingsBytes": 124676,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 600
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 7 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 15 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 15,
+            "uncompressedResponseBytes": 6937,
+            "wastedBytes": 6937
+          }
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "A835B4EBD2EFC23A40E6B44C21C0BFE3": {
+                    "url": "http://127.0.0.1:4173/",
+                    "navStartToEndTime": 45,
+                    "transferSize": 11247,
+                    "isLongest": true,
+                    "children": {
+                      "28364.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 76,
+                        "transferSize": 999,
+                        "isLongest": true,
+                        "children": {
+                          "28364.16": {
+                            "url": "http://127.0.0.1:4173/assets/common-6_r6DWcq.js",
+                            "navStartToEndTime": 291,
+                            "transferSize": 29225,
+                            "isLongest": true,
+                            "children": {
+                              "28364.23": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 1532,
+                                "transferSize": 783,
+                                "isLongest": true,
+                                "children": {}
+                              },
+                              "28364.22": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 489,
+                                "transferSize": 783,
+                                "children": {}
+                              }
+                            }
+                          },
+                          "28364.20": {
+                            "url": "http://127.0.0.1:4173/assets/arrow-up-right-C49yH5HG.js",
+                            "navStartToEndTime": 334,
+                            "transferSize": 1207,
+                            "children": {}
+                          },
+                          "28364.21": {
+                            "url": "http://127.0.0.1:4173/assets/refresh-cw-D6_DkkEJ.js",
+                            "navStartToEndTime": 333,
+                            "transferSize": 1361,
+                            "children": {}
+                          },
+                          "28364.19": {
+                            "url": "http://127.0.0.1:4173/assets/useMessageAnnouncement-Dg8UC1HY.js",
+                            "navStartToEndTime": 316,
+                            "transferSize": 2735,
+                            "children": {}
+                          },
+                          "28364.18": {
+                            "url": "http://127.0.0.1:4173/assets/api--upfagCz.js",
+                            "navStartToEndTime": 312,
+                            "transferSize": 33279,
+                            "children": {}
+                          },
+                          "28364.15": {
+                            "url": "http://127.0.0.1:4173/assets/hooks-BX4x_E-z.js",
+                            "navStartToEndTime": 300,
+                            "transferSize": 22384,
+                            "children": {}
+                          },
+                          "28364.17": {
+                            "url": "http://127.0.0.1:4173/assets/jsx-runtime-LKYXHABd.js",
+                            "navStartToEndTime": 290,
+                            "transferSize": 1445,
+                            "children": {}
+                          },
+                          "28364.12": {
+                            "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+                            "navStartToEndTime": 289,
+                            "transferSize": 265682,
+                            "children": {}
+                          },
+                          "28364.14": {
+                            "url": "http://127.0.0.1:4173/assets/react-DlmbjZJV.js",
+                            "navStartToEndTime": 288,
+                            "transferSize": 8887,
+                            "children": {}
+                          },
+                          "28364.13": {
+                            "url": "http://127.0.0.1:4173/assets/rolldown-runtime-XKyaHtl9.js",
+                            "navStartToEndTime": 286,
+                            "transferSize": 1736,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "28364.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 81,
+                        "transferSize": 992,
+                        "children": {
+                          "28364.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 235,
+                            "transferSize": 979,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "28364.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 71,
+                        "transferSize": 947,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 1532
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 150 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 992,
+              "wastedMs": 188
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 947,
+              "wastedMs": 338
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "page": "homepage",
+    "url": "http://127.0.0.1:4173/",
+    "date": "2026-11-04T12:46:35.320Z",
+    "version": "13.5.0",
+    "mode": "desktop-repeat simulated throttling; local production build; Supabase unconfigured",
+    "scores": {
+      "performance": 100,
+      "accessibility": 100,
+      "best-practices": 96,
+      "seo": 100
+    },
+    "metrics": {
+      "first-contentful-paint": 367.73255,
+      "largest-contentful-paint": 441.23255,
+      "total-blocking-time": 8,
+      "cumulative-layout-shift": 0.0002645634503692029,
+      "speed-index": 390.99787541360274
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "sourceLocation",
+              "valueType": "source-location",
+              "label": "Source"
+            },
+            {
+              "key": "description",
+              "valueType": "code",
+              "label": "Description"
+            }
+          ],
+          "items": [
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            },
+            {
+              "source": "network",
+              "description": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+              "sourceLocation": {
+                "type": "source-location",
+                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                "urlProvider": "network",
+                "line": 0,
+                "column": 0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "displayValue": "Est savings of 122 KiB",
+        "details": {
+          "type": "opportunity",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "subItemsHeading": {
+                "key": "source",
+                "valueType": "code"
+              },
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceBytes"
+              },
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedBytes",
+              "valueType": "bytes",
+              "subItemsHeading": {
+                "key": "sourceWastedBytes"
+              },
+              "label": "Est Savings"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+              "totalBytes": 264592,
+              "wastedBytes": 124676,
+              "wastedPercent": 47.12009433391788
+            }
+          ],
+          "overallSavingsMs": 0,
+          "overallSavingsBytes": 124676,
+          "sortedBy": [
+            "wastedBytes"
+          ],
+          "debugData": {
+            "type": "debugdata",
+            "metricSavings": {
+              "FCP": 0,
+              "LCP": 0
+            }
+          }
+        }
+      },
+      {
+        "id": "document-latency-insight",
+        "title": "Document request latency",
+        "displayValue": "Est savings of 7 KiB",
+        "details": {
+          "type": "checklist",
+          "items": {
+            "noRedirects": {
+              "label": "Avoids redirects",
+              "value": true
+            },
+            "serverResponseIsFast": {
+              "label": "Server responds quickly (observed 16 ms)",
+              "value": true
+            },
+            "usesCompression": {
+              "label": "No compression applied",
+              "value": false
+            }
+          },
+          "debugData": {
+            "type": "debugdata",
+            "redirectDuration": 0,
+            "serverResponseTime": 16,
+            "uncompressedResponseBytes": 6937,
+            "wastedBytes": 6937
+          }
+        }
+      },
+      {
+        "id": "forced-reflow-insight",
+        "title": "Forced reflow",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "table",
+              "headings": [
+                {
+                  "key": "source",
+                  "valueType": "source-location",
+                  "label": "Source"
+                },
+                {
+                  "key": "reflowTime",
+                  "valueType": "ms",
+                  "granularity": 1,
+                  "label": "Total reflow time"
+                }
+              ],
+              "items": [
+                {
+                  "source": {
+                    "type": "text",
+                    "value": "[unattributed]"
+                  },
+                  "reflowTime": 66.949
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "details": {
+          "type": "list",
+          "items": [
+            {
+              "type": "list-section",
+              "value": {
+                "type": "network-tree",
+                "chains": {
+                  "C0612E8A66350F47A5C32D2FB29CA6DB": {
+                    "url": "http://127.0.0.1:4173/",
+                    "navStartToEndTime": 77,
+                    "transferSize": 11247,
+                    "isLongest": true,
+                    "children": {
+                      "8716.4": {
+                        "url": "http://127.0.0.1:4173/assets/index-De79LoQh.js",
+                        "navStartToEndTime": 106,
+                        "transferSize": 999,
+                        "isLongest": true,
+                        "children": {
+                          "8716.16": {
+                            "url": "http://127.0.0.1:4173/assets/common-6_r6DWcq.js",
+                            "navStartToEndTime": 374,
+                            "transferSize": 29225,
+                            "isLongest": true,
+                            "children": {
+                              "8716.23": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 1595,
+                                "transferSize": 783,
+                                "isLongest": true,
+                                "children": {}
+                              },
+                              "8716.22": {
+                                "url": "http://127.0.0.1:4173/api/public/rooms/lounge/messages",
+                                "navStartToEndTime": 569,
+                                "transferSize": 783,
+                                "children": {}
+                              }
+                            }
+                          },
+                          "8716.21": {
+                            "url": "http://127.0.0.1:4173/assets/refresh-cw-D6_DkkEJ.js",
+                            "navStartToEndTime": 418,
+                            "transferSize": 1361,
+                            "children": {}
+                          },
+                          "8716.12": {
+                            "url": "http://127.0.0.1:4173/assets/main-BIQ752xY.js",
+                            "navStartToEndTime": 407,
+                            "transferSize": 999,
+                            "children": {}
+                          },
+                          "8716.20": {
+                            "url": "http://127.0.0.1:4173/assets/arrow-up-right-C49yH5HG.js",
+                            "navStartToEndTime": 401,
+                            "transferSize": 1207,
+                            "children": {}
+                          },
+                          "8716.19": {
+                            "url": "http://127.0.0.1:4173/assets/useMessageAnnouncement-Dg8UC1HY.js",
+                            "navStartToEndTime": 400,
+                            "transferSize": 2735,
+                            "children": {}
+                          },
+                          "8716.18": {
+                            "url": "http://127.0.0.1:4173/assets/api--upfagCz.js",
+                            "navStartToEndTime": 379,
+                            "transferSize": 33279,
+                            "children": {}
+                          },
+                          "8716.17": {
+                            "url": "http://127.0.0.1:4173/assets/jsx-runtime-LKYXHABd.js",
+                            "navStartToEndTime": 378,
+                            "transferSize": 1445,
+                            "children": {}
+                          },
+                          "8716.15": {
+                            "url": "http://127.0.0.1:4173/assets/hooks-BX4x_E-z.js",
+                            "navStartToEndTime": 376,
+                            "transferSize": 22384,
+                            "children": {}
+                          },
+                          "8716.14": {
+                            "url": "http://127.0.0.1:4173/assets/react-DlmbjZJV.js",
+                            "navStartToEndTime": 369,
+                            "transferSize": 8887,
+                            "children": {}
+                          },
+                          "8716.13": {
+                            "url": "http://127.0.0.1:4173/assets/rolldown-runtime-XKyaHtl9.js",
+                            "navStartToEndTime": 293,
+                            "transferSize": 1736,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "8716.5": {
+                        "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+                        "navStartToEndTime": 105,
+                        "transferSize": 992,
+                        "children": {
+                          "8716.10": {
+                            "url": "http://127.0.0.1:4173/fonts/dm-sans-latin.woff2",
+                            "navStartToEndTime": 299,
+                            "transferSize": 979,
+                            "children": {}
+                          }
+                        }
+                      },
+                      "8716.3": {
+                        "url": "http://127.0.0.1:4173/theme.js",
+                        "navStartToEndTime": 90,
+                        "transferSize": 947,
+                        "children": {}
+                      }
+                    }
+                  }
+                },
+                "longestChain": {
+                  "duration": 1595
+                }
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnected origins",
+              "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to.",
+              "value": {
+                "type": "text",
+                "value": "no origins were preconnected"
+              }
+            },
+            {
+              "type": "list-section",
+              "title": "Preconnect candidates",
+              "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4.",
+              "value": {
+                "type": "text",
+                "value": "No additional origins are good candidates for preconnecting"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "displayValue": "Est savings of 50 ms",
+        "details": {
+          "type": "table",
+          "headings": [
+            {
+              "key": "url",
+              "valueType": "url",
+              "label": "URL"
+            },
+            {
+              "key": "totalBytes",
+              "valueType": "bytes",
+              "label": "Transfer Size"
+            },
+            {
+              "key": "wastedMs",
+              "valueType": "timespanMs",
+              "label": "Duration"
+            }
+          ],
+          "items": [
+            {
+              "url": "http://127.0.0.1:4173/assets/index-kweGNQQ_.css",
+              "totalBytes": 992,
+              "wastedMs": 71
+            },
+            {
+              "url": "http://127.0.0.1:4173/theme.js",
+              "totalBytes": 947,
+              "wastedMs": 111
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
