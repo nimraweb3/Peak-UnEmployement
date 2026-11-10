@@ -59,6 +59,40 @@ describe("message composer behavior", () => {
     fireEvent.keyDown(input, { key: "Enter", shiftKey: true });
     expect(api).not.toHaveBeenCalled();
   });
+  it("inserts an emoji at the selection and returns focus without submitting", async () => {
+    mount();
+    const input = screen.getByRole("textbox", {
+      name: "Message",
+    }) as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: "hello world" } });
+    input.setSelectionRange(6, 11);
+    fireEvent.click(screen.getByRole("button", { name: "Add emoji" }));
+    fireEvent.click(screen.getByRole("button", { name: "Smile" }));
+    expect(input.value).toBe("hello 😀");
+    expect(api).not.toHaveBeenCalled();
+    await waitFor(() => expect(document.activeElement).toBe(input));
+    fireEvent.click(screen.getByRole("button", { name: "Add emoji" }));
+    fireEvent.keyDown(screen.getByRole("button", { name: "Smile" }), {
+      key: "Escape",
+    });
+    expect(screen.queryByRole("group", { name: "Choose an emoji" })).toBeNull();
+  });
+  it("prevents emoji insertion beyond the message limit", () => {
+    mount();
+    const input = screen.getByRole("textbox", {
+      name: "Message",
+    }) as HTMLTextAreaElement;
+    fireEvent.change(input, { target: { value: "a".repeat(999) } });
+    input.setSelectionRange(999, 999);
+    fireEvent.click(screen.getByRole("button", { name: "Add emoji" }));
+    expect(
+      (
+        screen.getByRole("button", {
+          name: "Smile",
+        }) as HTMLButtonElement
+      ).disabled,
+    ).toBe(true);
+  });
   it("shows failed state and retries the same idempotency key", async () => {
     vi.mocked(api)
       .mockRejectedValueOnce(new Error("Offline"))
@@ -68,13 +102,13 @@ describe("message composer behavior", () => {
       target: { value: "A small win" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
-    await screen.findByText("Failed to send");
+    await screen.findByText("Didn’t go through. Try again.");
     const original = vi.mocked(api).mock.calls[0][2];
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
     await waitFor(() => expect(api).toHaveBeenCalledTimes(2));
     expect(vi.mocked(api).mock.calls[1][2]).toEqual(original);
     await waitFor(() =>
-      expect(screen.queryByText("Failed to send")).toBeNull(),
+      expect(screen.queryByText("Didn’t go through. Try again.")).toBeNull(),
     );
   });
   it("renders user content as text and never reveals deleted bodies", () => {
@@ -109,7 +143,20 @@ describe("message composer behavior", () => {
   });
   it("does not activate javascript URLs or interpret Unicode text as markup", () => {
     const content = "javascript:alert(1) — مرحبا 🫂 <script>no()</script>";
-    vi.mocked(useMessages).mockReturnValue({ ...empty, messages: [{ id: "safe", sender_id: "self", content, created_at: "2026-11-04T12:00:00Z", deleted_at: null, profiles: { username: "Fixture", avatar_seed: "seed" }, reactions: [] }] } as any);
+    vi.mocked(useMessages).mockReturnValue({
+      ...empty,
+      messages: [
+        {
+          id: "safe",
+          sender_id: "self",
+          content,
+          created_at: "2026-11-04T12:00:00Z",
+          deleted_at: null,
+          profiles: { username: "Fixture", avatar_seed: "seed" },
+          reactions: [],
+        },
+      ],
+    } as any);
     const { container } = mount();
     expect(screen.getByText(content)).toBeTruthy();
     expect(container.querySelector('a[href^="javascript:"],script')).toBeNull();

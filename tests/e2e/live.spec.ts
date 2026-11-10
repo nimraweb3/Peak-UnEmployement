@@ -109,7 +109,7 @@ test("two real anonymous sessions: onboarding, persistence, rooms, consent, real
       pa.getByText(`Hello from ${nameB}`, { exact: true }),
     ).toBeVisible({ timeout: 15000 });
     await pa.getByRole("button", { name: nameB, exact: true }).click();
-    await pa.getByRole("button", { name: "Request chat", exact: true }).click();
+    await pa.getByRole("button", { name: "Ask to chat", exact: true }).click();
     await pb.goto("/app/messages");
     await pb.getByRole("button", { name: "Accept", exact: true }).click();
     await pb.getByRole("link", { name: new RegExp(nameA) }).click();

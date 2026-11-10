@@ -9,12 +9,20 @@ test("chat-first public page, intentional join, keyboard dismissal and room cont
     if (r.url().includes("/auth/v1/")) auth.push(r.url());
   });
   await page.goto("/");
+  await expect(page.getByLabel("Demo identity")).toHaveCount(0);
+  await expect(page.getByText("Local demo · sample conversations")).toHaveCount(
+    0,
+  );
+  const testSession = await page.request.post("/api/demo/session", {
+    data: { id: "10000000-0000-4000-8000-000000000001" },
+  });
+  expect(testSession.ok()).toBe(false);
   await expect(page).toHaveTitle(/Peak Unemployment/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "The group chat",
   );
   await expect(
-    page.getByRole("heading", { name: "Conversation on hold." }),
+    page.getByRole("heading", { name: "Couldn’t load the conversation." }),
   ).toBeVisible();
   expect(auth).toEqual([]);
   await page
@@ -48,11 +56,17 @@ test("responsive screenshots, reflow, accessible themes and modal", async ({
   mkdirSync("docs/audits", { recursive: true });
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Conversation on hold." }),
+    page.getByRole("heading", { name: "Couldn’t load the conversation." }),
   ).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
-  for (const width of [320, 375, 390, 430, 768, 1280, 1440, 1920]) {
+  for (const width of [320, 375, 390, 430, 600, 768, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: width < 650 ? 844 : 1000 });
+    await expect(
+      page.getByRole("link", { name: "Sign in", exact: true }),
+    ).toBeVisible();
+    const navigation = await page.locator(".public-header nav").boundingBox();
+    const heading = await page.locator(".community-heading").boundingBox();
+    expect(navigation!.y + navigation!.height).toBeLessThanOrEqual(heading!.y);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
@@ -167,18 +181,24 @@ test("isolated guest fixtures: empty, populated, safe text, and gated reactions"
     page.getByText('<script>alert("fixture")</script>', { exact: true }),
   ).toBeVisible();
   await expect(page.getByText("Auto-refresh · every 15s")).toBeVisible();
-  await page.screenshot({ path: "docs/screenshots/after-hours-test-fixture.png" });
+  await page.screenshot({
+    path: "docs/screenshots/after-hours-test-fixture.png",
+  });
   await page
     .getByRole("button", { name: "Join to react 🎉, 1 reactions" })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
 });
 
-test("system theme follows OS changes and explicit preferences survive reload", async ({ page }) => {
+test("system theme follows OS changes and explicit preferences survive reload", async ({
+  page,
+}) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await expect(page.getByRole("heading", { name: "Conversation on hold." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Couldn’t load the conversation." }),
+  ).toBeVisible();
   await page.getByLabel("Color theme").selectOption("system");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.emulateMedia({ colorScheme: "light" });
@@ -186,5 +206,8 @@ test("system theme follows OS changes and explicit preferences survive reload", 
   await page.getByLabel("Color theme").selectOption("dark");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#11151B");
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+    "content",
+    "#11151B",
+  );
 });
