@@ -1,3 +1,4 @@
+import { copy } from "./copy";
 import { roomNames, roomDescriptions } from "./public-page";
 export const publicPaths = [
   "/",
@@ -12,7 +13,7 @@ export function pageMetadata(path: string, origin: string) {
   const titles: Record<string, [string, string]> = {
     "/": [
       "Peak Unemployment | Anonymous Chat for People Between Jobs",
-      "Join Peak Unemployment, an anonymous live chat community for people between jobs. Read real conversations, find your industry, and talk with others.",
+      copy.metaDescription,
     ],
     "/community-guidelines": [
       "Community Guidelines | Peak Unemployment",

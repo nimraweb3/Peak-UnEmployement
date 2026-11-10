@@ -1,21 +1,12 @@
-import type { ReactNode, MouseEvent } from "react";
+import { useState, type ReactNode, type MouseEvent } from "react";
 import { Brand, BrandMark } from "./brand";
-import { industries } from "./config";
+import { industries, nickname } from "./config";
 export const roomNames: Record<string, string> = {
   lounge: "The Unemployment Lounge",
-  ...Object.fromEntries(industries.map((i) => [i.slug, i.name])),
+  ...Object.fromEntries(industries.map((r) => [r.slug, r.name])),
 };
-export const roomDescriptions: Record<string, string> = {
-  lounge: "Job searches, life updates, and everything in between.",
-  tech: "Code, interviews, and the occasional missing semicolon.",
-  design: "Portfolios, feedback, and life outside the brief.",
-  business: "Spreadsheets closed. Conversation open.",
-  marketing: "A conversation you don’t have to pitch.",
-  healthcare: "Some space for the people who care.",
-  education: "There’s always more to talk about.",
-  engineering: "Working things out, together.",
-  other: "No neat category? You’re in the right place.",
-};
+export { roomDescriptions } from "./copy";
+import { roomDescriptions, copy } from "./copy";
 export function GuestPlaceholder() {
   return (
     <div className="feed-loading" role="status">
@@ -31,7 +22,7 @@ export function GuestPlaceholder() {
           </div>
         ))}
       </div>
-      <p>Getting the conversation…</p>
+      <p>{copy.chat.loading}</p>
     </div>
   );
 }
@@ -52,159 +43,166 @@ export function PublicPage({
   onTheme?: (value: string) => void;
   theme?: string;
 }) {
+  const [alias, setAlias] = useState("LateCoffee_91");
+  const [identityVersion, setIdentityVersion] = useState(0);
   const room = roomNames[slug] || roomNames.lounge;
+  const joinHref =
+    "/join?returnTo=" +
+    encodeURIComponent(slug === "lounge" ? "/" : "/rooms/" + slug);
   const join = (e: MouseEvent<HTMLAnchorElement>) => {
     if (onJoin) {
       e.preventDefault();
       onJoin();
     }
   };
-  const joinHref = `/join?returnTo=${encodeURIComponent(slug === "lounge" ? "/" : `/rooms/${slug}`)}`;
+  const changeRoom = (e: MouseEvent<HTMLAnchorElement>, next: string) => {
+    e.currentTarget.closest("details")?.removeAttribute("open");
+    if (onRoom) {
+      e.preventDefault();
+      onRoom(next);
+    }
+  };
   return (
-    <div className="public-site">
+    <div className="after-hours">
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <header className="public-header">
+      <header className="ah-header">
         <a href="/" aria-label="Peak Unemployment home">
           <Brand />
         </a>
         <nav aria-label="Main navigation">
-          <a href="#rooms">The rooms</a>
+          <a href="#rooms">Find your people</a>
           <a href="/community-guidelines">House rules</a>
+        </nav>
+        <div className="ah-header-actions">
           <select
-            className="theme-select"
             aria-label="Color theme"
+            className="theme-select"
             value={theme}
             onChange={(e) => onTheme?.(e.target.value)}
           >
             <option value="light">Day Shift</option>
             <option value="dark">Night Shift</option>
-            <option value="system">System</option>
+            <option value="system">Match device</option>
           </select>
-          {member ? (
-            <a className="button button-primary" href="/app/messages">
-              Your inbox <span aria-hidden="true">↗</span>
-            </a>
-          ) : (
-            <a className="button button-primary" href={joinHref} onClick={join}>
-              Join anonymously <span aria-hidden="true">↗</span>
-            </a>
-          )}
-        </nav>
+          <a className="ah-signin" href={member ? "/app/messages" : "/recover"}>
+            {member ? "Your inbox" : "Sign in"}
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
       </header>
       <main id="main-content">
-        <section className="home-grid" aria-label="Peak Unemployment community">
-          <div className="home-intro">
-            <span className="editorial-label">
-              <span className="tiny-spark" aria-hidden="true">
-                ✳
+        <section
+          className="ah-arrival"
+          aria-label="Peak Unemployment community"
+        >
+          <div className="ah-intro">
+            <div className="ah-kicker">
+              <span className="ah-small-mark" aria-hidden="true">
+                ↳
               </span>{" "}
-              AFTER HOURS. OPEN TO EVERYONE.
-            </span>
+              The internet’s unofficial break room
+            </div>
             <h1>
-              {slug === "lounge" ? (
-                <>
-                  The group chat
-                  <br />
-                  <span className="coral-heading">
-                    between jobs.
-                    <svg viewBox="0 0 310 12" aria-hidden="true">
-                      <path d="M3 9Q130-1 306 5" />
-                    </svg>
-                  </span>
-                </>
-              ) : (
-                <>
-                  {room}.<br />
-                  <span className="coral-heading">Same boat.</span>
-                </>
-              )}
+              The group chat
+              <br />
+              <span>between jobs.</span>
             </h1>
-            <p className="intro-copy">
+            <p className="ah-lede">
               No résumé. No awkward networking. Just people talking about
               everything that comes with being between jobs.
             </p>
-            <div className="intro-actions">
+            <div className="ah-actions">
               <a
                 className="button button-primary"
                 href={member ? "/app/lounge" : joinHref}
                 onClick={member ? undefined : join}
               >
-                {member ? "Open your lounge" : "Join anonymously"}{" "}
+                {member ? "Back to the lounge" : "Join anonymously"}
                 <span aria-hidden="true">↗</span>
               </a>
-              <a className="browse-link" href="#rooms">
+              <a href="#rooms" className="ah-text-link">
                 Explore rooms <span aria-hidden="true">↓</span>
               </a>
             </div>
-            <p className="identity-note">
-              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path
-                  d="m10 2 6 3v5c0 4-6 7-6 7s-6-3-6-7V5l6-3Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="m7 9 2 2 4-4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              You can read the conversation before joining.
+            <p className="ah-read-note">
+              <span aria-hidden="true">◎</span> Or just read the room. That’s
+              fine too.
             </p>
-            <div className="margin-note">
-              <span aria-hidden="true">↳</span>
-              <p>
-                The internet’s unofficial
-                <br />
-                break room.
-              </p>
-            </div>
-            <div className="intro-bottom">
-              <BrandMark />
-              <span>
-                Less networking.
-                <br />
-                <strong>More actually talking.</strong>
+            <div className="ah-desk-object" aria-hidden="true" data-depth="18">
+              <div className="ah-object-shadow" />
+              <div className="ah-object-back" />
+              <div className="ah-object-front">
+                <BrandMark />
+                <span>
+                  OFF THE CLOCK.
+                  <br />
+                  <strong>STILL IN THE CHAT.</strong>
+                </span>
+                <i>↗</i>
+              </div>
+              <span className="ah-object-caption">
+                Your job title can sit this one out.
               </span>
             </div>
           </div>
-          <section className="home-chat" aria-labelledby="public-room-title">
-            <div className="chat-topline">
-              <span>THE CONVERSATION</span>
-              <span className="read-badge">
-                {member ? "You’re in" : "Open to read"}
+          <section
+            className="home-chat ah-conversation"
+            aria-labelledby="public-room-title"
+          >
+            <div className="ah-chat-label">
+              <span>
+                <i aria-hidden="true" /> The conversation
               </span>
+              <a href="/community-guidelines">House rules ↗</a>
             </div>
             <header className="public-room-header">
-              <span className="room-hash" aria-hidden="true">
+              <div className="ah-room-symbol" aria-hidden="true">
                 #
-              </span>
+              </div>
               <div>
                 <h2 id="public-room-title">{room}</h2>
-                <p>{roomDescriptions[slug] || roomDescriptions.lounge}</p>
+                <p>{roomDescriptions[slug]}</p>
               </div>
-              <a
-                href="/community-guidelines"
-                className="room-rules"
-                aria-label="Read the community guidelines"
-              >
-                ↗
-              </a>
             </header>
+            <details className="ah-room-switcher">
+              <summary>
+                <span>#{slug === "lounge" ? " main lounge" : " " + slug}</span>
+                <span>
+                  Change room <span aria-hidden="true">⌄</span>
+                </span>
+              </summary>
+              <nav aria-label="Public chatrooms">
+                {[
+                  { slug: "lounge", name: "The main lounge" },
+                  ...industries,
+                ].map((r) => (
+                  <a
+                    key={r.slug}
+                    href={r.slug === "lounge" ? "/" : "/rooms/" + r.slug}
+                    aria-current={slug === r.slug ? "page" : undefined}
+                    onClick={(e) => changeRoom(e, r.slug)}
+                  >
+                    <span aria-hidden="true">#</span>
+                    {r.name}
+                    {slug === r.slug && <span aria-hidden="true">✓</span>}
+                  </a>
+                ))}
+              </nav>
+            </details>
             <div className="public-chat-content" data-nosnippet="">
               {chat || (
                 <>
                   <GuestPlaceholder />
                   <div className="guest-composer">
-                    <span>Join to send a message</span>
+                    <span>Join to say something</span>
                     <a
                       className="button button-primary"
                       href={joinHref}
                       onClick={join}
                     >
-                      Join in <span aria-hidden="true">↗</span>
+                      Join in
                     </a>
                   </div>
                   <p className="public-disclosure">
@@ -215,74 +213,137 @@ export function PublicPage({
             </div>
           </section>
         </section>
-        <section className="room-directory" id="rooms">
-          <div className="directory-heading">
+        <section
+          className="ah-community reveal-section"
+          aria-label="About the community"
+        >
+          <span className="ah-section-label">01 / A little company</span>
+          <h2>
+            Some days you need advice.
+            <br />
+            Some days you just <span>need to complain.</span>
+          </h2>
+          <p>Both are welcome. So is talking about something else entirely.</p>
+          <div className="ah-community-note" data-depth="-14">
+            <span aria-hidden="true">↳</span> No introductions
+            <br />
+            that sound like a pitch.
+          </div>
+        </section>
+        <section className="ah-discovery reveal-section" id="rooms">
+          <div className="ah-section-heading">
             <div>
-              <span className="eyebrow">
-                SAME SITUATION. DIFFERENT GROUP CHATS.
+              <span className="ah-section-label">
+                02 / Find a familiar corner
               </span>
               <h2>
-                Find your people<span className="coral-dot">.</span>
+                Find your people<span>.</span>
               </h2>
             </div>
-            <p>Pick a room. You don’t have to stick to your industry.</p>
+            <p>Different industries. Surprisingly similar problems.</p>
           </div>
-          <nav className="directory-grid" aria-label="Public chatrooms">
-            {[
-              { slug: "lounge", name: "The main lounge", icon: "↗" },
-              ...industries,
-            ].map((r, i) => (
+          <nav className="ah-room-directory" aria-label="Industry discovery">
+            {industries.map((r, i) => (
               <a
+                className={"ah-room-card room-art-" + i}
+                href={"/rooms/" + r.slug}
                 key={r.slug}
-                className={`directory-room ${slug === r.slug ? "room-selected" : ""}`}
-                href={r.slug === "lounge" ? "/" : `/rooms/${r.slug}`}
+                onClick={(e) => changeRoom(e, r.slug)}
                 aria-current={slug === r.slug ? "page" : undefined}
-                onClick={(e) => {
-                  if (onRoom) {
-                    e.preventDefault();
-                    onRoom(r.slug);
-                  }
-                }}
+                data-tilt=""
               >
-                <span
-                  className={`directory-icon icon-${i % 4}`}
-                  aria-hidden="true"
-                >
-                  {r.icon}
-                </span>
-                <strong>{r.name}</strong>
-                <span className="directory-arrow" aria-hidden="true">
-                  ↗
-                </span>
+                <div className="ah-room-art" aria-hidden="true">
+                  <span>{r.icon}</span>
+                  <i />
+                  <b>{String(i + 1).padStart(2, "0")}</b>
+                </div>
+                <div className="ah-room-card-copy">
+                  <h3>{r.name}</h3>
+                  <p>{roomDescriptions[r.slug]}</p>
+                  <span className="ah-room-enter">
+                    Enter room <span aria-hidden="true">↗</span>
+                  </span>
+                </div>
               </a>
             ))}
           </nav>
         </section>
-        <aside className="house-note">
-          <span className="note-icon" aria-hidden="true">
-            ✳
-          </span>
-          <p>
-            <strong>A room full of strangers. A few ground rules.</strong> Be
-            kind. Keep personal details personal. Private chats only happen when
-            both people say yes.
-          </p>
-          <a href="/community-guidelines">
-            Read the house rules <span aria-hidden="true">↗</span>
+        <section
+          className="ah-identity reveal-section"
+          aria-labelledby="identity-title"
+        >
+          <div className="ah-identity-copy">
+            <span className="ah-section-label">03 / A name, not a résumé</span>
+            <h2 id="identity-title">
+              No real names.
+              <br />
+              <span>No awkward intros.</span>
+            </h2>
+            <p>
+              Pick a nickname and join a conversation. Share as much or as
+              little about yourself as you like.
+            </p>
+            <ul>
+              <li>Your email never appears on your public profile.</li>
+              <li>Private message requests start off.</li>
+              <li>You decide which private chats to accept.</li>
+            </ul>
+            <a href="/privacy" className="ah-text-link">
+              The details on privacy ↗
+            </a>
+          </div>
+          <div className="ah-identity-stage" data-tilt="">
+            <div className="ah-identity-underlay" aria-hidden="true" />
+            <div
+              className={"ah-identity-card identity-" + (identityVersion % 3)}
+            >
+              <span className="ah-card-label">Hello, I’m</span>
+              <div className="ah-avatar-sculpture" aria-hidden="true">
+                <span />
+                <i />
+                <b />
+              </div>
+              <strong aria-live="polite">{alias}</strong>
+              <span className="ah-card-caption">
+                Nickname preview · no account created
+              </span>
+              <button
+                className="button button-outline"
+                onClick={() => {
+                  setAlias(nickname());
+                  setIdentityVersion((v) => v + 1);
+                }}
+              >
+                ↻ Try another
+              </button>
+            </div>
+          </div>
+        </section>
+        <section className="ah-invitation">
+          <div>
+            <span className="ah-section-label">Pull up a chair.</span>
+            <h2>Still here? Come say hi.</h2>
+          </div>
+          <a
+            className="button button-primary"
+            href={member ? "/app/lounge" : joinHref}
+            onClick={member ? undefined : join}
+          >
+            {member ? "Open your lounge" : "Join anonymously"}
+            <span aria-hidden="true">↗</span>
           </a>
-        </aside>
+        </section>
       </main>
-      <footer className="public-footer">
+      <footer className="ah-footer">
         <a href="/" aria-label="Peak Unemployment home">
           <Brand />
         </a>
-        <span>Not a job board. A place to talk.</span>
+        <span>A place to talk.</span>
         <nav aria-label="Footer navigation">
           <a href="/privacy">Privacy</a>
           <a href="/terms">Terms</a>
           <a href="/community-guidelines">Community guidelines</a>
         </nav>
-        <small>Come as you are. Leave when you need to.</small>
       </footer>
     </div>
   );

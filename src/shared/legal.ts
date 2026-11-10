@@ -3,12 +3,11 @@ export const legalContent: Record<
   { title: string; intro: string; sections: [string, string][] }
 > = {
   "/community-guidelines": {
-    title: "Good company. Good boundaries.",
-    intro:
-      "Humor without cruelty. Connection without pressure. These are the basics of being here.",
+    title: "Be funny. Don’t be awful.",
+    intro: "A few rules for sharing a room with other people.",
     sections: [
       [
-        "Be a person to other people.",
+        "No harassment or abuse.",
         "No harassment, hate, threats, sexual harassment, or targeting people for who they are. Vent about an experience without turning it into abuse.",
       ],
       [
@@ -24,7 +23,7 @@ export const legalContent: Record<
         "No recruitment scams, suspicious offers, repetitive promotion, or requests for money. Links are limited to one per message.",
       ],
       [
-        "Celebrate the small things.",
+        "Everyone’s welcome.",
         "All industries and stages are welcome. Employment status is self-reported, never verified. Getting a job does not make you less welcome.",
       ],
       [
@@ -65,7 +64,7 @@ export const legalContent: Record<
     ],
   },
   "/terms": {
-    title: "A little common ground.",
+    title: "Terms of use.",
     intro:
       "Peak Unemployment is an independent social community, not a recruitment service or professional advice provider.",
     sections: [

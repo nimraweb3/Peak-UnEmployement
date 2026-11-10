@@ -65,7 +65,7 @@ app.get("*", async (c) => {
       : ["/privacy", "/terms", "/community-guidelines"].includes(path)
         ? renderToStaticMarkup(<LegalPage path={path} />)
         : !known
-          ? '<main class="state not-found"><h1>This page doesn’t exist.</h1><p>The conversation is back this way.</p><a class="button button-primary" href="/">Back to the lounge</a></main>'
+          ? '<main class="state not-found"><h1>Looks like this page is between jobs too.</h1><p>Head back to the lounge to read or join the conversation.</p><a class="button button-primary" href="/">Back to the lounge</a></main>'
           : "";
   html = html.replace(
     '<div id="root"></div>',
@@ -77,7 +77,9 @@ app.get("*", async (c) => {
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "X-Frame-Options": "DENY",
-    ...(new URL(c.req.url).protocol === "https:" ? { "Strict-Transport-Security": "max-age=31536000" } : {}),
+    ...(new URL(c.req.url).protocol === "https:"
+      ? { "Strict-Transport-Security": "max-age=31536000" }
+      : {}),
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     ...(import.meta.env.PROD
       ? {
