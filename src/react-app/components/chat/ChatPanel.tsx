@@ -1,3 +1,4 @@
+import { copy } from "../../../shared/copy";
 import { useMessageAnnouncement } from "../../hooks/useMessageAnnouncement";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import {
@@ -36,6 +37,8 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
   const qc = useQueryClient();
   const query = useMessages(kind, id);
   const [content, setContent] = useState("");
+  const input = useRef<HTMLTextAreaElement>(null);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   const [pending, setPending] = useState<Pending[]>([]);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
@@ -163,7 +166,9 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
           ? "Connected to the conversation"
           : query.connection === "Offline"
             ? "You’re offline. Messages will need retrying."
-            : `${query.connection}…`}
+            : query.connection === "Reconnecting"
+              ? "Connection lost. Trying to get you back."
+              : `${query.connection}…`}
         <span>KEEP IT KIND.</span>
       </div>
       <div
@@ -205,7 +210,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
           <ErrorState error={query.error} retry={() => void query.refetch()} />
         ) : query.messages.length === 0 ? (
           <Empty
-            title="Quiet in here. Someone has to start."
+            title={copy.chat.empty}
             description="A question, a small win, or whatever’s on your mind."
           />
         ) : null}
@@ -350,7 +355,9 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
           .map((item) => (
             <div className="pending-message" key={item.client_id}>
               <p>{item.content}</p>
-              <small>{item.failed ? "Failed to send" : "Sending…"}</small>
+              <small>
+                {item.failed ? copy.chat.failed : copy.chat.sending}
+              </small>
               {item.failed && (
                 <>
                   <Button
@@ -406,16 +413,80 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
       </div>
       <form
         className="composer-area"
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && emojiOpen) {
+            e.preventDefault();
+            setEmojiOpen(false);
+            input.current?.focus();
+          }
+        }}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setEmojiOpen(false);
+        }}
         onSubmit={(e) => {
           e.preventDefault();
           void send();
         }}
       >
+        {emojiOpen && !closed && (
+          <div
+            className="composer-emojis"
+            role="group"
+            aria-label="Choose an emoji"
+          >
+            {[
+              ["😀", "Smile"],
+              ["😂", "Laugh"],
+              ["😊", "Happy"],
+              ["❤️", "Heart"],
+              ["🫂", "Hug"],
+              ["🎉", "Celebrate"],
+              ["🙌", "Hooray"],
+              ["👍", "Thumbs up"],
+              ["👋", "Wave"],
+              ["🤔", "Thinking"],
+              ["😅", "Relieved"],
+              ["☕", "Coffee"],
+            ].map(([emoji, label]) => (
+              <button
+                type="button"
+                key={emoji}
+                aria-label={label}
+                disabled={
+                  content.length -
+                    ((input.current?.selectionEnd ?? content.length) -
+                      (input.current?.selectionStart ?? content.length)) +
+                    emoji.length >
+                  1000
+                }
+                onClick={() => {
+                  const start = input.current?.selectionStart ?? content.length;
+                  const end = input.current?.selectionEnd ?? content.length;
+                  const next =
+                    content.slice(0, start) + emoji + content.slice(end);
+                  if (next.length > 1000) return;
+                  setContent(next);
+                  setEmojiOpen(false);
+                  requestAnimationFrame(() => {
+                    input.current?.focus();
+                    input.current?.setSelectionRange(
+                      start + emoji.length,
+                      start + emoji.length,
+                    );
+                  });
+                }}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="composer">
           <textarea
+            ref={input}
             aria-label="Message"
             placeholder={
-              closed ? "This conversation is closed." : "Say something…"
+              closed ? "This conversation is closed." : copy.chat.composer
             }
             value={content}
             maxLength={1000}
@@ -433,6 +504,16 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
               }
             }}
           />
+          <button
+            className="icon-button composer-emoji-toggle"
+            type="button"
+            aria-label="Add emoji"
+            aria-expanded={emojiOpen}
+            disabled={closed}
+            onClick={() => setEmojiOpen((v) => !v)}
+          >
+            <SmilePlus size={20} />
+          </button>
           <Button
             size="icon"
             type="submit"

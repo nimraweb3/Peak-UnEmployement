@@ -91,9 +91,9 @@ export default function App() {
                   404<span>.</span>
                 </span>
 
-                <h1>This page doesn’t exist.</h1>
+                <h1>Looks like this page is between jobs too.</h1>
 
-                <p>The conversation is back this way.</p>
+                <p>Head back to the lounge to read or join the conversation.</p>
 
                 <Link className="button button-primary" to="/">
                   Back to the lounge

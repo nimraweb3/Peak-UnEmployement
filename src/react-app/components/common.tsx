@@ -51,7 +51,7 @@ export function ErrorState({
       <p>
         {error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again."}
+          : "Something went wrong. Try again."}
       </p>
       {retry && (
         <Button variant="outline" onClick={retry}>
