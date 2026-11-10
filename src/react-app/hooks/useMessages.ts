@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { api, supabase } from "../lib/api";
+import { api, supabase, demoMode, frontendDemo } from "../lib/api";
 import type { Message } from "../../shared/types";
 export function useMessages(kind: "rooms" | "conversations", id: string) {
   const qc = useQueryClient();
-  const [connection, setConnection] = useState("Connecting");
+  const [connection, setConnection] = useState(demoMode || frontendDemo ? "Local demo" : "Connecting");
   const query = useInfiniteQuery({
     queryKey: ["messages", kind, id],
     initialPageParam: null as string | null,
@@ -14,7 +14,7 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
       ),
     getNextPageParam: (page, pages) => (pages.length < 10 ? page.next : null),
     enabled: !!id,
-    refetchInterval: 30000,
+    refetchInterval: demoMode ? 2000 : 30000,
     refetchIntervalInBackground: false,
   });
   useEffect(() => {

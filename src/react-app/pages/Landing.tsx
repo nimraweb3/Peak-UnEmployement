@@ -4,12 +4,14 @@ import { PublicPage, roomNames } from "../../shared/public-page";
 import { PublicConversation } from "../components/chat/PublicConversation";
 import { usePreferences } from "../contexts/preferences";
 import { useSession } from "../contexts/session";
+import { useAfterHoursMotion } from "../hooks/useAfterHoursMotion";
 const JoinFlow = lazy(() => import("../components/JoinFlow"));
 export default function Landing({
   joinInitially = false,
 }: {
   joinInitially?: boolean;
 }) {
+  useAfterHoursMotion();
   const params = useParams();
   const nav = useNavigate();
   const location = useLocation();
