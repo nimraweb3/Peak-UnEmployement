@@ -99,11 +99,11 @@ export const categories = [
 ] as const;
 export const prompts = [
   "What's the weirdest interview question you've ever been asked?",
-  "What tiny win are we celebrating today?",
+  "Anything go well today?",
   "What job requirement made you close the browser?",
-  "Describe your unemployment era using three emojis.",
+  "What have you been doing away from the job search?",
   "What's your most creative answer to ‘so, what do you do?’",
-  "How many applications before LinkedIn became your enemy?",
+  "What helps you take a break from applications?",
   "What have you learned outside a job this week?",
 ];
 export function dailyPrompt(date = new Date()) {
@@ -111,11 +111,11 @@ export function dailyPrompt(date = new Date()) {
 }
 export function nickname() {
   const words = [
-    "JoblessLegend",
-    "InterviewGhost",
-    "CurrentlyUnpaid",
-    "UnemployedWizard",
-    "Rejected",
+    "LateCoffee",
+    "OpenTabs",
+    "QuietPenguin",
+    "LunchBreak",
+    "WindowSeat",
   ];
   return `${words[crypto.getRandomValues(new Uint32Array(1))[0] % words.length]}_${crypto.getRandomValues(new Uint32Array(1))[0] % 100000}`;
 }

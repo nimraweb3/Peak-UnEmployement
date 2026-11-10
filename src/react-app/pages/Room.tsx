@@ -1,3 +1,4 @@
+import { roomDescriptions } from "../../shared/copy";
 import { useParams, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Sparkles, ShieldCheck, ArrowUpRight } from "lucide-react";
@@ -32,7 +33,7 @@ export default function Room() {
                 : "YOUR INDUSTRY ROOM"}
             </span>
             <h1>{room.name}</h1>
-            <p>{room.description}</p>
+            <p>{roomDescriptions[slug] || room.description}</p>
           </div>
           <span className="room-public">Public room</span>
         </header>
@@ -69,7 +70,7 @@ export default function Room() {
             to={`/app/rooms/${profile.industry_id}`}
           >
             YOUR NEXT STOP <strong>Your industry room ↗</strong>
-            <p>Same world. Familiar struggles.</p>
+            <p>Talk with people in your line of work.</p>
           </Link>
         )}
         <p className="info-signoff">

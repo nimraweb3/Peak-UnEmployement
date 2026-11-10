@@ -1,3 +1,4 @@
+import { copy } from "../../shared/copy";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -5,7 +6,7 @@ import { useNavigate } from "react-router";
 import { ShieldCheck, RefreshCw } from "lucide-react";
 import { useSession } from "../contexts/session";
 import { usePreferences } from "../contexts/preferences";
-import { api, supabase } from "../lib/api";
+import { api, supabase, demoMode, frontendDemo } from "../lib/api";
 import { Avatar, ErrorState, Loading } from "../components/common";
 import { Button } from "../components/ui/button";
 import { Modal } from "../components/ui/dialog";
@@ -42,7 +43,7 @@ export default function Settings() {
       await api("/me", "PATCH", form);
       await qc.invalidateQueries({ queryKey: ["me"] });
       setForm({});
-      toast.success("Preferences saved.");
+      toast.success("Saved.");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -52,7 +53,18 @@ export default function Settings() {
   async function leave() {
     setBusy(true);
     try {
+      if (frontendDemo) {
+        (await import("../lib/frontend-demo")).leaveLocal();
+        qc.clear();
+        nav("/");
+        return;
+      }
       if (confirm === "delete") await api("/me", "DELETE");
+      if (demoMode) {
+        await api("/demo/session", "DELETE");
+        location.assign("/");
+        return;
+      }
       const result = await supabase?.auth.signOut({ scope: "local" });
       if (result?.error) throw result.error;
       qc.clear();
@@ -100,7 +112,7 @@ export default function Settings() {
             Your current status
             <input
               value={value.public_status}
-              placeholder="Currently ignoring LinkedIn."
+              placeholder="What’s on your mind?"
               maxLength={120}
               onChange={(e) => update("public_status", e.target.value)}
             />
@@ -161,8 +173,7 @@ export default function Settings() {
           <div>
             <strong>Allow message requests</strong>
             <p>
-              You still approve each request. Turning this off prevents new
-              requests; existing conversations stay available.
+              {copy.dmDescription} Turning this off won’t close existing chats.
             </p>
           </div>
           <input
@@ -181,12 +192,12 @@ export default function Settings() {
         </Button>
       </section>
       <section className="settings-section glass">
-        <h2>Appearance & accessibility</h2>
+        <h2>Appearance</h2>
         <div className="theme-options">
           {[
             ["light", "Day Shift"],
             ["dark", "Night Shift"],
-            ["system", "System"],
+            ["system", "Match device"],
           ].map(([id, label]) => (
             <button
               className={`theme-choice theme-${id} ${theme === id ? "selected" : ""}`}
@@ -277,18 +288,31 @@ export default function Settings() {
         <div className="notice">
           <ShieldCheck />
           <p>
-            {session?.user.is_anonymous
-              ? "Your account is anonymous. Signing out, clearing storage, or changing devices can lose access. Link an email to preserve this identity. Your email is never public."
-              : "Your account is linked. Your public identity is still anonymous."}
+            {frontendDemo
+              ? "This frontend demo stays in this tab until you reload. No account has been created."
+              : session?.user.is_anonymous
+                ? "Your account is anonymous. Signing out, clearing storage, or changing devices can lose access. Link an email to preserve this identity. Your email is never public."
+                : session?.user.email_confirmed_at
+                  ? "Your email is verified. Your public identity is still anonymous."
+                  : "Email verification is pending. Check your inbox to finish linking your account."}
           </p>
         </div>
-        {session?.user.is_anonymous && (
+        {(demoMode || frontendDemo) && (
+          <p className="notice">
+            This is a local demo identity. Google sign-in and email verification
+            become available after provider setup. You can preview an incoming
+            request in your inbox after enabling private messages.
+          </p>
+        )}
+        {!demoMode && !frontendDemo && session?.user.is_anonymous && (
           <form
             className="email-form"
             onSubmit={async (e) => {
               e.preventDefault();
               setBusy(true);
               try {
+                if (!supabase)
+                  throw new Error("Account service is unavailable.");
                 const result = await supabase?.auth.updateUser(
                   { email },
                   { emailRedirectTo: `${location.origin}/app/settings` },
@@ -325,7 +349,11 @@ export default function Settings() {
           <Button variant="outline" onClick={() => setConfirm("signout")}>
             Sign out
           </Button>
-          <Button variant="danger" onClick={() => setConfirm("delete")}>
+          <Button
+            variant="danger"
+            disabled={demoMode || frontendDemo}
+            onClick={() => setConfirm("delete")}
+          >
             Delete account & data
           </Button>
         </div>
@@ -337,9 +365,11 @@ export default function Settings() {
         description={
           confirm === "delete"
             ? "This permanently removes your account, profile, messages, reactions, and conversations. This cannot be undone."
-            : session?.user.is_anonymous
-              ? "This anonymous account may be impossible to recover after sign-out. Link an email first if you want to return."
-              : "You can return using your linked email."
+            : frontendDemo
+              ? "This clears your local identity and returns you to the public room."
+              : session?.user.is_anonymous
+                ? "This anonymous account may be impossible to recover after sign-out. Link an email first if you want to return."
+                : "You can return using your linked email."
         }
       >
         {confirm === "delete" && (
