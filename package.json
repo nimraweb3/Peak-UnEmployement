@@ -12,7 +12,9 @@
     "test:e2e": "playwright test",
     "deploy": "npm run build && wrangler deploy",
     "preview": "vite preview",
-    "format": "prettier --write src tests docs *.json *.ts *.js *.md"
+    "format": "prettier --write src tests docs *.json *.ts *.js *.md",
+    "test:internal": "playwright test --config playwright.demo.config.ts",
+    "setup": "node scripts/setup.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "7.0.1",
