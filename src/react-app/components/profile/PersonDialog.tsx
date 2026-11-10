@@ -46,11 +46,11 @@ export function PersonDialog({
       onOpenChange={(v) => {
         if (!v) onClose();
       }}
-      title={report ? "Report to moderators" : "A fellow human"}
+      title={report ? "Report to moderators" : "Profile"}
       description={
         report
           ? "Reports are private. Include context without personal information."
-          : "Anonymous by design. Treat the person behind the nickname with care."
+          : "Choose whether to ask for a private chat, report, or block."
       }
     >
       {profile.isLoading ? (
@@ -87,7 +87,7 @@ export function PersonDialog({
                       )
                     }
                   >
-                    Request chat
+                    Ask to chat
                   </Button>
                 ) : (
                   <p className="fine-print">
@@ -143,7 +143,7 @@ export function PersonDialog({
                         category,
                         detail,
                       },
-                      "Report received. Thank you for looking out for the community.",
+                      "Report received. Thanks for letting us know.",
                     )
                   }
                 >
