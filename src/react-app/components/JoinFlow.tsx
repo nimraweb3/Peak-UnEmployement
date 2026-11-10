@@ -8,7 +8,7 @@ import { Avatar } from "./common";
 import { Turnstile } from "./Turnstile";
 import { Brand } from "../../shared/brand";
 import { industries, eras, nickname } from "../../shared/config";
-import { api, configured, supabase } from "../lib/api";
+import { api, configured, supabase, frontendDemo } from "../lib/api";
 import { useSession } from "../contexts/session";
 export default function JoinFlow({
   onClose,
@@ -39,6 +39,11 @@ export default function JoinFlow({
     if (step === 1 && !session) {
       setBusy(true);
       try {
+        if (frontendDemo) {
+          (await import("../lib/frontend-demo")).joinLocal();
+          setStep(2);
+          return;
+        }
         if (!supabase)
           throw new Error(
             "Joining isn’t available until this community is connected.",
@@ -82,10 +87,10 @@ export default function JoinFlow({
     }
   }
   const titles = [
-    "Pick a name. Keep yours private.",
-    "Which room feels like you?",
-    "Where are you at?",
-    "Who gets to message you?",
+    "Come on in.",
+    "What line of work are you in?",
+    "What’s your situation?",
+    "Open to message requests?",
   ];
   return (
     <Modal
@@ -96,10 +101,10 @@ export default function JoinFlow({
       title={titles[step - 1]}
       description={
         [
-          "No real name or email required. You can change your nickname later.",
-          "A starting point, not a restriction. Every room is open to you.",
+          "No real name needed. Pick a username and you’re good.",
+          "Pick a starting point. You can join any room.",
           "Optional. There’s no right answer.",
-          "Private conversations start with your permission.",
+          "Others can ask to chat privately. You decide who gets through.",
         ][step - 1]
       }
     >
@@ -127,7 +132,7 @@ export default function JoinFlow({
             <div className="nickname-picker">
               <Avatar name={name} seed={profile?.avatar_seed || name} large />
               <label>
-                Your public nickname
+                What should we call you?
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -140,13 +145,21 @@ export default function JoinFlow({
               <button
                 type="button"
                 className="icon-button"
-                aria-label="Regenerate nickname"
+                aria-label="Try another nickname"
+                title="Try another"
                 onClick={() => setName(nickname())}
               >
                 <RefreshCw size={19} />
               </button>
             </div>
+            {frontendDemo && (
+              <p className="notice">
+                Frontend demo: your nickname and messages exist only in this tab
+                until you reload. No account is created.
+              </p>
+            )}
             {!session &&
+              !frontendDemo &&
               (!configured ? (
                 <div className="notice warning">
                   Joining is currently unavailable. This installation needs
@@ -160,8 +173,9 @@ export default function JoinFlow({
                 <Turnstile key={attempt} onToken={setToken} />
               ))}
             <p className="fine-print">
-              An anonymous account stays in this browser. Link an email later to
-              keep access on other devices.
+              {frontendDemo
+                ? "Try the complete joining flow. Private message requests start off."
+                : "An anonymous account stays in this browser. Link an email later to keep access on other devices."}
             </p>
           </>
         )}
@@ -202,10 +216,7 @@ export default function JoinFlow({
             <div className="setting-row">
               <label htmlFor="join-dm">
                 <strong>Allow message requests</strong>
-                <span>
-                  Other members can ask to start a private chat. You decide who
-                  gets through.
-                </span>
+                <span>You can accept or decline each request.</span>
               </label>
               <input
                 id="join-dm"
@@ -247,13 +258,17 @@ export default function JoinFlow({
           <Button
             type="submit"
             disabled={
-              busy || (step === 1 && !session && (!configured || !token))
+              busy ||
+              (step === 1 &&
+                !session &&
+                !frontendDemo &&
+                (!configured || !token))
             }
           >
             {busy
               ? "Joining…"
               : step === 4
-                ? "Join the conversation"
+                ? "Enter the conversation"
                 : "Continue"}
             <ArrowRight size={16} />
           </Button>
@@ -269,8 +284,8 @@ export default function JoinFlow({
         )}
         <p className="fine-print">
           By joining, you agree to the <a href="/terms">terms</a> and{" "}
-          <a href="/community-guidelines">community guidelines</a>. Already
-          linked? <a href="/recover">Sign in by email.</a>
+          <a href="/community-guidelines">community guidelines</a>. Been here
+          before? <a href="/recover">Continue with Google or email.</a>
         </p>
       </form>
     </Modal>

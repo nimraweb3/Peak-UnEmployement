@@ -8,12 +8,18 @@ import {
   useLayoutEffect,
 } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { ArrowDown, ArrowUpRight, RefreshCw, WifiOff } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  RefreshCw,
+  WifiOff,
+  SmilePlus,
+} from "lucide-react";
 import { Avatar, ErrorState, Loading } from "../common";
 import { Button } from "../ui/button";
 import { BrandMark } from "../../../shared/brand";
 import { GuestPlaceholder } from "../../../shared/public-page";
-import { api } from "../../lib/api";
+import { api, frontendDemo } from "../../lib/api";
 import { useSession } from "../../contexts/session";
 import { usePreferences } from "../../contexts/preferences";
 import { timeLabel } from "../../lib/utils";
@@ -42,12 +48,22 @@ export function PublicConversation({
   onJoin: () => void;
 }) {
   const { profile } = useSession();
-  return profile?.onboarding_completed ? (
-    <Suspense fallback={<GuestPlaceholder />}>
-      <MemberRoom slug={slug} />
-    </Suspense>
-  ) : (
-    <GuestFeed key={slug} slug={slug} onJoin={onJoin} />
+  return (
+    <>
+      {frontendDemo && (
+        <div className="frontend-demo-note">
+          <strong>Frontend demo</strong>
+          <span>Sample conversation · local only</span>
+        </div>
+      )}
+      {profile?.onboarding_completed ? (
+        <Suspense fallback={<GuestPlaceholder />}>
+          <MemberRoom slug={slug} />
+        </Suspense>
+      ) : (
+        <GuestFeed key={slug} slug={slug} onJoin={onJoin} />
+      )}
+    </>
   );
 }
 function MemberRoom({ slug }: { slug: string }) {
@@ -92,21 +108,26 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
     queryKey: ["public-feed", slug],
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam, signal }) => {
+      if (frontendDemo) return api<Feed>(`/public/rooms/${slug}/messages`);
       const response = await fetch(
         `/api/public/rooms/${slug}/messages${pageParam ? `?before=${encodeURIComponent(pageParam)}` : ""}`,
         { signal },
       );
       const data = await response.json();
       if (!response.ok)
-        throw Object.assign(new Error(data.error || "Couldn’t load the conversation. Try again."), {
-          retryable: response.status >= 500 && data.code !== "NOT_CONFIGURED",
-        });
+        throw Object.assign(
+          new Error(data.error || "Couldn’t load the conversation. Try again."),
+          {
+            retryable: response.status >= 500 && data.code !== "NOT_CONFIGURED",
+          },
+        );
       return data as Feed;
     },
     getNextPageParam: (page, pages) => (pages.length < 4 ? page.next : null),
     refetchInterval: visible && online ? 15000 : false,
     refetchIntervalInBackground: false,
-    retry: (count, error) => count < 1 && !("retryable" in error && error.retryable === false),
+    retry: (count, error) =>
+      count < 1 && !("retryable" in error && error.retryable === false),
     staleTime: 10000,
   });
   const items = [
@@ -141,15 +162,17 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
       newest.current = last;
     }
   }, [last, query.data, query.isFetchNextPageError]);
-  const status = !online
-    ? "Offline"
-    : query.error
-      ? "Not connected"
-      : query.isPending
-        ? "Connecting…"
-        : query.isFetching
-          ? "Refreshing…"
-          : "Auto-refresh · every 15s";
+  const status = frontendDemo
+    ? "Sample conversation"
+    : !online
+      ? "Offline"
+      : query.error
+        ? "Not connected"
+        : query.isPending
+          ? "Connecting…"
+          : query.isFetching
+            ? "Refreshing…"
+            : "Auto-refresh · every 15s";
   return (
     <>
       <div className="feed-status">
@@ -183,7 +206,7 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
             <div className="empty-mark">
               <WifiOff size={28} />
             </div>
-            <h3>Conversation on hold.</h3>
+            <h3>Couldn’t load the conversation.</h3>
             <p>{query.error.message}</p>
             <Button
               variant="outline"
@@ -207,11 +230,7 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
               <br />
               Someone has to start.
             </h3>
-            <p>
-              A question, a small win, a very strange interview.
-              <br />
-              Whatever’s on your mind.
-            </p>
+            <p>Ask a question or say what’s on your mind.</p>
             <Button variant="outline" onClick={onJoin}>
               Join anonymously <ArrowUpRight size={16} />
             </Button>
@@ -303,6 +322,14 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
       </div>
       <div className="guest-composer">
         <span>Join to send a message</span>
+        <button
+          type="button"
+          className="icon-button"
+          aria-label="Join to add emoji"
+          onClick={onJoin}
+        >
+          <SmilePlus size={20} />
+        </button>
         <Button onClick={onJoin}>
           Join in <ArrowUpRight size={16} />
         </Button>

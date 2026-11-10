@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { MessageCircle, ArrowLeft, MoreHorizontal } from "lucide-react";
-import { api, supabase } from "../lib/api";
+import { api, supabase, demoMode, frontendDemo } from "../lib/api";
 import { useSession } from "../contexts/session";
 import type { Conversation, Request } from "../../shared/types";
 import { Button } from "../components/ui/button";
@@ -18,10 +18,12 @@ export default function Messages() {
   const [busy, setBusy] = useState(false);
   const requests = useQuery({
     queryKey: ["requests"],
+    refetchInterval: demoMode ? 2000 : false,
     queryFn: () => api<Request[]>("/dm-requests"),
   });
   const conversations = useQuery({
     queryKey: ["conversations"],
+    refetchInterval: demoMode ? 2000 : false,
     queryFn: () => api<Conversation[]>("/conversations"),
   });
   useEffect(() => {
@@ -84,9 +86,7 @@ export default function Messages() {
       await qc.invalidateQueries({ queryKey: ["requests"] });
       await qc.invalidateQueries({ queryKey: ["conversations"] });
       toast.success(
-        status === "accepted"
-          ? "The conversation is yours."
-          : "Request declined.",
+        status === "accepted" ? "Request accepted." : "Request declined.",
       );
     } catch (e) {
       toast.error((e as Error).message);
@@ -125,12 +125,12 @@ export default function Messages() {
           </Link>
           <Avatar name={other?.username} seed={other?.avatar_seed} />
           <div>
-            <span className="eyebrow">AN INVITED CONVERSATION</span>
+            <span className="eyebrow">PRIVATE CHAT</span>
             <h1>{other?.username}</h1>
             <p>
               {selected.closed_at
                 ? "Closed — history remains available"
-                : "Only the two of you. Keep it kind."}
+                : "Private chat. Keep personal details private."}
             </p>
           </div>
           <Button
@@ -185,20 +185,40 @@ export default function Messages() {
   return (
     <div className="content-page">
       <span className="eyebrow">YOUR INBOX</span>
-      <h1>
-        Private <em>conversations.</em>
-      </h1>
+      <h1>Messages</h1>
       <p className="page-intro">
         Private conversations start with an accepted request.
       </p>
+      {frontendDemo && (
+        <div className="notice">
+          <p>
+            Frontend demo. No real people receive these messages. Enable
+            requests in Settings, then try an incoming request.
+          </p>
+          <Button
+            variant="outline"
+            disabled={!profile?.allows_dm_requests}
+            onClick={async () => {
+              try {
+                await api("/demo/incoming", "POST");
+                await qc.invalidateQueries({ queryKey: ["requests"] });
+              } catch (e) {
+                toast.error((e as Error).message);
+              }
+            }}
+          >
+            Preview incoming request
+          </Button>
+        </div>
+      )}
       <div className="notice">
         <MessageCircle />
         <p>
-          Requests are{" "}
+          Message requests are{" "}
           <strong>{profile?.allows_dm_requests ? "enabled" : "off"}</strong>.{" "}
           {profile?.allows_dm_requests
             ? "People can request a chat. You decide who gets in."
-            : "Your peace comes first. Enable requests in Settings when you’re ready."}{" "}
+            : "You can turn them on in Settings."}{" "}
           <Link to="/app/settings">Manage preferences ↗</Link>
         </p>
       </div>
@@ -224,7 +244,7 @@ export default function Messages() {
                     onClick={() => setPerson(r.sender_id)}
                   >
                     <strong>{r.sender.username}</strong>
-                    <small>Would like to start a conversation</small>
+                    <small>Wants to chat privately</small>
                   </button>
                   <Button
                     size="sm"
@@ -251,9 +271,7 @@ export default function Messages() {
                 </article>
               ))
             ) : (
-              <p className="muted">
-                No pending requests. Your space is all yours.
-              </p>
+              <p className="muted">No message requests right now.</p>
             )}
           </section>
           <section className="inbox-section">
@@ -285,7 +303,7 @@ export default function Messages() {
               })
             ) : (
               <Empty
-                title="No private conversations yet."
+                title="Nothing here yet."
                 description="Meet someone in a room, then ask to chat privately. They decide whether to accept."
               />
             )}
