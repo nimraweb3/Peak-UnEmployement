@@ -23,3 +23,77 @@ pnpm-debug.log*
 # OS-generated files
 .DS_Store
 Thumbs.db
+
+anti-slop-review.md
+# Local AI assistants: instructions, sessions, prompts and editor state
+.codex/
+.claude/
+.cursor/
+.aider*
+.continue/
+.windsurf/
+.copilot/
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.cursorignore
+.windsurfrules
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+/prompts/
+/briefs/
+/attachments/
+
+# Internal work notes and generated design / QA evidence
+/docs/audits/
+/docs/screenshots/
+/docs/anti-slop-review.md
+/docs/community-redesign.md
+/docs/performance-report.md
+/docs/verification-report.md
+/docs/DESIGN-QA.md
+/docs/COPYWRITING.md
+
+# Private credentials and local service configuration
+.secrets/
+secrets/
+credentials/
+*.secret
+*.secrets
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+service-account*.json
+*-service-account.json
+.npmrc
+.pypirc
+.netrc
+supabase/.temp/
+supabase/.branches/
+
+# Local data, database exports and backups (keep SQL migrations tracked)
+/backups/
+/dumps/
+/private/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.sqlite3-*
+*.dump
+*.sql.gz
+*.bak
+
+# Machine-specific editor files
+.idea/
+.vscode/
+*.swp
+*.swo
