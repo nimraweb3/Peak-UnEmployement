@@ -1,3 +1,4 @@
+import {profileMediaUrl} from "../../lib/media";
 import { copy } from "../../../shared/copy";
 import { useMessageAnnouncement } from "../../hooks/useMessageAnnouncement";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
@@ -234,6 +235,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
               >
                 <Avatar
                   seed={message.profiles?.avatar_seed}
+                  imageSrc={profileMediaUrl(message.profiles?.profile_details?.avatar_path)}
                   name={message.profiles?.username}
                 />
               </button>

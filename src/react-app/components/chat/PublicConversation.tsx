@@ -19,7 +19,7 @@ import { Avatar, ErrorState, Loading } from "../common";
 import { Button } from "../ui/button";
 import { BrandMark } from "../../../shared/brand";
 import { GuestPlaceholder } from "../../../shared/public-page";
-import { api, frontendDemo } from "../../lib/api";
+import { api, frontendDemo, apiBase } from "../../lib/api";
 import { useSession } from "../../contexts/session";
 import { usePreferences } from "../../contexts/preferences";
 import { timeLabel } from "../../lib/utils";
@@ -110,7 +110,7 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
     queryFn: async ({ pageParam, signal }) => {
       if (frontendDemo) return api<Feed>(`/public/rooms/${slug}/messages`);
       const response = await fetch(
-        `/api/public/rooms/${slug}/messages${pageParam ? `?before=${encodeURIComponent(pageParam)}` : ""}`,
+        `${apiBase}/api/public/rooms/${slug}/messages${pageParam ? `?before=${encodeURIComponent(pageParam)}` : ""}`,
         { signal },
       );
       const data = await response.json();
