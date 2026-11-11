@@ -1,14 +1,17 @@
 import { LoaderCircle, AlertCircle, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
 export function Avatar({
+  imageSrc,
   seed = "peak",
   name = "Anonymous",
   large = false,
 }: {
+  imageSrc?: string;
   seed?: string;
   name?: string;
   large?: boolean;
 }) {
+  if (imageSrc) return <img className={`avatar ${large ? "avatar-large" : ""}`} src={imageSrc} alt={`${name}’s avatar`} loading="lazy" style={{objectFit:"cover"}}/>;
   const hue = [...seed].reduce((n, c) => n + c.charCodeAt(0), 0) % 4;
   return (
     <span

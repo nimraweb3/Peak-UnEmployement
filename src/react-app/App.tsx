@@ -8,6 +8,9 @@ import { PageMetadata } from "./components/PageMetadata";
 
 import Landing from "./pages/Landing";
 
+const UserProfile = lazy(() => import("./pages/UserProfile"));
+const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/Auth").then(m=>({default:m.AuthCallback})));
 const Join = lazy(() => import("./pages/Join"));
 
 const Shell = lazy(() => import("./components/layout/Shell"));
@@ -60,6 +63,9 @@ export default function App() {
           <Route path="/join" element={<Join />} />
 
           <Route path="/recover" element={<Recover />} />
+          <Route path="/u/:username" element={<UserProfile/>}/>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
 
           <Route path="/app" element={<Shell />}>
             <Route index element={<Navigate to="lounge" replace />} />
