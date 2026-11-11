@@ -15,6 +15,7 @@
   "include": [
     "src",
     "server.ts",
+    "api",
     "tests",
     "vite.config.ts",
     "vitest.config.ts",

@@ -28,7 +28,7 @@ const missing = [
 if (missing.length) {
   console.log("Provider setup remains: " + missing.join(", "));
   console.log(
-    "Create the Supabase project and Google OAuth client, then configure SMTP and Turnstile. See docs/authentication.md. Do not paste secrets into chat.",
+    "Configure the missing values above. Google OAuth, SMTP, and Turnstile must also be configured with their providers. See docs/authentication.md. Do not paste secrets into chat.",
   );
   process.exitCode = 1;
 } else {

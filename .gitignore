@@ -97,3 +97,6 @@ supabase/.branches/
 .vscode/
 *.swp
 *.swo
+
+# Local Vercel deployment metadata and upload packages
+.vercel/
