@@ -8,12 +8,45 @@ const env = {
 afterEach(() => vi.unstubAllGlobals());
 describe("Worker trust boundary", () => {
   it("rejects oversized bodies before Auth and malformed JSON before mutation", async () => {
-    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ id: crypto.randomUUID(), aud: "authenticated", role: "authenticated" }), { headers: { "Content-Type": "application/json" } }));
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            is_anonymous: true,
+            id: crypto.randomUUID(),
+            aud: "authenticated",
+            role: "authenticated",
+          }),
+          { headers: { "Content-Type": "application/json" } },
+        ),
+    );
     vi.stubGlobal("fetch", fetchMock);
-    const oversized = await app.request("/api/me", { method: "PATCH", headers: { Authorization: "Bearer test", "Content-Type": "application/json" }, body: "x".repeat(9000) }, env);
+    const oversized = await app.request(
+      "/api/me",
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: "Bearer test",
+          "Content-Type": "application/json",
+        },
+        body: "x".repeat(9000),
+      },
+      env,
+    );
     expect(oversized.status).toBe(413);
     expect(fetchMock).not.toHaveBeenCalled();
-    const malformed = await app.request("/api/me", { method: "PATCH", headers: { Authorization: "Bearer test", "Content-Type": "application/json" }, body: "{" }, env);
+    const malformed = await app.request(
+      "/api/me",
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: "Bearer test",
+          "Content-Type": "application/json",
+        },
+        body: "{",
+      },
+      env,
+    );
     expect(malformed.status).toBe(400);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -52,6 +85,7 @@ describe("Worker trust boundary", () => {
       async () =>
         new Response(
           JSON.stringify({
+            is_anonymous: true,
             id: crypto.randomUUID(),
             aud: "authenticated",
             role: "authenticated",
@@ -79,4 +113,34 @@ describe("Worker trust boundary", () => {
     expect(res.status).toBe(400);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+});
+
+it("denies unverified email accounts before profile writes", async () => {
+  const fetchMock = vi.fn(
+    async () =>
+      new Response(
+        JSON.stringify({
+          id: crypto.randomUUID(),
+          is_anonymous: false,
+          email_confirmed_at: null,
+          aud: "authenticated",
+        }),
+        { headers: { "Content-Type": "application/json" } },
+      ),
+  );
+  vi.stubGlobal("fetch", fetchMock);
+  const result = await app.request(
+    "/api/me/profile",
+    {
+      method: "PATCH",
+      headers: {
+        Authorization: "Bearer token",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ bio: "not yet" }),
+    },
+    env,
+  );
+  expect(result.status).toBe(403);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
 });
