@@ -75,6 +75,17 @@ export const industries = [
     ],
   },
   {
+    slug: "support",
+    name: "Customer Support",
+    icon: "◌",
+    professions: [
+      "Customer Support Specialist",
+      "Customer Success",
+      "Technical Support",
+      "Other Support Role",
+    ],
+  },
+  {
     slug: "other",
     name: "Other Careers",
     icon: "✦",
@@ -117,6 +128,6 @@ export function nickname() {
     "LunchBreak",
     "WindowSeat",
   ];
-  return `${words[crypto.getRandomValues(new Uint32Array(1))[0] % words.length]}_${crypto.getRandomValues(new Uint32Array(1))[0] % 100000}`;
+  return `${words[crypto.getRandomValues(new Uint32Array(1))[0] % words.length].toLowerCase()}_${crypto.getRandomValues(new Uint32Array(1))[0] % 100000}`;
 }
 export const AI_ENABLED = false;

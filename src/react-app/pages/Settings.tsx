@@ -1,3 +1,5 @@
+import { useIndustries, useProfessions } from "../hooks/useIndustries";
+import { ProfileEditor } from "../components/profile/ProfileEditor";
 import { copy } from "../../shared/copy";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,7 +12,6 @@ import { api, supabase, demoMode, frontendDemo } from "../lib/api";
 import { Avatar, ErrorState, Loading } from "../components/common";
 import { Button } from "../components/ui/button";
 import { Modal } from "../components/ui/dialog";
-import { eras, industries } from "../../shared/config";
 import type { Profile } from "../../shared/types";
 export default function Settings() {
   const { profile, session } = useSession();
@@ -33,6 +34,10 @@ export default function Settings() {
     queryKey: ["blocks"],
     queryFn: () => api<{ blocked_id: string; profile: Profile }[]>("/blocks"),
   });
+  const industriesQuery = useIndustries(!!profile);
+  const professionsQuery = useProfessions(
+    form.industry_id ?? profile?.industry_id ?? "",
+  );
   if (!profile) return <Loading />;
   const value = { ...profile, ...form };
   const update = (key: keyof Profile, val: unknown) =>
@@ -83,6 +88,7 @@ export default function Settings() {
       <p className="page-intro">
         Choose what you share and how this space works for you.
       </p>
+      <ProfileEditor />
       <section className="settings-section glass">
         <h2>Your anonymous identity</h2>
         <div className="avatar-setting">
@@ -100,14 +106,6 @@ export default function Settings() {
           </div>
         </div>
         <div className="form-grid">
-          <label>
-            Public nickname
-            <input
-              value={value.username}
-              maxLength={30}
-              onChange={(e) => update("username", e.target.value)}
-            />
-          </label>
           <label>
             Your current status
             <input
@@ -127,8 +125,8 @@ export default function Settings() {
               }}
             >
               <option value="">Prefer not to say</option>
-              {industries.map((i) => (
-                <option value={i.slug} key={i.slug}>
+              {industriesQuery.data?.map((i) => (
+                <option value={i.id} key={i.id}>
                   {i.name}
                 </option>
               ))}
@@ -141,21 +139,10 @@ export default function Settings() {
               onChange={(e) => update("profession", e.target.value)}
             >
               <option value="">Still figuring it out</option>
-              {industries
-                .find((i) => i.slug === value.industry_id)
-                ?.professions.map((p) => (
-                  <option key={p}>{p}</option>
-                ))}
-            </select>
-          </label>
-          <label>
-            Your situation
-            <select
-              value={value.unemployment_status}
-              onChange={(e) => update("unemployment_status", e.target.value)}
-            >
-              {eras.map((e) => (
-                <option key={e}>{e}</option>
+              {(professionsQuery.data || []).map((p) => (
+                <option key={p.id} value={p.name}>
+                  {p.name}
+                </option>
               ))}
             </select>
           </label>
@@ -338,7 +325,18 @@ export default function Settings() {
                 placeholder="you@example.com"
               />
             </label>
-            <Button disabled={busy}>Send confirmation</Button>
+            <Button
+              disabled={
+                busy || import.meta.env.VITE_EMAIL_AUTH_ENABLED !== "true"
+              }
+            >
+              Send confirmation
+            </Button>
+            {import.meta.env.VITE_EMAIL_AUTH_ENABLED !== "true" && (
+              <p className="notice">
+                Email linking is unavailable until email delivery is configured.
+              </p>
+            )}
           </form>
         )}
         <p className="fine-print">
