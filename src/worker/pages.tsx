@@ -44,6 +44,9 @@ app.get("*", async (c) => {
     publicPaths.includes(path) ||
     path === "/join" ||
     path === "/recover" ||
+    path === "/auth" ||
+    path === "/auth/callback" ||
+    path.startsWith("/u/") ||
     /^\/app(?:\/(?:lounge|profile|settings|admin|messages(?:\/[a-f0-9-]+)?|rooms\/[a-z-]+))?$/.test(
       path,
     );
@@ -84,7 +87,7 @@ app.get("*", async (c) => {
     ...(import.meta.env.PROD
       ? {
           "Content-Security-Policy":
-            "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cloudflareinsights.com https://*.cloudflareinsights.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+            "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cloudflareinsights.com https://*.cloudflareinsights.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
         }
       : {}),
   });

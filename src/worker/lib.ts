@@ -6,6 +6,8 @@ export type Env = {
     SUPABASE_PUBLISHABLE_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
     SITE_URL?: string;
+    BACKEND_ORIGIN?: string;
+    API_PROXY_SECRET?: string;
     NETWORK_LIMITER?: {
       limit(input: { key: string }): Promise<{ success: boolean }>;
     };
@@ -54,4 +56,4 @@ export function unwrap<T>({
   return data as NonNullable<T>;
 }
 export const messageSelect =
-  "*,profiles!messages_sender_id_fkey(id,username,avatar_seed,allows_dm_requests),reactions(user_id,emoji)";
+  "*,profiles!messages_sender_id_fkey(id,username,avatar_seed,allows_dm_requests,profile_details(avatar_path,display_name)),reactions(user_id,emoji)";
