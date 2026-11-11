@@ -1,5 +1,14 @@
 SUPABASE_URL=
 SUPABASE_PUBLISHABLE_KEY=
-# Server only; used exclusively for account deletion
+# Server only; used for validated media operations, cleanup and account deletion
 SUPABASE_SERVICE_ROLE_KEY=
 SITE_URL=
+
+# Vercel Node entry only: exact frontend origin for CORS.
+FRONTEND_ORIGIN=
+
+# Optional HTTPS Node API origin; Worker forwards /api while keeping browser requests same-origin.
+BACKEND_ORIGIN=
+
+# Matching random server-only secret on Worker and Vercel; protects the Node origin.
+API_PROXY_SECRET=

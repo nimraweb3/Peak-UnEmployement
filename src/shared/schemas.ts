@@ -1,5 +1,6 @@
+import { usernameSchema, employmentStatuses } from "./accounts";
 import { z } from "zod";
-import { categories, eras } from "./config";
+import { categories } from "./config";
 export const uuid = z.string().uuid();
 export const messageSchema = z
   .object({
@@ -17,11 +18,14 @@ export const messageSchema = z
   .strict();
 export const profileSchema = z
   .object({
-    username: z.string().regex(/^[a-zA-Z0-9_]{3,30}$/),
+    username: usernameSchema,
     avatar_seed: z.string().max(40),
     industry_id: z.string().max(30).nullable(),
     profession: z.string().max(60),
-    unemployment_status: z.enum(eras),
+    unemployment_status: z.enum([
+      ...employmentStatuses,
+      "Searching for months",
+    ]),
     public_status: z.string().max(120),
     allows_dm_requests: z.boolean(),
     onboarding_completed: z.boolean(),

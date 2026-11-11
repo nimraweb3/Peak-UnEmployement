@@ -4,6 +4,8 @@ import { secureHeaders } from "hono/secure-headers";
 import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
 import { dbClient, type Env } from "./lib";
+import media from "./routes/media";
+import accounts from "./routes/accounts";
 import profile from "./routes/profile";
 import chat from "./routes/chat";
 import social from "./routes/social";
@@ -16,13 +18,13 @@ app.use("/api/*", async (c, next) => {
   c.header("X-Robots-Tag", "noindex, nofollow, nosnippet");
   await next();
 });
-app.use(
-  "/api/*",
-  secureHeaders(),
+app.use("/api/*", secureHeaders(), async (c, next) =>
   bodyLimit({
-    maxSize: 8192,
+    maxSize: /^\/api\/me\/media\/(avatar|banner)$/.test(c.req.path)
+      ? 524288
+      : 8192,
     onError: (c) => c.json({ error: "Request too large" }, 413),
-  }),
+  })(c, next),
 );
 // Coarse, shared edge protection. PostgreSQL remains authoritative for atomic user limits.
 app.use("/api/*", async (c, next) => {
@@ -35,6 +37,34 @@ app.use("/api/*", async (c, next) => {
     }
   }
   await next();
+});
+// Optional same-origin forwarding to the Node runtime for CPU-intensive image work.
+app.use("/api/*", async (c, next) => {
+  if (!c.env.BACKEND_ORIGIN) return next();
+  let origin: URL;
+  try {
+    origin = new URL(c.env.BACKEND_ORIGIN);
+    if (
+      origin.protocol !== "https:" ||
+      origin.username ||
+      origin.password ||
+      origin.pathname !== "/"
+    )
+      throw new Error();
+  } catch {
+    throw new HTTPException(503, {
+      message: "Backend origin is not configured correctly.",
+    });
+  }
+  if (origin.origin === new URL(c.req.url).origin)
+    throw new HTTPException(503, {
+      message: "Backend origin must be separate from the frontend.",
+    });
+  const target = new URL(c.req.path + new URL(c.req.url).search, origin);
+  const request = new Request(target, c.req.raw);
+  if (c.env.API_PROXY_SECRET)
+    request.headers.set("X-API-Proxy-Secret", c.env.API_PROXY_SECRET);
+  return fetch(request, { redirect: "manual" });
 });
 app.get("/api/health", (c) =>
   c.json({
@@ -60,10 +90,16 @@ app.use("/api/*", async (c, next) => {
     throw new HTTPException(401, {
       message: "Your session expired. Please sign in again.",
     });
+  if (!data.user.is_anonymous && !data.user.email_confirmed_at)
+    throw new HTTPException(403, {
+      message: "Verify your email before joining the conversation.",
+    });
   c.set("db", db);
   c.set("authId", data.user.id);
   await next();
 });
+app.route("/", media);
+app.route("/", accounts);
 app.route("/", profile);
 app.route("/", chat);
 app.route("/", social);

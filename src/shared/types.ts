@@ -30,7 +30,12 @@ export interface Message {
   profiles: Pick<
     Profile,
     "id" | "username" | "avatar_seed" | "allows_dm_requests"
-  >;
+  > & {
+    profile_details?: {
+      avatar_path: string | null;
+      display_name: string;
+    } | null;
+  };
   reactions: { user_id: string; emoji: string }[];
 }
 export interface Request {
