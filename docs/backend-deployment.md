@@ -1,6 +1,6 @@
 # Free-tier deployment — account/profile release
 
-No provider accounts, DNS records, production migrations or deployments were changed in this implementation.
+Supabase setup was performed on the new, empty `peak-unemployment` project (`eedxbddfpwfalyvavzsg`) in the free Peak Unemployment organization. See [Supabase setup status](supabase-setup-status.md) for verified changes and remaining requirements. A [frontend-only Vercel deployment](frontend-deployment.md) is now live. The backend layout below is still a proposed architecture, not a deployed service. DNS has not been changed.
 
 ## Recommended runtime layout
 
