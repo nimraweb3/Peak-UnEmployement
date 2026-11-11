@@ -1,16 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
+export const apiBase = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 export const demoMode = import.meta.env.DEV && import.meta.env.MODE === "demo";
 export const configured = !!(
   import.meta.env.VITE_SUPABASE_URL &&
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 );
 export const frontendDemo =
-  !configured && !demoMode && import.meta.env.VITE_FRONTEND_DEMO !== "false";
+  import.meta.env.DEV &&
+  !configured &&
+  !demoMode &&
+  import.meta.env.VITE_FRONTEND_DEMO === "true";
 export const supabase =
   configured && !demoMode
     ? createClient(
         import.meta.env.VITE_SUPABASE_URL,
         import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        { auth: { flowType: "pkce" } },
       )
     : null;
 export async function api<T>(
@@ -21,7 +26,7 @@ export async function api<T>(
   if (frontendDemo)
     return (await import("./frontend-demo")).localApi<T>(path, method, body);
   const session = await supabase?.auth.getSession();
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${apiBase}/api${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -33,6 +38,6 @@ export async function api<T>(
   });
   const data = await response.json();
   if (!response.ok)
-    throw new Error(data.error || "Something went wrong. Please try again.");
+    throw Object.assign(new Error(data.error || "Something went wrong. Please try again."),{status:response.status,suggestions:data.suggestions});
   return data;
 }

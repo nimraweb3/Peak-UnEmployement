@@ -86,7 +86,7 @@ export function PublicPage({
             <option value="dark">Night Shift</option>
             <option value="system">Match device</option>
           </select>
-          <a className="ah-signin" href={member ? "/app/messages" : "/recover"}>
+          <a className="ah-signin" href={member ? "/app/messages" : "/auth?returnTo=" + encodeURIComponent(slug === "lounge" ? "/app/lounge" : "/rooms/"+slug)}>
             {member ? "Your inbox" : "Sign in"}
             <span aria-hidden="true">↗</span>
           </a>

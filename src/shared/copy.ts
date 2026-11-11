@@ -9,6 +9,7 @@ export const roomDescriptions: Record<string, string> = {
   healthcare: "A place to talk between shifts and applications.",
   education: "For people who teach, learn, and keep applying.",
   engineering: "Building things. Working out what comes next.",
+  support: "A conversation where you don’t have to open a ticket.",
   other: "Didn’t see your industry? You’re still invited.",
 };
 export const copy = {
