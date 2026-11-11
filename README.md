@@ -2,13 +2,13 @@
 
 **The group chat between jobs.** An anonymous community for people between jobs, with public rooms and consent-based private conversations.
 
-This is the existing React/Hono/Supabase application, redesigned around the conversation. It is **not deployed**. When Supabase is unconfigured, the preview uses clearly labeled in-memory frontend samples. No production messages, member counts or online activity are fabricated. Set VITE_FRONTEND_DEMO=false to show the unavailable-service state instead.
+The React frontend now connects to Hono APIs, Supabase Auth/PostgreSQL/Storage and Realtime. New account/profile features include password signup and recovery, username checks, profile media and private employment history. **External providers are not configured or live-tested yet; this is not deployed.**
 
-See [frontend architecture](docs/FRONTEND-ARCHITECTURE.md), [design direction](docs/FRONTEND-DESIGN.md), and [current QA status](docs/DESIGN-QA.md). Visual browser verification of this revision is pending.
+Production never falls back to simulated accounts. A local UI demo requires both a development build and `VITE_FRONTEND_DEMO=true`. See [backend delivery and remaining checks](docs/backend-delivery.md), [authentication setup](docs/authentication.md), [schema](docs/database-schema.md), and [free deployment](docs/backend-deployment.md).
 
 ## Run locally
 
-Run `npm run setup` to prepare ignored environment files and identify missing provider configuration. Test identities are available only to `npm run test:internal`, which starts an isolated server on port 5175 and stops it afterward. There is no demo-account selector. The frontend preview supports a local nickname and sample conversation until reload; configured production installations use the real backend. See [Google/email setup](docs/community-redesign.md).
+Run `npm run setup` to prepare ignored environment files and identify missing provider configuration. Test identities are available only to `npm run test:internal`, which starts an isolated server on port 5175 and stops it afterward. The optional frontend demo stays in memory until reload and is excluded from production account flows. See [Google/email setup](docs/authentication.md).
 
 ```sh
 npm ci
