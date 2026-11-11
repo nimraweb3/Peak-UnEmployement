@@ -2,8 +2,24 @@ import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import type { Env } from "../lib";
+import { unwrap, type Env } from "../lib";
 const app = new Hono<Env>();
+app.get("/api/users/:username", async (c, next) => {
+  if (c.req.header("Authorization")) return next();
+  if (!c.env.SUPABASE_URL || !c.env.SUPABASE_PUBLISHABLE_KEY)
+    throw new HTTPException(503, { message: "Profiles aren’t connected yet." });
+  const db = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_PUBLISHABLE_KEY, {
+    auth: { persistSession: false },
+  });
+  const profile = unwrap(
+    await db.rpc("public_profile", {
+      handle: z.string().max(30).parse(c.req.param("username")),
+    }),
+  );
+  if (!profile)
+    throw new HTTPException(404, { message: "This profile is unavailable." });
+  return c.json(profile);
+});
 app.get("/api/public/rooms/:slug/messages", async (c) => {
   c.header("X-Robots-Tag", "noindex, nofollow, nosnippet");
   if (!c.env.SUPABASE_URL || !c.env.SUPABASE_PUBLISHABLE_KEY)

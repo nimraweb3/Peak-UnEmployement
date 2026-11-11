@@ -36,7 +36,18 @@ app.delete("/api/me", async (c) => {
     throw new HTTPException(500, {
       message: "Deletion failed. Please try again.",
     });
-  return c.json({ ok: true });
+  const queued = await admin.rpc("media_cleanup_batch");
+  let mediaCleanupPending = !!queued.error;
+  if (queued.data?.length) {
+    const paths = queued.data.map((item: { path: string }) => item.path);
+    const removed = await admin.storage.from("profile-media").remove(paths);
+    if (removed.error) mediaCleanupPending = true;
+    else {
+      const ack = await admin.rpc("media_cleanup_ack", { paths });
+      mediaCleanupPending = !!ack.error;
+    }
+  }
+  return c.json({ ok: true, mediaCleanupPending });
 });
 
 export default app;
