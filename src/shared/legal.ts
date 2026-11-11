@@ -39,11 +39,11 @@ export const legalContent: Record<
     sections: [
       [
         "What we store",
-        "We store an authentication identifier, a separate public profile identifier, your chosen profile fields, messages, reactions, conversation requests, blocks, and reports. Optional account-linking email is kept by Supabase Auth and is never part of your public profile.",
+        "We store an authentication identifier, a separate public profile identifier, your chosen profile fields, uploaded profile images, employment history and visibility choices, messages, reactions, conversation requests, blocks, and reports. Optional account-linking email is kept by Supabase Auth and is never part of your public profile.",
       ],
       [
         "Who can see what",
-        "Anyone can read public room messages, nicknames, avatars and reaction counts. Other profile fields are available only to signed-in members. Only participants can read approved private conversations through the application. Operators with database access can access stored data for service administration. Private chats are not end-to-end encrypted.",
+        "Anyone can read public room messages, nicknames, avatars and reaction counts. Full profiles are visible to members by default; you can choose public or private. Employment details stay private unless you choose to share them. Uploaded avatar and banner files are public assets. Only participants can read approved private conversations through the application. Operators with database access can access stored data for service administration. Private chats are not end-to-end encrypted.",
       ],
       [
         "Your anonymous account",

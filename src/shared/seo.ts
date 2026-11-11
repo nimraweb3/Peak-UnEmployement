@@ -36,13 +36,17 @@ export function pageMetadata(path: string, origin: string) {
           `${roomDescriptions[slug]} Read public conversations and join anonymously on Peak Unemployment.`,
         ]
       : titles[path] || [
-          path.startsWith("/app")
-            ? "Your Community | Peak Unemployment"
-            : path === "/join"
-              ? "Join Anonymously | Peak Unemployment"
-              : path === "/recover"
-                ? "Sign In | Peak Unemployment"
-                : "Page Not Found | Peak Unemployment",
+          path.startsWith("/u/")
+            ? "Profile | Peak Unemployment"
+            : path.startsWith("/auth")
+              ? "Account | Peak Unemployment"
+              : path.startsWith("/app")
+                ? "Your Community | Peak Unemployment"
+                : path === "/join"
+                  ? "Join Anonymously | Peak Unemployment"
+                  : path === "/recover"
+                    ? "Sign In | Peak Unemployment"
+                    : "Page Not Found | Peak Unemployment",
           "Peak Unemployment is an anonymous community for people between jobs.",
         ];
   return {
