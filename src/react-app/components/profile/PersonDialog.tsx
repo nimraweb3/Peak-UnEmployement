@@ -1,3 +1,5 @@
+import { profileMediaUrl } from "../../lib/media";
+import { Link } from "react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -22,6 +24,18 @@ export function PersonDialog({
     queryFn: () => api<Profile>(`/profiles/${id}`),
     enabled: !!id,
     staleTime: 0,
+  });
+  const details = useQuery({
+    queryKey: ["public-profile", profile.data?.username],
+    queryFn: () =>
+      api<{
+        display_name: string;
+        bio: string;
+        mood: string;
+        avatar_path: string | null;
+        banner_path: string | null;
+      }>("/users/" + profile.data!.username),
+    enabled: !!profile.data,
   });
   const [report, setReport] = useState(false);
   const [category, setCategory] = useState<string>("Harassment");
@@ -61,12 +75,27 @@ export function PersonDialog({
         profile.data && (
           <>
             <div className="person-summary">
+              {details.data?.banner_path && (
+                <img
+                  className="compact-banner"
+                  src={profileMediaUrl(details.data.banner_path)}
+                  alt=""
+                  loading="lazy"
+                />
+              )}
               <Avatar
+                imageSrc={profileMediaUrl(details.data?.avatar_path)}
                 seed={profile.data.avatar_seed}
                 name={profile.data.username}
                 large
               />
-              <h3>{profile.data.username}</h3>
+              <h3>{details.data?.display_name || profile.data.username}</h3>
+              <p>@{profile.data.username}</p>
+              {details.data?.mood && <p>{details.data.mood}</p>}
+              {details.data?.bio && <p>{details.data.bio}</p>}
+              <Link to={"/u/" + profile.data.username} onClick={onClose}>
+                Open full profile ↗
+              </Link>
               <p>{profile.data.public_status || "No status shared."}</p>
               <small>
                 {profile.data.profession ||

@@ -1,3 +1,6 @@
+import { employmentStatuses } from "../../shared/accounts";
+import { useIndustries, useProfessions } from "../hooks/useIndustries";
+import { UsernameField } from "./profile/UsernameField";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, ArrowRight, ArrowLeft } from "lucide-react";
@@ -7,7 +10,7 @@ import { Button } from "./ui/button";
 import { Avatar } from "./common";
 import { Turnstile } from "./Turnstile";
 import { Brand } from "../../shared/brand";
-import { industries, eras, nickname } from "../../shared/config";
+import { industries, nickname } from "../../shared/config";
 import { api, configured, supabase, frontendDemo } from "../lib/api";
 import { useSession } from "../contexts/session";
 export default function JoinFlow({
@@ -19,12 +22,17 @@ export default function JoinFlow({
 }) {
   const { session, profile } = useSession();
   const qc = useQueryClient();
+  const industriesQuery = useIndustries(!!session);
+  const [profession, setProfession] = useState("");
   const [step, setStep] = useState(1);
   const [name, setName] = useState(() => profile?.username || nickname());
   const [industry, setIndustry] = useState(profile?.industry_id || "");
+  const professionsQuery = useProfessions(industry);
   const [era, setEra] = useState(
     profile?.unemployment_status || "Prefer not to say",
   );
+  const [startMonth, setStartMonth] = useState("");
+  const [showEmployment, setShowEmployment] = useState(false);
   const [dm, setDm] = useState(profile?.allows_dm_requests || false);
   const [token, setToken] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -32,8 +40,8 @@ export default function JoinFlow({
   const [error, setError] = useState("");
   async function next() {
     setError("");
-    if (step === 1 && !/^[A-Za-z0-9_]{3,30}$/.test(name)) {
-      setError("Use 3–30 letters, numbers, or underscores.");
+    if (step === 1 && !/^[a-z0-9_]{3,20}$/.test(name)) {
+      setError("Use 3–20 lowercase letters, numbers, or underscores.");
       return;
     }
     if (step === 1 && !session) {
@@ -54,11 +62,29 @@ export default function JoinFlow({
         if (result.error) throw result.error;
         await api("/me");
         await qc.invalidateQueries({ queryKey: ["me"] });
-        setStep(2);
+        setStep(1);
       } catch (e) {
         setError((e as Error).message);
         setToken("");
         setAttempt((n) => n + 1);
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+    if (step === 1 && session && !frontendDemo) {
+      setBusy(true);
+      try {
+        const checked = await api<{ available: boolean }>(
+          "/usernames/availability?username=" + encodeURIComponent(name),
+        );
+        if (!checked.available)
+          throw new Error(
+            "That username isn’t available. Choose another or use a suggestion.",
+          );
+        setStep(2);
+      } catch (e) {
+        setError((e as Error).message);
       } finally {
         setBusy(false);
       }
@@ -70,18 +96,33 @@ export default function JoinFlow({
     }
     setBusy(true);
     try {
-      await api("/me", "PATCH", {
-        username: name,
-        industry_id: industry || null,
-        unemployment_status: era,
-        allows_dm_requests: dm,
-        onboarding_completed: true,
-      });
+      await api(
+        frontendDemo ? "/me" : "/onboarding/complete",
+        frontendDemo ? "PATCH" : "POST",
+        {
+          username: name,
+          industry_id: industry || null,
+          profession,
+          unemployment_status: era,
+          allows_dm_requests: dm,
+          onboarding_completed: true,
+          ...(!frontendDemo
+            ? {
+                start_month:
+                  era === "Currently unemployed" && startMonth
+                    ? startMonth + "-01"
+                    : null,
+                show_employment: showEmployment,
+              }
+            : {}),
+        },
+      );
       await qc.invalidateQueries({ queryKey: ["me"] });
       toast.success("You’re in.");
       onComplete();
     } catch (e) {
       setError((e as Error).message);
+      if ((e as Error).message.includes("nickname")) setStep(1);
     } finally {
       setBusy(false);
     }
@@ -131,17 +172,7 @@ export default function JoinFlow({
           <>
             <div className="nickname-picker">
               <Avatar name={name} seed={profile?.avatar_seed || name} large />
-              <label>
-                What should we call you?
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  maxLength={30}
-                  autoComplete="off"
-                  aria-invalid={!!error}
-                  aria-describedby={error ? "join-error" : undefined}
-                />
-              </label>
+              <UsernameField value={name} onChange={setName} />
               <button
                 type="button"
                 className="icon-button"
@@ -181,23 +212,49 @@ export default function JoinFlow({
         )}
         {step === 2 && (
           <div className="choices two-col">
-            {industries.map((i) => (
+            {industriesQuery.data?.map((i) => (
               <button
                 type="button"
-                key={i.slug}
-                className={`choice ${industry === i.slug ? "selected" : ""}`}
-                aria-pressed={industry === i.slug}
-                onClick={() => setIndustry(i.slug)}
+                key={i.id}
+                className={`choice ${industry === i.id ? "selected" : ""}`}
+                aria-pressed={industry === i.id}
+                onClick={() => {
+                  setIndustry(i.id);
+                  setProfession("");
+                }}
               >
-                <span aria-hidden="true">{i.icon}</span>
+                <span aria-hidden="true">
+                  {industries.find((item) => item.slug === i.id)?.icon || "○"}
+                </span>
                 {i.name}
               </button>
             ))}
           </div>
         )}
+        {step === 2 && industry && (
+          <label>
+            Profession (optional)
+            <select
+              value={profession}
+              onChange={(e) => setProfession(e.target.value)}
+            >
+              <option value="">Prefer not to say</option>
+              {professionsQuery.data?.map((p) => (
+                <option key={p.id} value={p.name}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {step === 2 && industriesQuery.error && (
+          <p role="alert">
+            Couldn’t load industries. You can skip this step and try later.
+          </p>
+        )}
         {step === 3 && (
           <div className="choices">
-            {eras.map((e) => (
+            {employmentStatuses.map((e) => (
               <button
                 type="button"
                 key={e}
@@ -210,6 +267,32 @@ export default function JoinFlow({
               </button>
             ))}
           </div>
+        )}
+        {step === 3 && !frontendDemo && (
+          <>
+            {era === "Currently unemployed" && (
+              <label>
+                Since when? (optional)
+                <input
+                  type="month"
+                  max={new Date().toISOString().slice(0, 7)}
+                  value={startMonth}
+                  onChange={(e) => setStartMonth(e.target.value)}
+                />
+              </label>
+            )}
+            <label>
+              <input
+                type="checkbox"
+                checked={showEmployment}
+                onChange={(e) => setShowEmployment(e.target.checked)}
+              />{" "}
+              Show this situation and start month on my profile
+            </label>
+            <p className="fine-print">
+              Off by default. You can change this in Settings.
+            </p>
+          </>
         )}
         {step === 4 && (
           <>
@@ -285,7 +368,20 @@ export default function JoinFlow({
         <p className="fine-print">
           By joining, you agree to the <a href="/terms">terms</a> and{" "}
           <a href="/community-guidelines">community guidelines</a>. Been here
-          before? <a href="/recover">Continue with Google or email.</a>
+          before?{" "}
+          <a
+            href={
+              "/auth?returnTo=" +
+              encodeURIComponent(
+                new URLSearchParams(location.search).get("returnTo") ||
+                  (location.pathname.startsWith("/rooms/")
+                    ? location.pathname
+                    : "/app/lounge"),
+              )
+            }
+          >
+            Continue with Google or email.
+          </a>
         </p>
       </form>
     </Modal>
