@@ -12,17 +12,20 @@ import type { Profile } from "../../shared/types";
 const Context = createContext<{
   session: Session | null;
   ready: boolean;
+  recovery: boolean;
   profile: Profile | undefined;
   loading: boolean;
   error: Error | null;
 }>({
   session: null,
   ready: false,
+  recovery: false,
   profile: undefined,
   loading: false,
   error: null,
 });
 export function SessionProvider({ children }: { children: ReactNode }) {
+  const [recovery, setRecovery] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(!supabase && !demoMode);
   const qc = useQueryClient();
@@ -97,6 +100,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (!supabase) return;
     let previousUser: string | undefined;
     const { data } = supabase.auth.onAuthStateChange((_event, next) => {
+      if (_event === "PASSWORD_RECOVERY") setRecovery(true);
+      if (!next) setRecovery(false);
       if (previousUser !== next?.user.id) {
         qc.clear();
         void supabase?.removeAllChannels();
@@ -119,6 +124,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     <Context.Provider
       value={{
         session,
+        recovery,
         ready,
         profile: profile.data,
         loading: profile.isLoading,
