@@ -31,7 +31,7 @@ async function mutate(
 beforeAll(async () => {
   db = new PGlite();
   await db.exec(
-    "create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key); create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;",
+    "create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key,is_anonymous boolean default true,email_confirmed_at timestamptz); create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated;",
   );
   let migration = readFileSync(
     "supabase/migrations/202611020001_initial.sql",
@@ -48,7 +48,7 @@ beforeAll(async () => {
     await db.exec(readFileSync(`supabase/migrations/${file}`, "utf8"));
   await db.exec(readFileSync("supabase/seed.sql", "utf8"));
   for (const id of authIds)
-    await db.query("insert into auth.users values($1)", [id]);
+    await db.query("insert into auth.users(id) values($1)", [id]);
   ids = [];
   for (let i = 0; i < 3; i++) {
     const row = await asUser<{ p: { id: string } }>(

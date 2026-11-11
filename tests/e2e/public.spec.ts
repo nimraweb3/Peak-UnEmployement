@@ -25,6 +25,7 @@ test("chat-first public page, intentional join, keyboard dismissal and room cont
     page.getByRole("heading", { name: "Couldn’t load the conversation." }),
   ).toBeVisible();
   expect(auth).toEqual([]);
+  await page.locator(".ah-room-switcher summary").click();
   await page
     .getByRole("navigation", { name: "Public chatrooms" })
     .getByRole("link", { name: "Tech & Software" })
@@ -37,7 +38,7 @@ test("chat-first public page, intentional join, keyboard dismissal and room cont
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("button", { name: "Continue" })).toBeDisabled();
-  await expect(dialog.getByLabel("Your public nickname")).toBeVisible();
+  await expect(dialog.getByLabel("Username")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(
@@ -64,8 +65,8 @@ test("responsive screenshots, reflow, accessible themes and modal", async ({
     await expect(
       page.getByRole("link", { name: "Sign in", exact: true }),
     ).toBeVisible();
-    const navigation = await page.locator(".public-header nav").boundingBox();
-    const heading = await page.locator(".community-heading").boundingBox();
+    const navigation = await page.locator(".ah-header-actions").boundingBox();
+    const heading = await page.locator(".ah-arrival").boundingBox();
     expect(navigation!.y + navigation!.height).toBeLessThanOrEqual(heading!.y);
     expect(
       await page.evaluate(
@@ -150,7 +151,7 @@ test("public HTML and real not-found status are available before JavaScript", as
   expect(missing.headers()["x-robots-tag"]).toContain("noindex");
   await page.goto("/missing");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "This page doesn’t exist.",
+    "Looks like this page is between jobs too.",
   );
 });
 test("isolated guest fixtures: empty, populated, safe text, and gated reactions", async ({

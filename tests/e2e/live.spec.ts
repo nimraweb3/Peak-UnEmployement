@@ -35,10 +35,14 @@ async function authenticated(
 }
 async function join(page: Page, name: string) {
   await page.goto("/join");
-  await page.getByLabel("Your public nickname").fill(name);
+  await page.getByLabel("Username").fill(name);
   await page
     .getByRole("button", { name: "Continue", exact: true })
     .click({ timeout: 30000 });
+  await expect(
+    page.getByText(`${name.toLowerCase()} is available.`, { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: "Tech & Software" }).click();
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("button", { name: "Fresh graduate" }).click();
@@ -46,7 +50,7 @@ async function join(page: Page, name: string) {
   await expect(
     page.getByRole("checkbox", { name: "Allow message requests" }),
   ).not.toBeChecked();
-  await page.getByRole("button", { name: "Join the conversation" }).click();
+  await page.getByRole("button", { name: "Enter the conversation" }).click();
   await expect(
     page.getByRole("textbox", { name: "Message", exact: true }),
   ).toBeFocused();
