@@ -1,5 +1,7 @@
 # Supabase setup status — 2026-11-11
 
+Update 2026-11-12: the [backend is now deployed and verified](backend-live.md). Provider authentication setup and scheduled media cleanup remain outstanding.
+
 Project: `peak-unemployment` (`eedxbddfpwfalyvavzsg`), free Peak Unemployment organization, Northeast Asia (Seoul). The user created the database password; it was not collected in chat.
 
 ## Completed
