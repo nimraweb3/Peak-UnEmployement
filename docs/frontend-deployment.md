@@ -1,5 +1,7 @@
 # Frontend deployment — 2026-11-11
 
+Update 2026-11-12: the frontend-only release below has been superseded by the [live backend deployment](backend-live.md). API routes now run on the same production origin.
+
 Stable production URL: https://peak-unemployment.vercel.app
 
 Vercel team: `team_WJ0EWzCrpsf2tCK2lMUNMTGJ` (`nim12`). Project: `prj_PRjSzbRmSWGxXX76hfldIfEr2tCQ`. Deployment: `dpl_2xBoVtPtPKB8QK6eQGHdekqV2Qwg`, READY, production.

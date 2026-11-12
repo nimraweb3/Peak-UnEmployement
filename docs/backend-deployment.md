@@ -1,5 +1,7 @@
 # Free-tier deployment — account/profile release
 
+Current deployment: [Vercel frontend and backend on one origin](backend-live.md). The Cloudflare proxy layout below is an alternative, not the active setup.
+
 Supabase setup was performed on the new, empty `peak-unemployment` project (`eedxbddfpwfalyvavzsg`) in the free Peak Unemployment organization. See [Supabase setup status](supabase-setup-status.md) for verified changes and remaining requirements. A [frontend-only Vercel deployment](frontend-deployment.md) is now live. The backend layout below is still a proposed architecture, not a deployed service. DNS has not been changed.
 
 ## Recommended runtime layout
