@@ -1,4 +1,5 @@
 import { useState, type ReactNode, type MouseEvent } from "react";
+import { ThemeControl } from "./ThemeControl";
 import { Brand, BrandMark } from "./brand";
 import { industries, nickname } from "./config";
 export const roomNames: Record<string, string> = {
@@ -76,16 +77,7 @@ export function PublicPage({
           <a href="/community-guidelines">House rules</a>
         </nav>
         <div className="ah-header-actions">
-          <select
-            aria-label="Color theme"
-            className="theme-select"
-            value={theme}
-            onChange={(e) => onTheme?.(e.target.value)}
-          >
-            <option value="light">Day Shift</option>
-            <option value="dark">Night Shift</option>
-            <option value="system">Match device</option>
-          </select>
+          <ThemeControl value={theme} onChange={onTheme} />
           <a className="ah-signin" href={member ? "/app/messages" : "/auth?returnTo=" + encodeURIComponent(slug === "lounge" ? "/app/lounge" : "/rooms/"+slug)}>
             {member ? "Your inbox" : "Sign in"}
             <span aria-hidden="true">↗</span>
@@ -122,8 +114,8 @@ export function PublicPage({
                 {member ? "Back to the lounge" : "Join anonymously"}
                 <span aria-hidden="true">↗</span>
               </a>
-              <a href="#rooms" className="ah-text-link">
-                Explore rooms <span aria-hidden="true">↓</span>
+              <a href="#public-room-title" className="ah-text-link">
+                Read the room <span aria-hidden="true">↓</span>
               </a>
             </div>
             <p className="ah-read-note">

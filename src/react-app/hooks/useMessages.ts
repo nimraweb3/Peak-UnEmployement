@@ -14,7 +14,7 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
       ),
     getNextPageParam: (page, pages) => (pages.length < 10 ? page.next : null),
     enabled: !!id,
-    refetchInterval: demoMode ? 2000 : 30000,
+    refetchInterval: demoMode ? 2000 : 10000,
     refetchIntervalInBackground: false,
   });
   useEffect(() => {
@@ -61,6 +61,7 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
           void qc.invalidateQueries({ queryKey: ["messages", kind, id] });
       });
     const online = () => {
+      setConnection("Reconnecting");
       void qc.invalidateQueries({ queryKey: ["messages", kind, id] });
     };
     const offline = () => setConnection("Offline");

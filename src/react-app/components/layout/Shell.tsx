@@ -1,5 +1,5 @@
 import { Brand } from "../../../shared/brand";
-import { NavLink, Outlet, Navigate, Link } from "react-router";
+import { NavLink, Outlet, Navigate, Link, useLocation } from "react-router";
 import {
   MessageCircle,
   Settings,
@@ -9,7 +9,11 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { ThemeControl } from "../../../shared/ThemeControl";
+import { usePreferences } from "../../contexts/preferences";
+import { Modal } from "../ui/dialog";
+import { appDestination } from "../../lib/destination";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "../../contexts/session";
 import { api } from "../../lib/api";
@@ -17,6 +21,12 @@ import { Avatar, Loading, ErrorState } from "../common";
 import { industries } from "../../../shared/config";
 export default function Shell() {
   const { ready, session, profile, loading, error } = useSession();
+  const { theme, setTheme } = usePreferences();
+  const location = useLocation();
+  const main = useRef<HTMLElement>(null);
+  useEffect(() => {
+    main.current?.focus();
+  }, [location.pathname]);
   const [open, setOpen] = useState(false);
   const admin = useQuery({
     queryKey: ["admin"],
@@ -24,14 +34,35 @@ export default function Shell() {
     enabled: !!profile,
   });
   if (!ready || loading) return <Loading />;
-  if (!session) return <Navigate to="/join" replace />;
+  if (!session)
+    return (
+      <Navigate
+        to={
+          "/join?returnTo=" +
+          encodeURIComponent(appDestination(location.pathname))
+        }
+        replace
+      />
+    );
   if (error) return <ErrorState error={error} />;
   if (!profile) return <Loading />;
-  if (!profile.onboarding_completed) return <Navigate to="/join" replace />;
+  if (!profile.onboarding_completed)
+    return (
+      <Navigate
+        to={
+          "/join?returnTo=" +
+          encodeURIComponent(appDestination(location.pathname))
+        }
+        replace
+      />
+    );
   return (
     <div className="app-shell">
+      <a className="skip-link" href="#workspace">
+        Skip to conversation
+      </a>
       <header className="mobile-header">
-        <Link to="/" aria-label="Peak Unemployment home">
+        <Link to="/app/lounge" aria-label="Peak Unemployment lounge">
           <Brand />
         </Link>
         <button
@@ -43,14 +74,40 @@ export default function Shell() {
         </button>
       </header>
       {open && (
-        <button
-          className="sidebar-backdrop"
-          aria-label="Close navigation"
-          onClick={() => setOpen(false)}
-        />
+        <Modal
+          open={open}
+          onOpenChange={setOpen}
+          title="Your rooms"
+          description="Choose a conversation."
+        >
+          <nav className="mobile-room-links">
+            {[{ slug: "lounge", name: "Main Lounge" }, ...industries].map(
+              (room) => (
+                <NavLink
+                  key={room.slug}
+                  to={
+                    room.slug === "lounge"
+                      ? "/app/lounge"
+                      : `/app/rooms/${room.slug}`
+                  }
+                  onClick={() => setOpen(false)}
+                >
+                  # {room.name}
+                </NavLink>
+              ),
+            )}
+            <NavLink to="/app/profile" onClick={() => setOpen(false)}>
+              Your profile
+            </NavLink>
+            <NavLink to="/app/messages" onClick={() => setOpen(false)}>
+              Messages & requests
+            </NavLink>
+            <ThemeControl value={theme} onChange={setTheme} />
+          </nav>
+        </Modal>
       )}
-      <aside className={`sidebar ${open ? "sidebar-open" : ""}`}>
-        <Link to="/" aria-label="Peak Unemployment home">
+      <aside className="sidebar">
+        <Link to="/app/lounge" aria-label="Peak Unemployment lounge">
           <Brand />
         </Link>
         <div className="sidebar-caption">PEOPLE BETWEEN JOBS</div>
@@ -86,6 +143,7 @@ export default function Shell() {
           )}
         </nav>
         <div className="sidebar-bottom">
+          <ThemeControl value={theme} onChange={setTheme} />
           <Link to="/community-guidelines" className="sidebar-note">
             <ShieldCheck size={18} />
             <span>
@@ -105,7 +163,7 @@ export default function Shell() {
           </Link>
         </div>
       </aside>
-      <main className="app-main">
+      <main className="app-main" ref={main} tabIndex={-1} id="workspace">
         <Outlet />
       </main>
       <nav className="bottom-nav">
