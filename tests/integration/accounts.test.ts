@@ -260,6 +260,30 @@ it("prevents direct storage writes even with a pre-existing permissive policy", 
     ).rows,
   ).toHaveLength(0);
 });
+it("enforces a rolling 30-day username cooldown beyond the previous seven days", async () => {
+  await db.query(
+    "insert into private.username_changes values($1,now()-interval '29 days') on conflict(profile_id) do update set changed_at=excluded.changed_at",
+    [ids[2]],
+  );
+  await expect(
+    user(2, "select public.mutate('profile',$1::jsonb)", [
+      JSON.stringify({ username: "cooldown_boundary" }),
+    ]),
+  ).rejects.toThrow(/30 days/);
+  await db.query(
+    "update private.username_changes set changed_at=now()-interval '30 days 1 second' where profile_id=$1",
+    [ids[2]],
+  );
+  await user(2, "select public.mutate('profile',$1::jsonb)", [
+    JSON.stringify({ username: "cooldown_boundary" }),
+  ]);
+  await expect(
+    user(2, "select public.mutate('profile',$1::jsonb)", [
+      JSON.stringify({ username: "cooldown_again" }),
+    ]),
+  ).rejects.toThrow(/30 days/);
+});
+
 it("queues media when its Auth owner is deleted", async () => {
   const path = ids[2] + "/avatar/test.jpg";
   await db.query(
