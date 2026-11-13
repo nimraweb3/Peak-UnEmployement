@@ -20,9 +20,21 @@ Production variables set through the Vercel connector: SUPABASE_URL, SUPABASE_PU
 - Source/package/environment URL probes returned the SPA, not source or credentials.
 - No error/fatal logs were returned for the final deployment during the post-deployment check. The earlier failed deployment is superseded.
 
+## Authentication update — 2026-11-13
+
+Deployment `dpl_A7yZEf4qZUKtSA7FeAsBRDY9nu4y` is READY on the same production URL. Its frontend includes the production Turnstile site key. The TypeScript/Vite build passed.
+
+Google OAuth is configured in Supabase and the Google consent app is in production with basic email/profile scopes. The live Google button reaches Google's account chooser with the correct Supabase callback. Completing consent and the return to onboarding still requires an end-to-end check.
+
+The user chose to skip personal Google sign-in testing and confirmed that no sender domain or email service is available yet. Do not treat the account-chooser check as a completed Google login, or enable email registration/recovery before delivery is configured and tested.
+
+Cloudflare Turnstile is enabled in Supabase. The live widget displayed Success, and a signup request without a token was rejected with `captcha_failed`. Supabase's public settings confirm Google and anonymous sign-ins are enabled and email confirmation remains required. A successful anonymous signup and onboarding have not yet been verified.
+
+Provider secrets are stored in Supabase and the Git-ignored `.secrets/auth-setup.json`; only the public Turnstile site key is included in the frontend.
+
 ## Remaining launch work
 
-Google OAuth, SMTP delivery, and Turnstile are not configured. Anonymous sign-in remains disabled. The temporary admin-confirmed test account does not establish that public signup or email delivery works. Profile uploads, realtime two-user chat, and DM flows still need live acceptance testing after sign-in setup.
+SMTP delivery remains unconfigured and `VITE_EMAIL_AUTH_ENABLED=false`. A sender domain and email service are needed before verification/recovery delivery can be tested and enabled. The temporary admin-confirmed test account does not establish that public signup or email delivery works. Profile uploads, realtime two-user chat, and DM flows still need live acceptance testing after sign-in setup.
 
 Database per-user action limits and request body limits remain active. The Cloudflare NETWORK_LIMITER binding is not present in this Vercel-only layout; equivalent shared network-level rate limiting remains launch hardening work. Media deletion attempts immediate cleanup and retains failures in the durable queue; scheduled cleanup is not yet configured.
 

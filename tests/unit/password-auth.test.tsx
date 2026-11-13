@@ -96,6 +96,9 @@ it("does not enable email registration without SMTP readiness", () => {
 });
 it("constrains post-auth destinations to known local routes", () => {
   expect(safeReturn("//evil.test")).toBe("/app/lounge");
-  expect(safeReturn("/rooms/design")).toBe("/rooms/design");
+  expect(safeReturn("/rooms/design")).toBe("/app/rooms/design");
+  expect(safeReturn("/")).toBe("/app/lounge");
+  expect(safeReturn("/app/rooms/tech")).toBe("/app/rooms/tech");
+  expect(safeReturn("/rooms/not-a-room")).toBe("/app/lounge");
   expect(safeReturn("/auth?mode=reset")).toBe("/app/lounge");
 });
