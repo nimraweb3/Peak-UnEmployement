@@ -68,6 +68,9 @@ app.patch("/api/me/profile", async (c) =>
     ),
   ),
 );
+app.get("/api/me/username", async (c) =>
+  c.json(unwrap(await c.get("db").rpc("username_change_status"))),
+);
 app.patch("/api/me/username", async (c) => {
   const payload = z
     .object({ username: usernameSchema })
@@ -76,6 +79,8 @@ app.patch("/api/me/username", async (c) => {
   const result = await c
     .get("db")
     .rpc("mutate", { action: "profile", payload });
+  if (result.error?.message.startsWith("Username change limit:"))
+    return c.json({ error: "You can change your username once every 30 days. Check your profile for the next available date." }, 429);
   if (result.error?.code === "23505") {
     const checked = await c
       .get("db")

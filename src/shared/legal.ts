@@ -3,9 +3,11 @@ export const legalContent: Record<
   { title: string; intro: string; sections: [string, string][] }
 > = {
   "/community-guidelines": {
-    title: "Be funny. Don’t be awful.",
-    intro: "A few rules for sharing a room with other people.",
+    title: "A few ground rules.",
+    intro: "Complain about the job market all you want. Just don’t make other people’s day worse.",
     sections: [
+      ["Be yourself, under any nickname.", "Do not impersonate another member, a moderator, or an employer. Keep humor friendly; do not target people because they are vulnerable."],
+      ["Keep the room safe.", "Do not post sexually explicit or abusive content. Respect moderation decisions and report harmful behavior instead of escalating it."],
       [
         "No harassment or abuse.",
         "No harassment, hate, threats, sexual harassment, or targeting people for who they are. Vent about an experience without turning it into abuse.",
@@ -51,7 +53,7 @@ export const legalContent: Record<
       ],
       [
         "Service providers",
-        "Cloudflare hosts the app and provides Turnstile abuse protection. Supabase stores authentication and community data and delivers realtime updates. No AI provider receives conversations. Optional Cloudflare Web Analytics is enabled only when the operator configures a beacon token; it does not receive chat bodies.",
+        "Vercel hosts the app and API. Cloudflare provides Turnstile abuse protection. Supabase stores authentication and community data and delivers realtime updates. No AI provider receives conversations. Optional Cloudflare Web Analytics is enabled only when the operator configures a beacon token; it does not receive chat bodies.",
       ],
       [
         "Retention and deletion",
