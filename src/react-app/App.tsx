@@ -9,6 +9,7 @@ import { PageMetadata } from "./components/PageMetadata";
 import Landing from "./pages/Landing";
 
 const UserProfile = lazy(() => import("./pages/UserProfile"));
+const MyProfile = lazy(() => import("./pages/MyProfile"));
 const Auth = lazy(() => import("./pages/Auth"));
 const AuthCallback = lazy(() => import("./pages/Auth").then(m=>({default:m.AuthCallback})));
 const Join = lazy(() => import("./pages/Join"));
@@ -78,7 +79,7 @@ export default function App() {
 
             <Route path="messages/:conversationId" element={<Messages />} />
 
-            <Route path="profile" element={<Settings />} />
+            <Route path="profile" element={<MyProfile />} />
 
             <Route path="settings" element={<Settings />} />
 

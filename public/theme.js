@@ -26,8 +26,8 @@
   // The server-rendered selector works even before React is downloaded.
   document.addEventListener("change", (event) => {
     if (
-      !(event.target instanceof HTMLSelectElement) ||
-      !event.target.matches(".theme-select")
+      !((event.target instanceof HTMLSelectElement && event.target.matches(".theme-select")) ||
+        (event.target instanceof HTMLInputElement && event.target.matches('.theme-control input[type="radio"]')))
     )
       return;
     preference = event.target.value;
