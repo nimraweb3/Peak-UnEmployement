@@ -1,9 +1,12 @@
-import {profileMediaUrl} from "../../lib/media";
+import { EmojiPicker, reactionLabels } from "./EmojiPicker";
+import { profileMediaUrl } from "../../lib/media";
 import { copy } from "../../../shared/copy";
 import { useMessageAnnouncement } from "../../hooks/useMessageAnnouncement";
 import { useState, useRef, useLayoutEffect, useEffect } from "react";
 import {
   ArrowDown,
+  Copy,
+  Reply,
   Send,
   MoreHorizontal,
   Trash2,
@@ -95,7 +98,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
     }
   }, [query.messages, query.data, query.isFetchNextPageError]);
   async function send(item?: Pending) {
-    if (sendingRef.current) return;
+    if (sendingRef.current || closed) return;
     const text = (item?.content || content).trim();
     if (!text || text.length > 1000) return;
     const row = item || {
@@ -170,7 +173,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
             : query.connection === "Reconnecting"
               ? "Connection lost. Trying to get you back."
               : `${query.connection}…`}
-        <span>KEEP IT KIND.</span>
+        <span>Reactions refresh every 10s</span>
       </div>
       <div
         className="message-scroll"
@@ -235,7 +238,9 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
               >
                 <Avatar
                   seed={message.profiles?.avatar_seed}
-                  imageSrc={profileMediaUrl(message.profiles?.profile_details?.avatar_path)}
+                  imageSrc={profileMediaUrl(
+                    message.profiles?.profile_details?.avatar_path,
+                  )}
                   name={message.profiles?.username}
                 />
               </button>
@@ -268,6 +273,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
                           key={emoji}
                           className={`reaction ${active ? "reacted" : ""}`}
                           aria-pressed={active}
+                          aria-label={`${reactionLabels[emoji] || emoji}: ${reactions.filter((r) => r.emoji === emoji).length} reactions. ${active ? "Remove yours" : "React"}`}
                           onClick={() => void react(message.id, emoji, active)}
                         >
                           {emoji}{" "}
@@ -280,13 +286,16 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
                 {reactionMenu === message.id && (
                   <div
                     className="emoji-picker"
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") setReactionMenu(null);
+                    }}
                     role="group"
                     aria-label="Choose reaction"
                   >
                     {["💜", "😂", "🫂", "🎉", "🔥"].map((emoji) => (
                       <button
                         key={emoji}
-                        aria-label={`React ${emoji}`}
+                        aria-label={`React with ${reactionLabels[emoji] || emoji}`}
                         onClick={() =>
                           void react(
                             message.id,
@@ -311,7 +320,45 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
                 )}
               </div>
               {!message.deleted_at && (
-                <div className="message-actions">
+                <div
+                  className="message-actions"
+                  role="group"
+                  aria-label="Message actions"
+                >
+                  <button
+                    className="icon-button"
+                    aria-label="Copy message"
+                    onClick={() => {
+                      void navigator.clipboard
+                        .writeText(message.content)
+                        .then(() => toast.success("Message copied."))
+                        .catch(() =>
+                          toast.error(
+                            "Could not copy. Select the message text instead.",
+                          ),
+                        );
+                    }}
+                  >
+                    <Copy size={15} />
+                  </button>
+                  <button
+                    className="icon-button"
+                    aria-label="Reply to message"
+                    disabled={closed}
+                    onClick={() => {
+                      const quote = `> ${message.profiles?.username || "Anonymous"}: ${message.content.slice(0, 180).replace(/\n/g, " ")}\n`;
+                      if (quote.length + content.length > 1000) {
+                        toast.error(
+                          "Make some space in your message before replying.",
+                        );
+                        return;
+                      }
+                      setContent(quote + content);
+                      input.current?.focus();
+                    }}
+                  >
+                    <Reply size={15} />
+                  </button>
                   <button
                     className="icon-button"
                     aria-label="Add reaction"
@@ -431,57 +478,31 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
         }}
       >
         {emojiOpen && !closed && (
-          <div
-            className="composer-emojis"
-            role="group"
-            aria-label="Choose an emoji"
-          >
-            {[
-              ["😀", "Smile"],
-              ["😂", "Laugh"],
-              ["😊", "Happy"],
-              ["❤️", "Heart"],
-              ["🫂", "Hug"],
-              ["🎉", "Celebrate"],
-              ["🙌", "Hooray"],
-              ["👍", "Thumbs up"],
-              ["👋", "Wave"],
-              ["🤔", "Thinking"],
-              ["😅", "Relieved"],
-              ["☕", "Coffee"],
-            ].map(([emoji, label]) => (
-              <button
-                type="button"
-                key={emoji}
-                aria-label={label}
-                disabled={
-                  content.length -
-                    ((input.current?.selectionEnd ?? content.length) -
-                      (input.current?.selectionStart ?? content.length)) +
-                    emoji.length >
-                  1000
-                }
-                onClick={() => {
-                  const start = input.current?.selectionStart ?? content.length;
-                  const end = input.current?.selectionEnd ?? content.length;
-                  const next =
-                    content.slice(0, start) + emoji + content.slice(end);
-                  if (next.length > 1000) return;
-                  setContent(next);
-                  setEmojiOpen(false);
-                  requestAnimationFrame(() => {
-                    input.current?.focus();
-                    input.current?.setSelectionRange(
-                      start + emoji.length,
-                      start + emoji.length,
-                    );
-                  });
-                }}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
+          <EmojiPicker
+            onClose={() => setEmojiOpen(false)}
+            canInsert={(emoji) =>
+              content.length -
+                ((input.current?.selectionEnd ?? content.length) -
+                  (input.current?.selectionStart ?? content.length)) +
+                emoji.length <=
+              1000
+            }
+            onSelect={(emoji) => {
+              const start = input.current?.selectionStart ?? content.length;
+              const end = input.current?.selectionEnd ?? content.length;
+              const next = content.slice(0, start) + emoji + content.slice(end);
+              if (next.length > 1000) return;
+              setContent(next);
+              setEmojiOpen(false);
+              requestAnimationFrame(() => {
+                input.current?.focus();
+                input.current?.setSelectionRange(
+                  start + emoji.length,
+                  start + emoji.length,
+                );
+              });
+            }}
+          />
         )}
         <div className="composer">
           <textarea

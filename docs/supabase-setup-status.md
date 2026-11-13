@@ -1,6 +1,6 @@
 # Supabase setup status — 2026-11-11
 
-Update 2026-11-12: the [backend is now deployed and verified](backend-live.md). Provider authentication setup and scheduled media cleanup remain outstanding.
+Update 2026-11-13: the [backend and authentication configuration are deployed](backend-live.md). Google OAuth, Turnstile, and anonymous sign-in are configured. SMTP, full sign-in acceptance tests, and scheduled media cleanup remain outstanding.
 
 Project: `peak-unemployment` (`eedxbddfpwfalyvavzsg`), free Peak Unemployment organization, Northeast Asia (Seoul). The user created the database password; it was not collected in chat.
 
@@ -20,12 +20,11 @@ Project: `peak-unemployment` (`eedxbddfpwfalyvavzsg`), free Peak Unemployment or
 
 ## Still required before launch
 
-- Configure a real Turnstile site key in the frontend and matching CAPTCHA secret in Supabase; then enable anonymous sign-ins. They remain disabled until protection is ready.
-- Configure Google OAuth credentials in Supabase. Google is currently disabled.
+- Complete live anonymous onboarding and Google callback acceptance tests. Turnstile renders successfully, tokenless signup is rejected, and the Google button reaches the account chooser.
 - Configure SMTP and verify delivery before setting `VITE_EMAIL_AUTH_ENABLED=true`. No email delivery or Google sign-in is claimed tested.
-- Deploy the backend, configure its environment variables and proxy secret, and schedule media cleanup. The frontend is already deployed; see `frontend-deployment.md`.
+- Schedule media cleanup. The full-stack Vercel deployment is active; no proxy secret is required for that architecture.
 - Run the real two-user authentication, chat, profile, upload, and account-deletion acceptance tests after provider setup.
 
-`npm run setup` currently reports only `VITE_TURNSTILE_SITE_KEY` missing among its required local variables. Presence checks do not establish OAuth, SMTP, CAPTCHA, or deployment readiness.
+`VITE_TURNSTILE_SITE_KEY` is now present locally and included in the deployed frontend. Presence checks alone do not establish OAuth, SMTP, CAPTCHA, or deployment readiness.
 
 The earlier local checks passed 81 tests, lint, and build. This setup session ran live API checks, not browser end-to-end app tests.
