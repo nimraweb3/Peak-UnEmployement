@@ -5,14 +5,14 @@ import { useSession } from "../contexts/session";
 import { Brand } from "../../shared/brand";
 import { Button } from "../components/ui/button";
 import { Turnstile } from "../components/Turnstile";
-export function safeReturn(value: string | null) {
-  return value &&
-    /^\/(?:rooms\/[a-z-]+|app\/(?:lounge|settings|messages)|)$/.test(value)
-    ? value
-    : "/app/lounge";
-}
+import { appDestination } from "../lib/destination";
+import { ThemeControl } from "../../shared/ThemeControl";
+import { usePreferences } from "../contexts/preferences";
+export const safeReturn = appDestination;
 export default function Auth() {
   const [params] = useSearchParams();
+  const { theme, setTheme } = usePreferences();
+  const [showPassword, setShowPassword] = useState(false);
   const nav = useNavigate();
   const { session, recovery } = useSession();
   const initial = params.get("mode");
@@ -127,7 +127,19 @@ export default function Auth() {
     });
   }
   return (
-    <main className="join-page">
+    <main className="join-page auth-page">
+      <aside className="auth-story">
+        <span className="eyebrow">A PLACE TO TALK</span>
+        <h2>Your job title can sit this one out.</h2>
+        <p>Bad interviews. Small wins. Absolutely unrelated conversations.</p>
+        <div className="auth-story-note">
+          Pick a name.
+          <br />
+          Pull up a chair.
+        </div>
+        <Link to="/">Read the room first</Link>
+        <ThemeControl value={theme} onChange={setTheme} />
+      </aside>
       <Link to="/" aria-label="Peak Unemployment home">
         <Brand />
       </Link>
@@ -142,12 +154,12 @@ export default function Auth() {
           {notice && mode === "signup"
             ? "Check your inbox."
             : mode === "signup"
-              ? "Make yourself at home."
+              ? "Come on in."
               : mode === "forgot"
                 ? "Forgot your password?"
                 : mode === "reset"
                   ? "Choose a new password."
-                  : "Good to see you."}
+                  : "Good to have you back."}
         </h1>
         <p>Your login stays private. Your public name is up to you.</p>
         {!supabase && (
@@ -190,7 +202,7 @@ export default function Auth() {
           <label>
             Password
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               minLength={mode === "login" ? 1 : 12}
               maxLength={128}
@@ -206,7 +218,7 @@ export default function Auth() {
           <label>
             Confirm password
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               minLength={12}
               maxLength={128}
@@ -216,12 +228,23 @@ export default function Auth() {
             />
           </label>
         )}
+        {mode !== "forgot" && (
+          <button
+            type="button"
+            className="password-toggle"
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((v) => !v)}
+          >
+            {showPassword ? "Hide passwords" : "Show passwords"}
+          </button>
+        )}
         {mode !== "reset" && import.meta.env.VITE_TURNSTILE_SITE_KEY && (
           <Turnstile key={attempt} onToken={setToken} />
         )}
         {!emailReady && (mode === "signup" || mode === "forgot") && (
           <p className="notice">
-            Email delivery hasn’t been configured. Google sign-in is separate.
+            Email registration and recovery are not available yet. Continue with
+            Google or join anonymously.
           </p>
         )}
         {notice && (

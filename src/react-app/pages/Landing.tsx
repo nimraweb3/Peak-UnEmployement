@@ -1,6 +1,8 @@
-import { lazy, Suspense, useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router";
+import { lazy, Suspense, useState } from "react";
+import { useParams, useNavigate, useLocation, Navigate } from "react-router";
 import { PublicPage, roomNames } from "../../shared/public-page";
+import { appDestination } from "../lib/destination";
+import { ConversationDemo } from "../components/chat/ConversationDemo";
 import { PublicConversation } from "../components/chat/PublicConversation";
 import { usePreferences } from "../contexts/preferences";
 import { useSession } from "../contexts/session";
@@ -22,28 +24,13 @@ export default function Landing({
   const { theme, setTheme } = usePreferences();
   const { profile } = useSession();
   const [joining, setJoining] = useState(joinInitially);
-  const [focusComposer, setFocusComposer] = useState(false);
-  useEffect(() => {
-    if (focusComposer && profile?.onboarding_completed) {
-      const focus = () => {
-        const input = document.querySelector<HTMLTextAreaElement>(
-          '[aria-label="Message"]',
-        );
-        if (input) {
-          input.focus();
-          setFocusComposer(false);
-          return true;
-        }
-        return false;
-      };
-      if (focus()) return;
-      const observer = new MutationObserver(() => {
-        if (focus()) observer.disconnect();
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-      return () => observer.disconnect();
-    }
-  }, [focusComposer, profile]);
+  if (profile?.onboarding_completed)
+    return (
+      <Navigate
+        to={appDestination(params.slug ? `/rooms/${params.slug}` : requested)}
+        replace
+      />
+    );
   if (!roomNames[slug])
     return (
       <main className="state">
@@ -68,7 +55,10 @@ export default function Landing({
         onTheme={setTheme}
         theme={theme}
         chat={
-          <PublicConversation slug={slug} onJoin={() => setJoining(true)} />
+          <>
+            <PublicConversation slug={slug} onJoin={() => setJoining(true)} />
+            <ConversationDemo />
+          </>
         }
       />
       {joining && (
@@ -83,11 +73,12 @@ export default function Landing({
             }}
             onComplete={() => {
               setJoining(false);
-              setFocusComposer(true);
-              if (joinInitially)
-                nav(slug === "lounge" ? "/" : `/rooms/${slug}`, {
-                  replace: true,
-                });
+              nav(
+                appDestination(
+                  slug === "lounge" ? requested : `/rooms/${slug}`,
+                ),
+                { replace: true },
+              );
             }}
           />
         </Suspense>

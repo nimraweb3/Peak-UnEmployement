@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { roomDescriptions } from "../../shared/copy";
 import { useParams, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,14 @@ import { dailyPrompt } from "../../shared/config";
 import { useSession } from "../contexts/session";
 export default function Room() {
   const { slug = "lounge" } = useParams();
+  const [details, setDetails] = useState(false);
+  useEffect(() => {
+    try {
+      localStorage.setItem("pu-last-room", slug);
+    } catch {
+      /* Storage is optional. */
+    }
+  }, [slug]);
   const { profile } = useSession();
   const rooms = useQuery({
     queryKey: ["rooms"],
@@ -22,7 +31,7 @@ export default function Room() {
   if (!room)
     return <ErrorState error={new Error("This room does not exist.")} />;
   return (
-    <div className="room-layout">
+    <div className={`room-layout ${details ? "room-details-open" : ""}`}>
       <section className="room-main">
         <header className="room-header">
           <span className="room-symbol">{room.icon}</span>
@@ -35,48 +44,57 @@ export default function Room() {
             <h1>{room.name}</h1>
             <p>{roomDescriptions[slug] || room.description}</p>
           </div>
-          <span className="room-public">Public room</span>
+          <button
+            className="room-details-toggle"
+            aria-expanded={details}
+            aria-controls="room-details"
+            onClick={() => setDetails((v) => !v)}
+          >
+            {details ? "Hide info" : "Room info"}
+          </button>
         </header>
         <ChatPanel key={room.id} id={room.id} kind="rooms" title={room.name} />
       </section>
-      <aside className="room-info">
-        <div className="prompt-card glass">
-          <span className="eyebrow">
-            <Sparkles size={15} /> TODAY’S QUESTION
-          </span>
-          <h3>{dailyPrompt()}</h3>
-          <p>A starting point if you need one.</p>
-          <span className="prompt-doodle">✳</span>
-        </div>
-        <div className="room-info-copy">
-          <span className="eyebrow">A LITTLE REMINDER</span>
-          <h3>This room is public.</h3>
-          <p>
-            Anyone can read these conversations. Keep identifying details out of
-            your posts.
-          </p>
-        </div>
-        <Link to="/community-guidelines" className="guideline-link">
-          <ShieldCheck size={20} />
-          <div>
-            <strong>A few ground rules.</strong>
-            <p>Read our community guidelines</p>
+      {details && (
+        <aside className="room-info" id="room-details">
+          <div className="prompt-card glass">
+            <span className="eyebrow">
+              <Sparkles size={15} /> TODAY’S QUESTION
+            </span>
+            <h3>{dailyPrompt()}</h3>
+            <p>A starting point if you need one.</p>
+            <span className="prompt-doodle">✳</span>
           </div>
-          <ArrowUpRight size={16} />
-        </Link>
-        {profile?.industry_id && slug === "lounge" && (
-          <Link
-            className="suggest-room glass"
-            to={`/app/rooms/${profile.industry_id}`}
-          >
-            YOUR NEXT STOP <strong>Your industry room ↗</strong>
-            <p>Talk with people in your line of work.</p>
+          <div className="room-info-copy">
+            <span className="eyebrow">A LITTLE REMINDER</span>
+            <h3>This room is public.</h3>
+            <p>
+              Anyone can read these conversations. Keep identifying details out
+              of your posts.
+            </p>
+          </div>
+          <Link to="/community-guidelines" className="guideline-link">
+            <ShieldCheck size={20} />
+            <div>
+              <strong>A few ground rules.</strong>
+              <p>Read our community guidelines</p>
+            </div>
+            <ArrowUpRight size={16} />
           </Link>
-        )}
-        <p className="info-signoff">
-          A place to talk.<span>Peak Unemployment</span>
-        </p>
-      </aside>
+          {profile?.industry_id && slug === "lounge" && (
+            <Link
+              className="suggest-room glass"
+              to={`/app/rooms/${profile.industry_id}`}
+            >
+              YOUR NEXT STOP <strong>Your industry room ↗</strong>
+              <p>Talk with people in your line of work.</p>
+            </Link>
+          )}
+          <p className="info-signoff">
+            A place to talk.<span>Peak Unemployment</span>
+          </p>
+        </aside>
+      )}
     </div>
   );
 }
