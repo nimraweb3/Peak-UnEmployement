@@ -24,7 +24,6 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
-anti-slop-review.md
 # Local AI assistants: instructions, sessions, prompts and editor state
 .codex/
 .claude/
@@ -33,16 +32,6 @@ anti-slop-review.md
 .continue/
 .windsurf/
 .copilot/
-AGENTS.md
-AGENTS.override.md
-CLAUDE.md
-GEMINI.md
-.cursorrules
-.cursorignore
-.windsurfrules
-.github/copilot-instructions.md
-.github/instructions/
-.github/prompts/
 /prompts/
 /briefs/
 /attachments/
@@ -50,12 +39,6 @@ GEMINI.md
 # Internal work notes and generated design / QA evidence
 /docs/audits/
 /docs/screenshots/
-/docs/anti-slop-review.md
-/docs/community-redesign.md
-/docs/performance-report.md
-/docs/verification-report.md
-/docs/DESIGN-QA.md
-/docs/COPYWRITING.md
 
 # Private credentials and local service configuration
 .secrets/
@@ -100,3 +83,13 @@ supabase/.branches/
 
 # Local Vercel deployment metadata and upload packages
 .vercel/
+!.env.*.example
+.vite/
+.turbo/
+.nyc_output/
+/tmp/
+/temp/
+*.tmp
+
+
+anti-slop-review.md
