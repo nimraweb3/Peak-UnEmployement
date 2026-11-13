@@ -11,6 +11,9 @@ import { MediaEditor } from "./MediaEditor";
 export function ProfileEditor() {
   const { profile } = useSession();
   const qc = useQueryClient();
+  const cooldown = useQuery({ queryKey: ["username-cooldown"], queryFn: () => api<{ next_change_at: string | null }>("/me/username"), enabled: !frontendDemo });
+  const nextChange = cooldown.data?.next_change_at;
+  const locked = !!nextChange && new Date(nextChange).getTime() > Date.now();
   const query = useQuery({
     queryKey: ["profile-details"],
     queryFn: () => api<ProfileDetails | null>("/me/profile"),
@@ -137,18 +140,20 @@ export function ProfileEditor() {
           onChange={setHandle}
         />
         <p className="fine-print">
-          You can change your handle once every 7 days. Your old profile link
+          You can change your handle once every 30 days. Your old profile link
           will stop working.
+          {locked && ` Available again ${new Date(nextChange!).toLocaleString()}.`}
         </p>
         <Button
           variant="outline"
-          disabled={busy || !handle || handle === profile?.username}
+          disabled={busy || locked || cooldown.isLoading || !!cooldown.error || !handle || handle === profile?.username}
           onClick={async () => {
             setBusy(true);
             setError("");
             try {
               await api("/me/username", "PATCH", { username: handle });
               await qc.invalidateQueries({ queryKey: ["me"] });
+              await qc.invalidateQueries({ queryKey: ["username-cooldown"] });
               setNotice("Username saved.");
             } catch (e) {
               setError((e as Error).message);

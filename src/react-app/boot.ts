@@ -6,7 +6,7 @@ const informationalPage = [
   "/community-guidelines",
 ].includes(location.pathname);
 // These pages are complete server-rendered documents with ordinary links.
-if (!import.meta.env.PROD || !informationalPage) {
+if (!import.meta.env.PROD || !informationalPage || !document.querySelector("#root .legal-page")) {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       void import("./main");
