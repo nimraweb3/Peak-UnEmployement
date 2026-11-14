@@ -766,10 +766,9 @@
   font-size: 12px;
 }
 .motion-ready .reveal-section {
-  opacity: 0.35;
+  opacity: 1;
   transform: translateY(24px);
   transition:
-    opacity 0.65s,
     transform 0.65s;
 }
 .motion-ready .reveal-section.is-revealed {
@@ -785,7 +784,7 @@
 }
 @keyframes ah-arrive {
   from {
-    opacity: 0;
+    opacity: 1;
     transform: translateY(10px);
   }
   to {

@@ -1,12 +1,13 @@
 import { lazy, Suspense, Component, type ReactNode } from "react";
 
-import { Routes, Route, Navigate, Link } from "react-router";
+import { Routes, Route, Link } from "react-router";
 
 import { Loading, ErrorState } from "./components/common";
 
 import { PageMetadata } from "./components/PageMetadata";
 
 import Landing from "./pages/Landing";
+import { RoomEntry } from "./components/layout/RoomEntry";
 
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const MyProfile = lazy(() => import("./pages/MyProfile"));
@@ -69,7 +70,7 @@ export default function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
 
           <Route path="/app" element={<Shell />}>
-            <Route index element={<Navigate to="lounge" replace />} />
+            <Route index element={<RoomEntry />} />
 
             <Route path="lounge" element={<Room />} />
 

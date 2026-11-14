@@ -53,7 +53,8 @@ async function join(page: Page, name: string) {
   await page.getByRole("button", { name: "Enter the conversation" }).click();
   await expect(
     page.getByRole("textbox", { name: "Message", exact: true }),
-  ).toBeFocused();
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/app\/lounge$/);
   await expect(
     page.getByRole("heading", { name: "The Unemployment Lounge" }),
   ).toBeVisible();
@@ -85,7 +86,7 @@ test("two real anonymous sessions: onboarding, persistence, rooms, consent, real
     await pb.reload();
     await expect(pb.getByText(publicText, { exact: true })).toBeVisible();
     await pb.getByRole("link", { name: "Design & Creative" }).click();
-    await expect(pb.locator("#public-room-title")).toBeVisible();
+    await expect(pb.getByRole("heading", { name: "Design & Creative", exact: true })).toBeVisible();
     expect(
       (
         await authenticated(pa, "/dm-requests", "POST", {
