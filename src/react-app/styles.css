@@ -2992,9 +2992,7 @@ textarea {
 }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-reduced="true"]) body {
-    transition:
-      background-color 160ms,
-      color 160ms;
+    transition: none;
   }
   html:not([data-reduced="true"]) .home-intro {
     animation: arrive 240ms ease-out both;
@@ -4055,3 +4053,6 @@ textarea {
 [data-reduced="true"] .demo-message {
   animation: none;
 }
+.theme-control label { margin:0; flex-direction:row; }
+.theme-control legend.sr-only { width:1px; height:1px; padding:0; }
+@media (max-width:760px) { .ah-header .theme-control { max-width:100%; } }

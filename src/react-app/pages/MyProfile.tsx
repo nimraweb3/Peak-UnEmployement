@@ -4,7 +4,7 @@ import { useSession } from "../contexts/session";
 export default function MyProfile() {
   const { profile } = useSession();
   return (
-    <div className="settings-page">
+    <div className="content-page settings-page">
       <header className="page-heading">
         <span className="eyebrow">YOUR CORNER OF THE COMMUNITY</span>
         <h1>Your profile.</h1>

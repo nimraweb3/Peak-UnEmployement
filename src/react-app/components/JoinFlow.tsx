@@ -25,7 +25,7 @@ export default function JoinFlow({
   const industriesQuery = useIndustries(!!session);
   const [profession, setProfession] = useState("");
   const [step, setStep] = useState(1);
-  const [name, setName] = useState(() => profile?.username || nickname());
+  const [name, setName] = useState(() => profile?.username || nickname().toLowerCase());
   const [industry, setIndustry] = useState(profile?.industry_id || "");
   const professionsQuery = useProfessions(industry);
   const [era, setEra] = useState(
@@ -178,7 +178,7 @@ export default function JoinFlow({
                 className="icon-button"
                 aria-label="Try another nickname"
                 title="Try another"
-                onClick={() => setName(nickname())}
+                onClick={() => setName(nickname().toLowerCase())}
               >
                 <RefreshCw size={19} />
               </button>
