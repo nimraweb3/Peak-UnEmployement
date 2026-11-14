@@ -86,7 +86,7 @@ test("responsive screenshots, reflow, accessible themes and modal", async ({
   const reports = [];
   for (const theme of ["light", "dark"]) {
     if (theme === "dark")
-      await page.getByLabel("Color theme").selectOption("dark");
+      await page.getByRole("radio", { name: "Night Shift", exact: true }).check();
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
       .analyze();
@@ -105,7 +105,7 @@ test("responsive screenshots, reflow, accessible themes and modal", async ({
   expect(modal.violations).toEqual([]);
   await page.screenshot({ path: "docs/screenshots/redesign-join.png" });
   await page.keyboard.press("Escape");
-  await page.getByLabel("Color theme").selectOption("light");
+  await page.getByRole("radio", { name: "Day Shift", exact: true }).check();
   await page.setViewportSize({ width: 1280, height: 1000 });
   // Reflow equivalent to a 1280px viewport at 400% browser zoom (320 CSS px).
   await page.setViewportSize({ width: 320, height: 844 });
@@ -200,11 +200,11 @@ test("system theme follows OS changes and explicit preferences survive reload", 
   await expect(
     page.getByRole("heading", { name: "Couldn’t load the conversation." }),
   ).toBeVisible();
-  await page.getByLabel("Color theme").selectOption("system");
+  await page.getByRole("radio", { name: "System", exact: true }).check();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.emulateMedia({ colorScheme: "light" });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await page.getByLabel("Color theme").selectOption("dark");
+  await page.getByRole("radio", { name: "Night Shift", exact: true }).check();
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
