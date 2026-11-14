@@ -50,6 +50,17 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 describe("message composer behavior", () => {
+  it("searches categories and moves through emoji choices with the keyboard", () => {
+    mount();
+    fireEvent.click(screen.getByRole("button", {name:"Add emoji"}));
+    fireEvent.change(screen.getByRole("textbox", {name:"Search emojis"}), {target:{value:"coffee"}});
+    expect(screen.getByRole("button",{name:"Coffee"})).toBeTruthy();
+    expect(screen.queryByRole("button",{name:"Smile"})).toBeNull();
+    fireEvent.click(screen.getByRole("button",{name:"Gestures"}));
+    const first=screen.getByRole("button",{name:"Thumbs up"}); first.focus();
+    fireEvent.keyDown(first,{key:"ArrowRight"});
+    expect(document.activeElement).toBe(screen.getByRole("button",{name:"Thumbs down"}));
+  });
   it("prevents empty sends and preserves Shift+Enter", () => {
     mount();
     const input = screen.getByRole("textbox", { name: "Message" });

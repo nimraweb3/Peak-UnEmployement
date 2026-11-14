@@ -18,6 +18,7 @@ export function Preferences({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState("light");
   const [resolvedTheme, setResolvedTheme] = useState("light");
   const [reduced, setReduced] = useState(false);
+  const [systemReduced, setSystemReduced] = useState(false);
   const [announcements, setAnnouncements] = useState(false);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -42,6 +43,7 @@ export function Preferences({ children }: { children: ReactNode }) {
     const media = matchMedia("(prefers-color-scheme: dark)");
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const apply = () => {
+      setSystemReduced(motion.matches);
       const resolved =
         theme === "system" ? (media.matches ? "dark" : "light") : theme;
       setResolvedTheme(resolved);
@@ -74,7 +76,7 @@ export function Preferences({ children }: { children: ReactNode }) {
         theme,
         resolvedTheme,
         setTheme,
-        reduced,
+        reduced: reduced || systemReduced,
         setReduced,
         announcements,
         setAnnouncements,
