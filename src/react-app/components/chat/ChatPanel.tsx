@@ -33,7 +33,12 @@ type ChatProps = {
 };
 export function ChatPanel(props: ChatProps) {
   const { profile } = useSession();
-  return <ChatContent key={profile?.id || "guest"} {...props} />;
+  return (
+    <ChatContent
+      key={`${profile?.id || "guest"}:${props.kind}:${props.id}`}
+      {...props}
+    />
+  );
 }
 function ChatContent({ id, kind, title, closed = false }: ChatProps) {
   const { profile } = useSession();
@@ -210,7 +215,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
         )}
         {query.isLoading ? (
           <Loading />
-        ) : query.error ? (
+        ) : query.error && query.messages.length === 0 ? (
           <ErrorState error={query.error} retry={() => void query.refetch()} />
         ) : query.messages.length === 0 ? (
           <Empty
@@ -218,6 +223,18 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
             description="A question, a small win, or whatever’s on your mind."
           />
         ) : null}
+        {query.error && query.messages.length > 0 && (
+          <p className="notice" role="status">
+            Couldn’t refresh. Showing previously loaded messages.{" "}
+            <button
+              type="button"
+              className="text-link"
+              onClick={() => void query.refetch()}
+            >
+              Try again
+            </button>
+          </p>
+        )}
         {query.messages.map((message) => {
           const own = message.sender_id === profile?.id;
           const reactions = message.reactions || [];
