@@ -10,6 +10,7 @@ const files = execFileSync(
   .split("\0")
   .filter(Boolean);
 const patterns = [
+  /\bGOCSPX-[A-Za-z0-9_-]{20,}\b/,
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
   /\b(?:ghp|github_pat|sb_secret)_[A-Za-z0-9_]{20,}\b/,
   /\bAKIA[A-Z0-9]{16}\b/,

@@ -6,13 +6,15 @@ import { Loading, ErrorState } from "./components/common";
 
 import { PageMetadata } from "./components/PageMetadata";
 
-import Landing from "./pages/Landing";
+const Landing = lazy(() => import("./pages/Landing"));
 import { RoomEntry } from "./components/layout/RoomEntry";
 
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const MyProfile = lazy(() => import("./pages/MyProfile"));
 const Auth = lazy(() => import("./pages/Auth"));
-const AuthCallback = lazy(() => import("./pages/Auth").then(m=>({default:m.AuthCallback})));
+const AuthCallback = lazy(() =>
+  import("./pages/Auth").then((m) => ({ default: m.AuthCallback })),
+);
 const Join = lazy(() => import("./pages/Join"));
 
 const Shell = lazy(() => import("./components/layout/Shell"));
@@ -65,7 +67,7 @@ export default function App() {
           <Route path="/join" element={<Join />} />
 
           <Route path="/recover" element={<Recover />} />
-          <Route path="/u/:username" element={<UserProfile/>}/>
+          <Route path="/u/:username" element={<UserProfile />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
 
