@@ -1,16 +1,22 @@
+import { authorizationLost } from "../lib/transport";
 import { useEffect, useMemo, useState } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { api, supabase, demoMode, frontendDemo } from "../lib/api";
 import type { Message } from "../../shared/types";
 export function useMessages(kind: "rooms" | "conversations", id: string) {
   const qc = useQueryClient();
-  const [connection, setConnection] = useState(demoMode || frontendDemo ? "Local demo" : "Connecting");
+  const [connection, setConnection] = useState(
+    demoMode || frontendDemo ? "Local demo" : "Connecting",
+  );
   const query = useInfiniteQuery({
     queryKey: ["messages", kind, id],
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam }) =>
+    queryFn: ({ pageParam, signal }) =>
       api<{ items: Message[]; next: string | null }>(
         `/${kind}/${id}/messages${pageParam ? `?before=${encodeURIComponent(pageParam)}` : ""}`,
+        "GET",
+        undefined,
+        signal,
       ),
     getNextPageParam: (page, pages) => (pages.length < 10 ? page.next : null),
     enabled: !!id,
@@ -51,17 +57,19 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
       )
       .subscribe((status) => {
         setConnection(
-          status === "SUBSCRIBED"
-            ? "Live"
-            : status === "CHANNEL_ERROR" || status === "TIMED_OUT"
-              ? "Reconnecting"
-              : "Connecting",
+          !navigator.onLine
+            ? "Offline"
+            : status === "SUBSCRIBED"
+              ? "Live"
+              : status === "CHANNEL_ERROR" || status === "TIMED_OUT"
+                ? "Reconnecting"
+                : "Connecting",
         );
         if (status === "SUBSCRIBED")
           void qc.invalidateQueries({ queryKey: ["messages", kind, id] });
       });
     const online = () => {
-      setConnection("Reconnecting");
+      setConnection(channel.state === "joined" ? "Live" : "Reconnecting");
       void qc.invalidateQueries({ queryKey: ["messages", kind, id] });
     };
     const offline = () => setConnection("Offline");
@@ -76,7 +84,7 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
   }, [id, kind, qc]);
   const messages = useMemo(() => {
     const unique = new Map<string, Message>();
-    if (query.isError) return [];
+    if (authorizationLost(query.error)) return [];
     query.data?.pages.forEach((page) =>
       page.items.forEach((item) => unique.set(item.id, item)),
     );
@@ -84,6 +92,6 @@ export function useMessages(kind: "rooms" | "conversations", id: string) {
       (a, b) =>
         a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id),
     );
-  }, [query.data, query.isError]);
+  }, [query.data, query.error]);
   return { ...query, messages, connection };
 }

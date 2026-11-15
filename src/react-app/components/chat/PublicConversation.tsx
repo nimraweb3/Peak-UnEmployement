@@ -1,3 +1,4 @@
+import { requestJson } from "../../lib/transport";
 import { useMessageAnnouncement } from "../../hooks/useMessageAnnouncement";
 import {
   lazy,
@@ -109,19 +110,10 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
     initialPageParam: null as string | null,
     queryFn: async ({ pageParam, signal }) => {
       if (frontendDemo) return api<Feed>(`/public/rooms/${slug}/messages`);
-      const response = await fetch(
+      return requestJson<Feed>(
         `${apiBase}/api/public/rooms/${slug}/messages${pageParam ? `?before=${encodeURIComponent(pageParam)}` : ""}`,
         { signal },
       );
-      const data = await response.json();
-      if (!response.ok)
-        throw Object.assign(
-          new Error(data.error || "Couldn’t load the conversation. Try again."),
-          {
-            retryable: response.status >= 500 && data.code !== "NOT_CONFIGURED",
-          },
-        );
-      return data as Feed;
     },
     getNextPageParam: (page, pages) => (pages.length < 4 ? page.next : null),
     refetchInterval: visible && online ? 15000 : false,
@@ -183,6 +175,11 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
         {status}
         <span className="guest-label">YOU’RE READING AS A GUEST</span>
       </div>
+      {query.error && query.data && (
+        <p className="notice" role="status">
+          Couldn’t refresh. Showing previously loaded messages.
+        </p>
+      )}
       <div
         className="guest-message-scroll"
         ref={scroll}
@@ -201,7 +198,7 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
       >
         {query.isPending ? (
           <GuestPlaceholder />
-        ) : query.error ? (
+        ) : query.error && !query.data ? (
           <div className="feed-empty">
             <div className="empty-mark">
               <WifiOff size={28} />

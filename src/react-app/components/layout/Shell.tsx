@@ -26,7 +26,7 @@ export default function Shell() {
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
     main.current?.focus();
-  }, [location.pathname]);
+  }, [location.pathname, profile?.onboarding_completed]);
   const [open, setOpen] = useState(false);
   const admin = useQuery({
     queryKey: ["admin"],
