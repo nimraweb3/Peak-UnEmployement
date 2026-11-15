@@ -1,3 +1,4 @@
+import { requestJson } from "./transport";
 import { createClient } from "@supabase/supabase-js";
 export const apiBase = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 export const demoMode = import.meta.env.DEV && import.meta.env.MODE === "demo";
@@ -22,12 +23,14 @@ export async function api<T>(
   path: string,
   method = "GET",
   body?: unknown,
+  signal?: AbortSignal,
 ): Promise<T> {
   if (frontendDemo)
     return (await import("./frontend-demo")).localApi<T>(path, method, body);
   const session = await supabase?.auth.getSession();
-  const response = await fetch(`${apiBase}/api${path}`, {
+  return requestJson<T>(`${apiBase}/api${path}`, {
     method,
+    signal,
     headers: {
       "Content-Type": "application/json",
       ...(session?.data.session
@@ -36,8 +39,4 @@ export async function api<T>(
     },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-  const data = await response.json();
-  if (!response.ok)
-    throw Object.assign(new Error(data.error || "Something went wrong. Please try again."),{status:response.status,suggestions:data.suggestions});
-  return data;
 }

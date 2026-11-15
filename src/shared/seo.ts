@@ -1,5 +1,5 @@
 import { copy } from "./copy";
-import { roomNames, roomDescriptions } from "./public-page";
+import { roomNames, roomDescriptions } from "./rooms";
 export const publicPaths = [
   "/",
   "/community-guidelines",
