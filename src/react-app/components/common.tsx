@@ -30,8 +30,8 @@ export function Avatar({
 }
 export function Loading() {
   return (
-    <div className="state">
-      <LoaderCircle className="spin" />
+    <div className="state" role="status" aria-live="polite">
+      <LoaderCircle className="spin" aria-hidden="true" />
       <p>Loading…</p>
       <div className="skeleton-lines" aria-hidden="true">
         <i />
