@@ -18,13 +18,15 @@ export default function Messages() {
   const [busy, setBusy] = useState(false);
   const requests = useQuery({
     queryKey: ["requests"],
-    refetchInterval: demoMode ? 2000 : false,
-    queryFn: () => api<Request[]>("/dm-requests"),
+    refetchInterval: demoMode ? 2000 : 30000,
+    refetchIntervalInBackground: false,
+    queryFn: ({ signal }) => api<Request[]>("/dm-requests", "GET", undefined, signal),
   });
   const conversations = useQuery({
     queryKey: ["conversations"],
-    refetchInterval: demoMode ? 2000 : false,
-    queryFn: () => api<Conversation[]>("/conversations"),
+    refetchInterval: demoMode ? 2000 : 30000,
+    refetchIntervalInBackground: false,
+    queryFn: ({ signal }) => api<Conversation[]>("/conversations", "GET", undefined, signal),
   });
   useEffect(() => {
     if (!supabase || !profile) return;

@@ -3,6 +3,26 @@ import AxeBuilder from "@axe-core/playwright";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 // Public-only acceptance checks. Never create users or post fixture messages.
+test("static documents and crawler boundaries work without JavaScript", async ({request}) => {
+  for (const path of ["/", "/rooms/tech", "/community-guidelines"]) {
+    const response = await request.get(path);
+    expect(response.status()).toBe(200);
+    const html = await response.text();
+    expect(html).toContain('<meta property="og:title"');
+    expect(html).toContain('<link rel="canonical"');
+    expect(html).toMatch(/<h1[\s>]/);
+  }
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.headers()["content-type"]).toContain("xml");
+  expect(await sitemap.text()).toContain("/rooms/tech");
+  expect(await sitemap.text()).not.toContain("/app/");
+  const privatePage = await request.get("/app/messages");
+  expect(privatePage.headers()["x-robots-tag"]).toContain("noindex");
+  expect(await privatePage.text()).toContain('content="noindex, nofollow"');
+  const missing = await request.get("/audit-missing-page");
+  expect(missing.status()).toBe(404);
+});
+
 test("production guidelines navigation and direct refresh", async ({page}) => {
   await page.goto("/");
   await page.getByRole("navigation", {name:"Main navigation"}).getByRole("link", {name:"House rules"}).click();
@@ -22,7 +42,7 @@ test("public demo and both shifts reflow with no axe violations", async ({page})
     for(const theme of ["Day Shift","Night Shift"]) {
       await page.getByRole("radio",{name:theme,exact:true}).check();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      const result = await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21aa"]).analyze();
+      const result = await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
       results.push({width,theme,violations:result.violations});
       await page.screenshot({path:`docs/screenshots/ux-${width}-${theme.split(" ")[0]}.png`,fullPage:true});
     }
@@ -42,7 +62,7 @@ test("auth and legal pages render accessibly; guest workspace is protected", asy
   for(const path of ["/auth", "/auth?mode=signup", "/auth?mode=forgot", "/community-guidelines", "/privacy", "/terms"]) {
     await page.goto(path);
     await expect(page.getByRole("heading",{level:1})).toBeVisible();
-    const result=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21aa"]).analyze();
+    const result=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();
     reports.push({path,violations:result.violations});
   }
   mkdirSync("docs/audits",{recursive:true});

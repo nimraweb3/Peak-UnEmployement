@@ -2,11 +2,8 @@ import { useState, type ReactNode, type MouseEvent } from "react";
 import { ThemeControl } from "./ThemeControl";
 import { Brand, BrandMark } from "./brand";
 import { industries, nickname } from "./config";
-export const roomNames: Record<string, string> = {
-  lounge: "The Unemployment Lounge",
-  ...Object.fromEntries(industries.map((r) => [r.slug, r.name])),
-};
-export { roomDescriptions } from "./copy";
+import { roomNames } from "./rooms";
+export { roomNames, roomDescriptions } from "./rooms";
 import { roomDescriptions, copy } from "./copy";
 export function GuestPlaceholder() {
   return (
