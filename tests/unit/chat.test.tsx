@@ -52,14 +52,61 @@ afterEach(cleanup);
 describe("message composer behavior", () => {
   it("searches categories and moves through emoji choices with the keyboard", () => {
     mount();
-    fireEvent.click(screen.getByRole("button", {name:"Add emoji"}));
-    fireEvent.change(screen.getByRole("textbox", {name:"Search emojis"}), {target:{value:"coffee"}});
-    expect(screen.getByRole("button",{name:"Coffee"})).toBeTruthy();
-    expect(screen.queryByRole("button",{name:"Smile"})).toBeNull();
-    fireEvent.click(screen.getByRole("button",{name:"Gestures"}));
-    const first=screen.getByRole("button",{name:"Thumbs up"}); first.focus();
-    fireEvent.keyDown(first,{key:"ArrowRight"});
-    expect(document.activeElement).toBe(screen.getByRole("button",{name:"Thumbs down"}));
+    fireEvent.click(screen.getByRole("button", { name: "Add emoji" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Search emojis" }), {
+      target: { value: "coffee" },
+    });
+    expect(screen.getByRole("button", { name: "Coffee" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Smile" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Gestures" }));
+    const first = screen.getByRole("button", { name: "Thumbs up" });
+    first.focus();
+    fireEvent.keyDown(first, { key: "ArrowRight" });
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Thumbs down" }),
+    );
+  });
+  it("clears drafts when the room changes", () => {
+    const client = new QueryClient();
+    const view = render(
+      <QueryClientProvider client={client}>
+        <ChatPanel id="one" kind="rooms" title="One" />
+      </QueryClientProvider>,
+    );
+    fireEvent.change(screen.getByRole("textbox", { name: "Message" }), {
+      target: { value: "Private draft for room one" },
+    });
+    view.rerender(
+      <QueryClientProvider client={client}>
+        <ChatPanel id="two" kind="rooms" title="Two" />
+      </QueryClientProvider>,
+    );
+    expect(
+      (screen.getByRole("textbox", { name: "Message" }) as HTMLTextAreaElement)
+        .value,
+    ).toBe("");
+  });
+  it("shows retained history alongside a recoverable refresh notice", () => {
+    vi.mocked(useMessages).mockReturnValue({
+      ...empty,
+      error: new Error("Temporary failure"),
+      messages: [
+        {
+          id: "cached",
+          sender_id: "self",
+          content: "Previously loaded",
+          created_at: "2026-11-15T00:00:00Z",
+          deleted_at: null,
+          profiles: { username: "Self", avatar_seed: "seed" },
+          reactions: [],
+        },
+      ],
+    } as any);
+    mount();
+    expect(screen.getByText("Previously loaded")).toBeTruthy();
+    expect(screen.getAllByRole("status").map(node => node.textContent).join(" ")).toContain(
+      "Showing previously loaded",
+    );
   });
   it("prevents empty sends and preserves Shift+Enter", () => {
     mount();
