@@ -75,7 +75,17 @@ export function PublicPage({
         </nav>
         <div className="ah-header-actions">
           <ThemeControl value={theme} onChange={onTheme} />
-          <a className="ah-signin" href={member ? "/app/messages" : "/auth?returnTo=" + encodeURIComponent(slug === "lounge" ? "/app/lounge" : "/rooms/"+slug)}>
+          <a
+            className="ah-signin"
+            href={
+              member
+                ? "/app/messages"
+                : "/auth?returnTo=" +
+                  encodeURIComponent(
+                    slug === "lounge" ? "/app/lounge" : "/rooms/" + slug,
+                  )
+            }
+          >
             {member ? "Your inbox" : "Sign in"}
             <span aria-hidden="true">↗</span>
           </a>
@@ -183,7 +193,21 @@ export function PublicPage({
             <div className="public-chat-content" data-nosnippet="">
               {chat || (
                 <>
-                  <GuestPlaceholder />
+                  {slug === "lounge" &&
+                  import.meta.env.VITE_HOMEPAGE_CHAT_MODE !== "live" ? (
+                    <div className="conversation-demo">
+                      <span className="eyebrow">
+                        SEE HOW IT WORKS — DEMO · NOT LIVE MESSAGES
+                      </span>
+                      <h3>See how the conversation works.</h3>
+                      <p>
+                        A fictional conversation you can play when the page
+                        finishes loading.
+                      </p>
+                    </div>
+                  ) : (
+                    <GuestPlaceholder />
+                  )}
                   <div className="guest-composer">
                     <span>Join to say something</span>
                     <a

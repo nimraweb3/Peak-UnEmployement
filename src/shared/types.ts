@@ -18,7 +18,16 @@ export interface Room {
   icon: string;
   industry_id: string | null;
 }
+export interface ReplyReference {
+  id: string;
+  content: string;
+  deleted_at: string | null;
+  sender_id: string;
+  profiles: { username: string } | null;
+}
 export interface Message {
+  reply_to_message_id?: string | null;
+  reply?: ReplyReference | null;
   id: string;
   room_id: string | null;
   conversation_id: string | null;
@@ -56,4 +65,21 @@ export interface Conversation {
   a: Profile;
   b: Profile;
   unread: number;
+}
+
+export interface AppNotification {
+  id: string;
+  type: "reply" | "request" | "accepted" | "private_message";
+  is_read: boolean;
+  created_at: string;
+  actor_id: string;
+  message_id: string | null;
+  conversation_id: string | null;
+  room: { slug: string; name: string } | null;
+  actor: {
+    id: string;
+    username: string;
+    avatar_seed: string;
+    profile_details?: { avatar_path: string | null } | null;
+  } | null;
 }

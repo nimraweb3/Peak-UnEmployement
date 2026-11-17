@@ -56,4 +56,4 @@ export function unwrap<T>({
   return data as NonNullable<T>;
 }
 export const messageSelect =
-  "*,profiles!messages_sender_id_fkey(id,username,avatar_seed,allows_dm_requests,profile_details(avatar_path,display_name)),reactions(user_id,emoji)";
+  "*,profiles!messages_sender_id_fkey(id,username,avatar_seed,allows_dm_requests,profile_details(avatar_path,display_name)),reactions(user_id,emoji),reply:messages!messages_reply_to_message_id_fkey(id,content,deleted_at,sender_id,profiles!messages_sender_id_fkey(username))";

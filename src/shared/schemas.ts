@@ -14,6 +14,7 @@ export const messageSchema = z
         "One link per message, please.",
       ),
     client_id: uuid,
+    reply_to_message_id: uuid.nullable().optional(),
   })
   .strict();
 export const profileSchema = z
