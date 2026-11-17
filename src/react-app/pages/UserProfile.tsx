@@ -1,3 +1,4 @@
+import { industries } from "../../shared/config";
 import { useSession } from "../contexts/session";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router";
@@ -63,13 +64,16 @@ export default function UserProfile() {
               )}
               <h1>{q.data.display_name || q.data.username}</h1>
               <p>@{q.data.username}</p>
-              {q.data.mood && <p className="notice">{q.data.mood}</p>}
+              {q.data.mood && <p className="profile-badge">{q.data.mood}</p>}
               <p>{q.data.public_status}</p>
               <h2>About</h2>
               <p className="profile-bio">{q.data.bio || "No bio yet."}</p>
               <p>
                 {q.data.profession}{" "}
-                {q.data.industry_id && "· " + q.data.industry_id}
+                {q.data.industry_id &&
+                  "· " +
+                    (industries.find((i) => i.slug === q.data?.industry_id)
+                      ?.name || q.data.industry_id)}
               </p>
               <p>
                 Joined{" "}

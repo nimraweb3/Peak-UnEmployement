@@ -4,6 +4,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
 import { dbClient, type Env } from "./lib";
+import notifications from "./routes/notifications";
 import media from "./routes/media";
 import accounts from "./routes/accounts";
 import profile from "./routes/profile";
@@ -98,6 +99,7 @@ app.use("/api/*", async (c, next) => {
   c.set("authId", data.user.id);
   await next();
 });
+app.route("/", notifications);
 app.route("/", media);
 app.route("/", accounts);
 app.route("/", profile);

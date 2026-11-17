@@ -47,7 +47,7 @@ app.get("*", async (c) => {
     path === "/auth" ||
     path === "/auth/callback" ||
     path.startsWith("/u/") ||
-    /^\/app(?:\/(?:lounge|profile|settings|admin|messages(?:\/[a-f0-9-]+)?|rooms\/[a-z-]+))?$/.test(
+    /^\/app(?:\/(?:lounge|profile|settings|notifications|admin|messages(?:\/[a-f0-9-]+)?|rooms\/[a-z-]+))?$/.test(
       path,
     );
   const base = await c.env.ASSETS.fetch(
