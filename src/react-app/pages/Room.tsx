@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router";
 import { useState, useEffect } from "react";
 import { roomDescriptions } from "../../shared/copy";
 import { useParams, Link } from "react-router";
@@ -10,6 +11,7 @@ import { Loading, ErrorState } from "../components/common";
 import { dailyPrompt } from "../../shared/config";
 import { useSession } from "../contexts/session";
 export default function Room() {
+  const [searchParams] = useSearchParams();
   const { slug = "lounge" } = useParams();
   const [details, setDetails] = useState(false);
   useEffect(() => {
@@ -53,7 +55,13 @@ export default function Room() {
             {details ? "Hide info" : "Room info"}
           </button>
         </header>
-        <ChatPanel key={room.id} id={room.id} kind="rooms" title={room.name} />
+        <ChatPanel
+          focusMessageId={searchParams.get("message") || undefined}
+          key={room.id}
+          id={room.id}
+          kind="rooms"
+          title={room.name}
+        />
       </section>
       {details && (
         <aside className="room-info" id="room-details">

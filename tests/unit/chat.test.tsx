@@ -104,9 +104,48 @@ describe("message composer behavior", () => {
     } as any);
     mount();
     expect(screen.getByText("Previously loaded")).toBeTruthy();
-    expect(screen.getAllByRole("status").map(node => node.textContent).join(" ")).toContain(
-      "Showing previously loaded",
-    );
+    expect(
+      screen
+        .getAllByRole("status")
+        .map((node) => node.textContent)
+        .join(" "),
+    ).toContain("Showing previously loaded");
+  });
+  it("cancels replies without losing the draft, and retains the reference on retry", async () => {
+    vi.mocked(useMessages).mockReturnValue({
+      ...empty,
+      messages: [
+        {
+          id: "original",
+          sender_id: "other",
+          content: "Original thought",
+          created_at: "2026-11-16T00:00:00Z",
+          deleted_at: null,
+          profiles: { username: "Other", avatar_seed: "seed" },
+          reactions: [],
+        },
+      ],
+    } as any);
+    vi.mocked(api)
+      .mockRejectedValueOnce(new Error("Offline"))
+      .mockResolvedValueOnce({ ok: true });
+    mount();
+    const input = screen.getByRole("textbox", { name: "Message" });
+    fireEvent.change(input, { target: { value: "My reply" } });
+    fireEvent.click(screen.getByRole("button", { name: "Reply to message" }));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel reply" }));
+    expect((input as HTMLTextAreaElement).value).toBe("My reply");
+    fireEvent.click(screen.getByRole("button", { name: "Reply to message" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+    await screen.findByText("Didn’t go through. Try again.");
+    const payload = vi.mocked(api).mock.calls[0][2];
+    expect(payload).toMatchObject({
+      content: "My reply",
+      reply_to_message_id: "original",
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    await waitFor(() => expect(api).toHaveBeenCalledTimes(2));
+    expect(vi.mocked(api).mock.calls[1][2]).toEqual(payload);
   });
   it("prevents empty sends and preserves Shift+Enter", () => {
     mount();

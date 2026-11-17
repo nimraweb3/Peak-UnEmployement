@@ -56,8 +56,20 @@ export default function Landing({
         theme={theme}
         chat={
           <>
-            <PublicConversation slug={slug} onJoin={() => setJoining(true)} />
-            <ConversationDemo />
+            {slug === "lounge" &&
+            import.meta.env.VITE_HOMEPAGE_CHAT_MODE !== "live" ? (
+              <ConversationDemo />
+            ) : (
+              <PublicConversation slug={slug} onJoin={() => setJoining(true)} />
+            )}
+            <div className="demo-join">
+              <button
+                className="button button-primary"
+                onClick={() => setJoining(true)}
+              >
+                Join anonymously to reply
+              </button>
+            </div>
           </>
         }
       />
