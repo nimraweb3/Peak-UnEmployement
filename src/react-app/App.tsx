@@ -10,6 +10,7 @@ const Landing = lazy(() => import("./pages/Landing"));
 import { RoomEntry } from "./components/layout/RoomEntry";
 
 const UserProfile = lazy(() => import("./pages/UserProfile"));
+const Notifications = lazy(() => import("./components/notifications"));
 const MyProfile = lazy(() => import("./pages/MyProfile"));
 const Auth = lazy(() => import("./pages/Auth"));
 const AuthCallback = lazy(() =>
@@ -83,6 +84,7 @@ export default function App() {
             <Route path="messages/:conversationId" element={<Messages />} />
 
             <Route path="profile" element={<MyProfile />} />
+            <Route path="notifications" element={<Notifications />} />
 
             <Route path="settings" element={<Settings />} />
 

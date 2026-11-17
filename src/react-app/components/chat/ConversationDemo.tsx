@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { MessageBubble } from "./MessageBubble";
+import { useEffect, useState, useRef } from "react";
 import { usePreferences } from "../../contexts/preferences";
 
 const lines = [
@@ -32,6 +33,15 @@ export function ConversationDemo() {
     );
     return () => clearTimeout(timer);
   }, [playing, hidden, reduced, step]);
+  const transcript = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = transcript.current;
+    if (el && visible && playing && !hidden)
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: reduced ? "instant" : "smooth",
+      });
+  }, [step, visible, playing, hidden, reduced]);
   const count = reduced ? lines.length : Math.ceil(step / 2);
   return (
     <section
@@ -40,7 +50,9 @@ export function ConversationDemo() {
     >
       <div className="demo-heading">
         <div>
-          <span className="eyebrow">ILLUSTRATION · NOT LIVE MESSAGES</span>
+          <span className="eyebrow">
+            SEE HOW IT WORKS — DEMO · NOT LIVE MESSAGES
+          </span>
           <h3>See how the conversation works.</h3>
         </div>
         {!visible && (
@@ -57,7 +69,16 @@ export function ConversationDemo() {
       </div>
       {visible && (
         <>
-          <div className="demo-transcript" aria-label="Fictional conversation">
+          {reduced && (
+            <p className="fine-print">
+              Reduced motion is on. Showing a static conversation.
+            </p>
+          )}
+          <div
+            ref={transcript}
+            className="demo-transcript"
+            aria-label="Fictional conversation"
+          >
             {lines.slice(0, count).map(([name, text], i) => (
               <article className="demo-message" key={name}>
                 <span className="demo-avatar" aria-hidden="true">
@@ -65,7 +86,15 @@ export function ConversationDemo() {
                 </span>
                 <div>
                   <strong>{name}</strong>
-                  <p>{text}</p>
+                  {i === 1 && (
+                    <div className="reply-reference">
+                      <span>
+                        <strong>Replying to {lines[0][0]}</strong>
+                        <span>{lines[0][1]}</span>
+                      </span>
+                    </div>
+                  )}
+                  <MessageBubble>{text}</MessageBubble>
                   {i === 0 && (step >= 4 || reduced) && (
                     <span
                       className="demo-reaction"
@@ -110,8 +139,8 @@ export function ConversationDemo() {
             </button>
           </div>
           <p className="fine-print">
-            Fictional people, familiar conversations. The live room above shows
-            actual community messages.
+            Fictional people, familiar conversations. This demonstration never
+            posts to the community.
           </p>
         </>
       )}
