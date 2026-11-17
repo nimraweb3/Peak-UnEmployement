@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -11,6 +12,7 @@ import { Avatar, Loading, ErrorState, Empty } from "../components/common";
 import { ChatPanel } from "../components/chat/ChatPanel";
 import { PersonDialog } from "../components/profile/PersonDialog";
 export default function Messages() {
+  const [searchParams] = useSearchParams();
   const { conversationId } = useParams();
   const { profile } = useSession();
   const qc = useQueryClient();
@@ -20,13 +22,15 @@ export default function Messages() {
     queryKey: ["requests"],
     refetchInterval: demoMode ? 2000 : 30000,
     refetchIntervalInBackground: false,
-    queryFn: ({ signal }) => api<Request[]>("/dm-requests", "GET", undefined, signal),
+    queryFn: ({ signal }) =>
+      api<Request[]>("/dm-requests", "GET", undefined, signal),
   });
   const conversations = useQuery({
     queryKey: ["conversations"],
     refetchInterval: demoMode ? 2000 : 30000,
     refetchIntervalInBackground: false,
-    queryFn: ({ signal }) => api<Conversation[]>("/conversations", "GET", undefined, signal),
+    queryFn: ({ signal }) =>
+      api<Conversation[]>("/conversations", "GET", undefined, signal),
   });
   useEffect(() => {
     if (!supabase || !profile) return;
@@ -168,6 +172,7 @@ export default function Messages() {
           )}
         </header>
         <ChatPanel
+          focusMessageId={searchParams.get("message") || undefined}
           key={selected.id}
           id={selected.id}
           kind="conversations"

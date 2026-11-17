@@ -1,3 +1,4 @@
+import { NotificationProvider, NotificationBell } from "../notifications";
 import { Brand } from "../../../shared/brand";
 import { NavLink, Outlet, Navigate, Link, useLocation } from "react-router";
 import {
@@ -57,133 +58,137 @@ export default function Shell() {
       />
     );
   return (
-    <div className="app-shell">
-      <a className="skip-link" href="#workspace">
-        Skip to conversation
-      </a>
-      <header className="mobile-header">
-        <Link to="/app/lounge" aria-label="Peak Unemployment lounge">
-          <Brand />
-        </Link>
-        <button
-          className="icon-button"
-          aria-label={open ? "Close navigation" : "Open navigation"}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X /> : <Menu />}
-        </button>
-      </header>
-      {open && (
-        <Modal
-          open={open}
-          onOpenChange={setOpen}
-          title="Your rooms"
-          description="Choose a conversation."
-        >
-          <nav className="mobile-room-links">
-            {[{ slug: "lounge", name: "Main Lounge" }, ...industries].map(
-              (room) => (
-                <NavLink
-                  key={room.slug}
-                  to={
-                    room.slug === "lounge"
-                      ? "/app/lounge"
-                      : `/app/rooms/${room.slug}`
-                  }
-                  onClick={() => setOpen(false)}
-                >
-                  # {room.name}
-                </NavLink>
-              ),
-            )}
-            <NavLink to="/app/profile" onClick={() => setOpen(false)}>
-              Your profile
-            </NavLink>
-            <NavLink to="/app/messages" onClick={() => setOpen(false)}>
-              Messages & requests
-            </NavLink>
-            <ThemeControl value={theme} onChange={setTheme} />
-          </nav>
-        </Modal>
-      )}
-      <aside className="sidebar">
-        <Link to="/app/lounge" aria-label="Peak Unemployment lounge">
-          <Brand />
-        </Link>
-        <div className="sidebar-caption">PEOPLE BETWEEN JOBS</div>
-        <nav onClick={() => setOpen(false)}>
-          <NavLink to="/app/lounge">
-            <Coffee size={19} />
-            Main Lounge
-          </NavLink>
-          <span className="nav-label">FIND YOUR PEOPLE</span>
-          {industries.map((room) => (
-            <NavLink to={`/app/rooms/${room.slug}`} key={room.slug}>
-              <span className="nav-symbol">{room.icon}</span>
-              {room.name}
-              {profile.industry_id === room.slug && (
-                <span className="suggested-dot" title="Your industry" />
+    <NotificationProvider>
+      <div className="app-shell">
+        <a className="skip-link" href="#workspace">
+          Skip to conversation
+        </a>
+        <header className="mobile-header">
+          <Link to="/app/lounge" aria-label="Peak Unemployment lounge">
+            <Brand />
+          </Link>
+          <button
+            className="icon-button"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X /> : <Menu />}
+          </button>
+        </header>
+        {open && (
+          <Modal
+            open={open}
+            onOpenChange={setOpen}
+            title="Your rooms"
+            description="Choose a conversation."
+          >
+            <nav className="mobile-room-links">
+              {[{ slug: "lounge", name: "Main Lounge" }, ...industries].map(
+                (room) => (
+                  <NavLink
+                    key={room.slug}
+                    to={
+                      room.slug === "lounge"
+                        ? "/app/lounge"
+                        : `/app/rooms/${room.slug}`
+                    }
+                    onClick={() => setOpen(false)}
+                  >
+                    # {room.name}
+                  </NavLink>
+                ),
               )}
+              <NavLink to="/app/profile" onClick={() => setOpen(false)}>
+                Your profile
+              </NavLink>
+              <NavLink to="/app/messages" onClick={() => setOpen(false)}>
+                Messages & requests
+              </NavLink>
+              <ThemeControl value={theme} onChange={setTheme} />
+            </nav>
+          </Modal>
+        )}
+        <aside className="sidebar">
+          <Link to="/app/lounge" aria-label="Peak Unemployment lounge">
+            <Brand />
+          </Link>
+          <div className="sidebar-caption">PEOPLE BETWEEN JOBS</div>
+          <nav onClick={() => setOpen(false)}>
+            <NavLink to="/app/lounge">
+              <Coffee size={19} />
+              Main Lounge
             </NavLink>
-          ))}
-          <span className="nav-label">YOUR ACCOUNT</span>
+            <span className="nav-label">FIND YOUR PEOPLE</span>
+            {industries.map((room) => (
+              <NavLink to={`/app/rooms/${room.slug}`} key={room.slug}>
+                <span className="nav-symbol">{room.icon}</span>
+                {room.name}
+                {profile.industry_id === room.slug && (
+                  <span className="suggested-dot" title="Your industry" />
+                )}
+              </NavLink>
+            ))}
+            <span className="nav-label">YOUR ACCOUNT</span>
+            <NotificationBell />
+            <NavLink to="/app/messages">
+              <MessageCircle size={19} />
+              Private messages
+            </NavLink>
+            <NavLink to="/app/settings">
+              <Settings size={19} />
+              Settings
+            </NavLink>
+            {admin.data?.admin && (
+              <NavLink to="/app/admin">
+                <ShieldCheck size={19} />
+                Moderation
+              </NavLink>
+            )}
+          </nav>
+          <div className="sidebar-bottom">
+            <ThemeControl value={theme} onChange={setTheme} />
+            <Link to="/community-guidelines" className="sidebar-note">
+              <ShieldCheck size={18} />
+              <span>
+                Keep it kind.
+                <br />
+                <small>We’re all figuring it out.</small>
+              </span>
+              <ArrowUpRight size={14} />
+            </Link>
+            <Link to="/app/profile" className="profile-link">
+              <Avatar seed={profile.avatar_seed} name={profile.username} />
+              <span>
+                <strong>{profile.username}</strong>
+                <small>Profile & preferences</small>
+              </span>
+              <Settings size={15} />
+            </Link>
+          </div>
+        </aside>
+        <main className="app-main" ref={main} tabIndex={-1} id="workspace">
+          <Outlet />
+        </main>
+        <nav className="bottom-nav">
+          <NotificationBell />
+          <NavLink to="/app/lounge">
+            <Coffee size={20} />
+            <span>Lounge</span>
+          </NavLink>
+          <button onClick={() => setOpen(true)}>
+            <Menu size={20} />
+            <span>Rooms</span>
+          </button>
           <NavLink to="/app/messages">
-            <MessageCircle size={19} />
-            Private messages
+            <MessageCircle size={20} />
+            <span>Messages</span>
           </NavLink>
           <NavLink to="/app/settings">
-            <Settings size={19} />
-            Settings
+            <Settings size={20} />
+            <span>Settings</span>
           </NavLink>
-          {admin.data?.admin && (
-            <NavLink to="/app/admin">
-              <ShieldCheck size={19} />
-              Moderation
-            </NavLink>
-          )}
         </nav>
-        <div className="sidebar-bottom">
-          <ThemeControl value={theme} onChange={setTheme} />
-          <Link to="/community-guidelines" className="sidebar-note">
-            <ShieldCheck size={18} />
-            <span>
-              Keep it kind.
-              <br />
-              <small>We’re all figuring it out.</small>
-            </span>
-            <ArrowUpRight size={14} />
-          </Link>
-          <Link to="/app/profile" className="profile-link">
-            <Avatar seed={profile.avatar_seed} name={profile.username} />
-            <span>
-              <strong>{profile.username}</strong>
-              <small>Profile & preferences</small>
-            </span>
-            <Settings size={15} />
-          </Link>
-        </div>
-      </aside>
-      <main className="app-main" ref={main} tabIndex={-1} id="workspace">
-        <Outlet />
-      </main>
-      <nav className="bottom-nav">
-        <NavLink to="/app/lounge">
-          <Coffee size={20} />
-          <span>Lounge</span>
-        </NavLink>
-        <button onClick={() => setOpen(true)}>
-          <Menu size={20} />
-          <span>Rooms</span>
-        </button>
-        <NavLink to="/app/messages">
-          <MessageCircle size={20} />
-          <span>Messages</span>
-        </NavLink>
-        <NavLink to="/app/settings">
-          <Settings size={20} />
-          <span>Settings</span>
-        </NavLink>
-      </nav>
-    </div>
+      </div>
+    </NotificationProvider>
   );
 }

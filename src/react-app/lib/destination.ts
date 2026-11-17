@@ -4,7 +4,8 @@ import { industries } from "../../shared/config";
 export function appDestination(value: string | null): string {
   if (!value || value === "/") return "/app/lounge";
   if (
-    ["/app/lounge", "/app/settings", "/app/messages", "/app/profile"].includes(
+    ["/app/lounge", "/app/settings",
+    "/app/notifications", "/app/messages", "/app/profile"].includes(
       value,
     )
   )
