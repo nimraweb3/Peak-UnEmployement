@@ -1,3 +1,4 @@
+import { MessageBubble } from "./MessageBubble";
 import { requestJson } from "../../lib/transport";
 import { useMessageAnnouncement } from "../../hooks/useMessageAnnouncement";
 import {
@@ -266,11 +267,7 @@ function GuestFeed({ slug, onJoin }: { slug: string; onJoin: () => void }) {
                         {timeLabel(message.created_at)}
                       </time>
                     </div>
-                    <p className={message.deleted_at ? "removed" : ""}>
-                      {message.deleted_at
-                        ? "Message removed."
-                        : message.content}
-                    </p>
+                    <MessageBubble deleted={!!message.deleted_at}>{message.content}</MessageBubble>
                     {!message.deleted_at && message.reactions.length > 0 && (
                       <div className="reactions">
                         {message.reactions.map((r) => (

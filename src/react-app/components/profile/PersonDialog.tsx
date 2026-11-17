@@ -1,3 +1,6 @@
+import { useSession } from "../../contexts/session";
+import type { PublicProfile } from "../../pages/UserProfile";
+import { industries } from "../../../shared/config";
 import { profileMediaUrl } from "../../lib/media";
 import { Link } from "react-router";
 import { useState } from "react";
@@ -18,6 +21,7 @@ export function PersonDialog({
   messageId?: string;
   onClose: () => void;
 }) {
+  const { profile: self } = useSession();
   const qc = useQueryClient();
   const profile = useQuery({
     queryKey: ["profile", id],
@@ -27,14 +31,7 @@ export function PersonDialog({
   });
   const details = useQuery({
     queryKey: ["public-profile", profile.data?.username],
-    queryFn: () =>
-      api<{
-        display_name: string;
-        bio: string;
-        mood: string;
-        avatar_path: string | null;
-        banner_path: string | null;
-      }>("/users/" + profile.data!.username),
+    queryFn: () => api<PublicProfile>("/users/" + profile.data!.username),
     enabled: !!profile.data,
   });
   const [report, setReport] = useState(false);
@@ -96,14 +93,28 @@ export function PersonDialog({
               <Link to={"/u/" + profile.data.username} onClick={onClose}>
                 Open full profile ↗
               </Link>
+              {details.data?.employment_status && (
+                <p className="profile-badge">
+                  {details.data.employment_status}
+                </p>
+              )}
               <p>{profile.data.public_status || "No status shared."}</p>
               <small>
                 {profile.data.profession ||
-                  profile.data.industry_id ||
+                  industries.find((i) => i.slug === profile.data?.industry_id)
+                    ?.name ||
                   "Industry not shared"}
               </small>
             </div>
-            {!report ? (
+            {self?.id === id ? (
+              <Link
+                className="button button-outline"
+                to="/app/profile"
+                onClick={onClose}
+              >
+                Edit your profile
+              </Link>
+            ) : !report ? (
               <div className="stack">
                 {profile.data.allows_dm_requests ? (
                   <Button

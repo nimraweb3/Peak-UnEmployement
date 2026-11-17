@@ -1,3 +1,6 @@
+import type { Message, ReplyReference } from "../../../shared/types";
+import { Modal } from "../ui/dialog";
+import { MessageBubble } from "./MessageBubble";
 import { EmojiPicker, reactionLabels } from "./EmojiPicker";
 import { profileMediaUrl } from "../../lib/media";
 import { copy } from "../../../shared/copy";
@@ -24,12 +27,18 @@ import { Button } from "../ui/button";
 import { Avatar, Empty, ErrorState, Loading } from "../common";
 import { PersonDialog } from "../profile/PersonDialog";
 import { motion } from "motion/react";
-type Pending = { client_id: string; content: string; failed: boolean };
+type Pending = {
+  client_id: string;
+  content: string;
+  failed: boolean;
+  reply_to_message_id?: string | null;
+};
 type ChatProps = {
   id: string;
   kind: "rooms" | "conversations";
   title: string;
   closed?: boolean;
+  focusMessageId?: string;
 };
 export function ChatPanel(props: ChatProps) {
   const { profile } = useSession();
@@ -40,12 +49,65 @@ export function ChatPanel(props: ChatProps) {
     />
   );
 }
-function ChatContent({ id, kind, title, closed = false }: ChatProps) {
+function ChatContent({
+  id,
+  kind,
+  title,
+  closed = false,
+  focusMessageId,
+}: ChatProps) {
   const { profile } = useSession();
   const { reduced, announcements } = usePreferences();
   const qc = useQueryClient();
   const query = useMessages(kind, id);
   const [content, setContent] = useState("");
+  const [replyTarget, setReplyTarget] = useState<ReplyReference | null>(null);
+  const [contextMessage, setContextMessage] = useState<Message | null>(null);
+  const [contextError, setContextError] = useState("");
+  const handledFocus = useRef("");
+  async function openContext(mid: string) {
+    const el = document.getElementById("message-" + mid);
+    if (el) {
+      el.scrollIntoView({
+        block: "center",
+        behavior: reduced ? "instant" : "smooth",
+      });
+      el.focus({ preventScroll: true });
+      return;
+    }
+    try {
+      setContextMessage(await api<Message>(`/${kind}/${id}/messages/${mid}`));
+    } catch {
+      setContextError("This message is no longer available to you.");
+    }
+  }
+  useEffect(() => {
+    if (
+      !focusMessageId ||
+      handledFocus.current === focusMessageId ||
+      query.isLoading
+    )
+      return;
+    handledFocus.current = focusMessageId;
+    const controller = new AbortController();
+    const el = document.getElementById("message-" + focusMessageId);
+    if (el) {
+      el.scrollIntoView({ block: "center" });
+      el.focus({ preventScroll: true });
+    } else
+      void api<Message>(
+        `/${kind}/${id}/messages/${encodeURIComponent(focusMessageId)}`,
+        "GET",
+        undefined,
+        controller.signal,
+      )
+        .then(setContextMessage)
+        .catch(() => {
+          if (!controller.signal.aborted)
+            setContextError("This message is no longer available to you.");
+        });
+    return () => controller.abort();
+  }, [focusMessageId, id, kind, query.isLoading]);
   const input = useRef<HTMLTextAreaElement>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [pending, setPending] = useState<Pending[]>([]);
@@ -56,6 +118,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
     id: string;
     messageId?: string;
   } | null>(null);
+  const [actionMenu, setActionMenu] = useState<string | null>(null);
   const [reactionMenu, setReactionMenu] = useState<string | null>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const nearBottom = useRef(true);
@@ -110,12 +173,14 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
       client_id: crypto.randomUUID(),
       content: text,
       failed: false,
+      reply_to_message_id: replyTarget?.id || null,
     };
     sendingRef.current = true;
     setSending(true);
     if (!item) {
       setPending((p) => [...p, row]);
       setContent("");
+      setReplyTarget(null);
     } else
       setPending((p) =>
         p.map((x) =>
@@ -126,6 +191,9 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
       await api(`/${kind}/${id}/messages`, "POST", {
         content: row.content,
         client_id: row.client_id,
+        ...(row.reply_to_message_id
+          ? { reply_to_message_id: row.reply_to_message_id }
+          : {}),
       });
       await qc.invalidateQueries({ queryKey: ["messages", kind, id] });
       setPending((p) => p.filter((x) => x.client_id !== row.client_id));
@@ -164,7 +232,9 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
     }
   }
   return (
-    <div className="chat-panel">
+    <div
+      className={`chat-panel ${kind === "conversations" ? "chat-private" : ""}`}
+    >
       <div className="chat-connection">
         <span
           className={
@@ -235,7 +305,16 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
             </button>
           </p>
         )}
-        {query.messages.map((message) => {
+        {query.messages.map((message, index) => {
+          const previous = query.messages[index - 1];
+          const grouped =
+            !!previous &&
+            previous.sender_id === message.sender_id &&
+            !message.reply_to_message_id &&
+            !previous.deleted_at &&
+            new Date(message.created_at).getTime() -
+              new Date(previous.created_at).getTime() <
+              300000;
           const own = message.sender_id === profile?.id;
           const reactions = message.reactions || [];
           const emojis = [...new Set(reactions.map((r) => r.emoji))];
@@ -244,12 +323,13 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
               initial={reduced ? false : { opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.15 }}
-              className={`message ${own ? "message-own" : ""}`}
+              className={`message ${own ? "message-own" : ""} ${grouped ? "message-grouped" : ""}`}
+              id={"message-" + message.id}
+              tabIndex={-1}
               key={message.id}
             >
               <button
                 className="avatar-button"
-                disabled={own}
                 aria-label={`View ${message.profiles?.username || "anonymous"} profile`}
                 onClick={() => setPerson({ id: message.sender_id })}
               >
@@ -263,10 +343,7 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
               </button>
               <div className="message-body">
                 <div className="message-meta">
-                  <button
-                    disabled={own}
-                    onClick={() => setPerson({ id: message.sender_id })}
-                  >
+                  <button onClick={() => setPerson({ id: message.sender_id })}>
                     {message.profiles?.username || "Anonymous"}
                   </button>
                   {own && <span className="you-tag">you</span>}
@@ -274,11 +351,32 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
                     {timeLabel(message.created_at)}
                   </time>
                 </div>
-                <p className={message.deleted_at ? "removed" : ""}>
-                  {message.deleted_at
-                    ? "This message was removed."
-                    : message.content}
-                </p>
+                {message.reply_to_message_id && (
+                  <button
+                    type="button"
+                    className="reply-reference"
+                    onClick={() =>
+                      void openContext(message.reply_to_message_id!)
+                    }
+                    aria-label="Open original message"
+                  >
+                    <Reply size={14} />
+                    <span>
+                      <strong>
+                        {message.reply?.profiles?.username ||
+                          "Original message"}
+                      </strong>
+                      <span>
+                        {message.reply && !message.reply.deleted_at
+                          ? message.reply.content.slice(0, 140)
+                          : "Message unavailable"}
+                      </span>
+                    </span>
+                  </button>
+                )}
+                <MessageBubble deleted={!!message.deleted_at}>
+                  {message.content}
+                </MessageBubble>
                 {!message.deleted_at && (
                   <div className="reactions">
                     {emojis.map((emoji) => {
@@ -339,76 +437,101 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
               {!message.deleted_at && (
                 <div
                   className="message-actions"
+                  data-open={actionMenu === message.id}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                      setActionMenu(null);
+                      (
+                        e.currentTarget.querySelector(
+                          ".action-menu-trigger",
+                        ) as HTMLButtonElement
+                      )?.focus();
+                    }
+                  }}
                   role="group"
                   aria-label="Message actions"
                 >
                   <button
-                    className="icon-button"
-                    aria-label="Copy message"
-                    onClick={() => {
-                      void navigator.clipboard
-                        .writeText(message.content)
-                        .then(() => toast.success("Message copied."))
-                        .catch(() =>
-                          toast.error(
-                            "Could not copy. Select the message text instead.",
-                          ),
-                        );
-                    }}
-                  >
-                    <Copy size={15} />
-                  </button>
-                  <button
-                    className="icon-button"
-                    aria-label="Reply to message"
-                    disabled={closed}
-                    onClick={() => {
-                      const quote = `> ${message.profiles?.username || "Anonymous"}: ${message.content.slice(0, 180).replace(/\n/g, " ")}\n`;
-                      if (quote.length + content.length > 1000) {
-                        toast.error(
-                          "Make some space in your message before replying.",
-                        );
-                        return;
-                      }
-                      setContent(quote + content);
-                      input.current?.focus();
-                    }}
-                  >
-                    <Reply size={15} />
-                  </button>
-                  <button
-                    className="icon-button"
-                    aria-label="Add reaction"
+                    type="button"
+                    className="icon-button action-menu-trigger"
+                    aria-label="Open message actions"
+                    aria-expanded={actionMenu === message.id}
                     onClick={() =>
-                      setReactionMenu(
-                        reactionMenu === message.id ? null : message.id,
+                      setActionMenu(
+                        actionMenu === message.id ? null : message.id,
                       )
                     }
                   >
-                    <SmilePlus size={15} />
+                    <MoreHorizontal size={18} />
                   </button>
-                  {own ? (
+                  <div className="message-action-buttons">
                     <button
                       className="icon-button"
-                      aria-label="Delete message"
-                      onClick={() => void remove(message.id)}
+                      aria-label="Copy message"
+                      onClick={() => {
+                        void navigator.clipboard
+                          .writeText(message.content)
+                          .then(() => toast.success("Message copied."))
+                          .catch(() =>
+                            toast.error(
+                              "Could not copy. Select the message text instead.",
+                            ),
+                          );
+                      }}
                     >
-                      <Trash2 size={15} />
+                      <Copy size={15} />
                     </button>
-                  ) : (
                     <button
                       className="icon-button"
-                      aria-label="Report or block sender"
+                      aria-label="Reply to message"
+                      disabled={closed}
+                      onClick={() => {
+                        setReplyTarget({
+                          id: message.id,
+                          content: message.content,
+                          deleted_at: message.deleted_at,
+                          sender_id: message.sender_id,
+                          profiles: message.profiles,
+                        });
+                        input.current?.focus();
+                      }}
+                    >
+                      <Reply size={15} />
+                    </button>
+                    <button
+                      className="icon-button"
+                      aria-label="Add reaction"
                       onClick={() =>
-                        setPerson({
-                          id: message.sender_id,
-                          messageId: message.id,
-                        })
+                        setReactionMenu(
+                          reactionMenu === message.id ? null : message.id,
+                        )
                       }
                     >
-                      <MoreHorizontal size={17} />
+                      <SmilePlus size={15} />
                     </button>
-                  )}
+                    {own ? (
+                      <button
+                        className="icon-button"
+                        aria-label="Delete message"
+                        onClick={() => void remove(message.id)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    ) : (
+                      <button
+                        className="icon-button"
+                        aria-label="Report or block sender"
+                        onClick={() =>
+                          setPerson({
+                            id: message.sender_id,
+                            messageId: message.id,
+                          })
+                        }
+                      >
+                        <MoreHorizontal size={17} />
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </motion.article>
@@ -477,6 +600,59 @@ function ChatContent({ id, kind, title, closed = false }: ChatProps) {
             : ""}
         </span>
       </div>
+      {replyTarget && (
+        <div className="reply-preview">
+          <Reply size={18} />
+          <div>
+            <strong>
+              Replying to {replyTarget.profiles?.username || "Anonymous"}
+            </strong>
+            <p>{replyTarget.content.slice(0, 140)}</p>
+          </div>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Cancel reply"
+            onClick={() => {
+              setReplyTarget(null);
+              input.current?.focus();
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+      <Modal
+        open={!!contextMessage || !!contextError}
+        onOpenChange={() => {
+          setContextMessage(null);
+          setContextError("");
+        }}
+        title="Original message"
+        description="Only messages you can access appear here."
+      >
+        {contextError ? (
+          <p role="status">{contextError}</p>
+        ) : (
+          contextMessage && (
+            <>
+              <button
+                type="button"
+                className="text-link"
+                onClick={() => {
+                  setPerson({ id: contextMessage.sender_id });
+                  setContextMessage(null);
+                }}
+              >
+                {contextMessage.profiles?.username || "Anonymous"}
+              </button>
+              <MessageBubble deleted={!!contextMessage.deleted_at}>
+                {contextMessage.content}
+              </MessageBubble>
+            </>
+          )
+        )}
+      </Modal>
       <form
         className="composer-area"
         onKeyDown={(e) => {
