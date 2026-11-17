@@ -30,7 +30,12 @@ describe("After Hours contrast tokens", () => {
     it(`${name} text and interactive boundaries meet AA ratios`, () => {
       const t = tokens(selector);
       for (const surface of ["bg", "surface", "elevated"])
-        for (const foreground of ["text", "muted-foreground", "accent", "coral-text"])
+        for (const foreground of [
+          "text",
+          "muted-foreground",
+          "accent",
+          "coral-text",
+        ])
           expect(
             ratio(t[foreground], t[surface]),
             `${foreground} on ${surface}`,
@@ -39,4 +44,24 @@ describe("After Hours contrast tokens", () => {
       expect(ratio(t["lime-text"], t.lime)).toBeGreaterThanOrEqual(4.5);
       expect(ratio(t["control-border"], t.surface)).toBeGreaterThanOrEqual(3);
     });
+});
+
+it("Night Shift chat surfaces retain readable text and controls", () => {
+  const base = tokens('\\[data-theme="dark"\\]');
+  const social = readFileSync("src/react-app/social.css", "utf8");
+  const surfaces = [
+    ...social
+      .match(/\[data-theme="dark"\]\s*\{([^}]+)/)![1]
+      .matchAll(
+        /--(?:surface-[\w-]+|bubble-(?:incoming|outgoing)):\s*(#[\da-f]+)/gi,
+      ),
+  ].map((m) => m[1]);
+  for (const surface of surfaces) {
+    for (const foreground of ["text", "muted-foreground", "primary"])
+      expect(
+        ratio(base[foreground], surface),
+        `${foreground} on ${surface}`,
+      ).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(base["control-border"], surface)).toBeGreaterThanOrEqual(3);
+  }
 });

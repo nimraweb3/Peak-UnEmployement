@@ -18,6 +18,7 @@ afterEach(() => {
 });
 it("keeps fiction opt-in, pauses, replays and skips without API calls", () => {
   vi.useFakeTimers();
+  HTMLElement.prototype.scrollTo = vi.fn();
   render(<ConversationDemo />);
   expect(screen.queryByText(/Got rejected/)).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Play demo" }));
