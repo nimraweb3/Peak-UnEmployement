@@ -8,7 +8,10 @@ import { loadEnv } from "vite";
 // user sessions, private content, or server environment values enter these files.
 const root = path.resolve("dist/client");
 const template = await fs.readFile(path.join(root, "index.html"), "utf8");
-const env = loadEnv("production", process.cwd(), "VITE_SITE_URL");
+const env = loadEnv("production", process.cwd(), [
+  "VITE_SITE_URL",
+  "VITE_HOMEPAGE_CHAT_MODE",
+]);
 const origin = new URL(
   process.env.VITE_SITE_URL ||
     env.VITE_SITE_URL ||
@@ -29,7 +32,14 @@ await build({
   format: "esm",
   packages: "external",
   jsx: "automatic",
-  define: { "import.meta.env.PROD": "true" },
+  define: {
+    "import.meta.env.PROD": "true",
+    "import.meta.env.VITE_HOMEPAGE_CHAT_MODE": JSON.stringify(
+      process.env.VITE_HOMEPAGE_CHAT_MODE ||
+        env.VITE_HOMEPAGE_CHAT_MODE ||
+        "demo",
+    ),
+  },
 });
 const { pages, publicPaths } = await import(pathToFileURL(modulePath).href);
 const bindings = {
