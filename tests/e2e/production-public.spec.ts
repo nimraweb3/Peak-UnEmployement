@@ -32,10 +32,10 @@ test("production guidelines navigation and direct refresh", async ({page}) => {
   await expect(page).toHaveTitle(/Community Guidelines/);
 });
 test("public demo and both shifts reflow with no axe violations", async ({page}) => {
-  test.setTimeout(120000);
+  test.setTimeout(300000);
   mkdirSync("docs/audits",{recursive:true}); mkdirSync("docs/screenshots",{recursive:true});
   const results = [];
-  for(const width of [1440,768,390,320]) {
+  for(const width of [320,375,390,430,768,1024,1280,1440,1920]) {
     await page.setViewportSize({width,height:900});
     await page.goto("/");
     await expect(page.getByRole("heading",{level:1})).toContainText("The group chat");
@@ -57,7 +57,7 @@ test("public demo and both shifts reflow with no axe violations", async ({page})
   await expect(page.getByLabel("Fictional conversation")).toHaveCount(0);
 });
 test("auth and legal pages render accessibly; guest workspace is protected", async ({page}) => {
-  test.setTimeout(120000);
+  test.setTimeout(300000);
   const reports=[];
   for(const path of ["/auth", "/auth?mode=signup", "/auth?mode=forgot", "/community-guidelines", "/privacy", "/terms"]) {
     await page.goto(path);

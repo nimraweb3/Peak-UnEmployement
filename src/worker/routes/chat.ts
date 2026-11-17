@@ -62,6 +62,25 @@ for (const kind of ["rooms", "conversations"] as const) {
           : null,
     });
   });
+  app.get(`/api/${kind}/:id/messages/:mid`, async (c) => {
+    const db = c.get("db");
+    const id = uuid.parse(c.req.param("id"));
+    if (
+      kind === "conversations" &&
+      !unwrap(await db.rpc("can_converse", { cid: id }))
+    )
+      throw new HTTPException(403, { message: "Conversation unavailable" });
+    const item = unwrap(
+      await db
+        .from("messages")
+        .select(messageSelect)
+        .eq(field, id)
+        .eq("id", uuid.parse(c.req.param("mid")))
+        .maybeSingle(),
+    );
+    if (!item) throw new HTTPException(404, { message: "Message unavailable" });
+    return c.json(item);
+  });
   app.post(`/api/${kind}/:id/messages`, async (c) => {
     const payload = messageSchema.parse(await c.req.json());
     return c.json(
