@@ -91,5 +91,7 @@ supabase/.branches/
 /temp/
 *.tmp
 
-
+WEBSITE_AUDIT_REPORT.md
 anti-slop-review.md
+WEBSITE_IMPROVEMENT_CHECKLIST.md
+CHAT-ENHANCEMENTS.md
